@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'monday' => [
+        'api_token' => env('MONDAY_API_TOKEN', ''),
+        'board_id' => env('MONDAY_BOARD_ID', ''),
+    ],
+
 ];

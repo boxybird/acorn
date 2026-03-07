@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -39,6 +40,24 @@ class Patient extends Model
             'magic_link_expires_at' => 'datetime',
             'synced_at' => 'datetime',
         ];
+    }
+
+    /** @return HasMany<FormResponse, $this> */
+    public function formResponses(): HasMany
+    {
+        return $this->hasMany(FormResponse::class);
+    }
+
+    /** @return HasMany<Document, $this> */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    /** @return HasMany<Signature, $this> */
+    public function signatures(): HasMany
+    {
+        return $this->hasMany(Signature::class);
     }
 
     public function hasValidMagicLink(): bool

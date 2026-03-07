@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Staff\PatientController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -9,6 +10,11 @@ Route::inertia('/', 'Welcome', [
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+
+    Route::prefix('staff')->name('staff.')->group(function (): void {
+        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+        Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
+    });
 });
 
 require __DIR__.'/settings.php';

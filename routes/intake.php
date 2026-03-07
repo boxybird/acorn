@@ -1,9 +1,16 @@
 <?php
 
+use App\Http\Controllers\Intake\DashboardController;
+use App\Http\Controllers\Intake\DocumentController;
+use App\Http\Controllers\Intake\FormController;
 use App\Http\Controllers\Intake\MagicLinkController;
+use App\Http\Controllers\Intake\SignatureController;
 use App\Http\Middleware\AuthenticatePatient;
+use App\Http\Middleware\SetPatientLocale;
+use App\Models\Patient;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::prefix('intake')->name('intake.')->group(function (): void {
     Route::get('/', [MagicLinkController::class, 'landing'])->name('landing');
@@ -12,7 +19,25 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
         ->name('request-link');
     Route::get('/verify/{token}', [MagicLinkController::class, 'verify'])->name('verify');
 
-    Route::middleware(AuthenticatePatient::class)->group(function (): void {
-        Route::get('/dashboard', fn () => Inertia::render('intake/Dashboard'))->name('dashboard');
+    Route::middleware([AuthenticatePatient::class, SetPatientLocale::class])->group(function (): void {
+        Route::post('/set-locale', function (Request $request): JsonResponse {
+            $request->validate(['locale' => ['required', 'string', 'in:en,es']]);
+
+            /** @var int $patientId */
+            $patientId = $request->session()->get('patient_id');
+
+            Patient::query()->where('id', $patientId)->update([
+                'preferred_locale' => $request->input('locale'),
+            ]);
+
+            return response()->json(['status' => 'ok']);
+        })->name('set-locale');
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
+        Route::get('/form/{schemaKey}', [FormController::class, 'show'])->name('form.show');
+        Route::put('/form/{schemaKey}', [FormController::class, 'save'])->name('form.save');
+        Route::post('/form/{schemaKey}/complete', [FormController::class, 'complete'])->name('form.complete');
+        Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+        Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+        Route::post('/signatures', [SignatureController::class, 'store'])->name('signatures.store');
     });
 });
