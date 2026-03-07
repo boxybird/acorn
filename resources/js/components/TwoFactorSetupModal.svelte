@@ -19,7 +19,6 @@
         InputOTPSlot,
     } from '@/components/ui/input-otp';
     import { Spinner } from '@/components/ui/spinner';
-    import { themeState } from '@/lib/theme.svelte';
     import { twoFactorAuthState } from '@/lib/twoFactorAuth.svelte';
     import { confirm } from '@/routes/two-factor';
     import type { TwoFactorConfigContent } from '@/types';
@@ -34,7 +33,6 @@
         isOpen?: boolean;
     } = $props();
 
-    const { resolvedAppearance } = themeState();
     const twoFactorAuth = twoFactorAuthState();
 
     let showVerificationStep = $state(false);
@@ -177,9 +175,6 @@
                                 >
                                     <div
                                         class="flex aspect-square size-full items-center justify-center [&>svg]:size-full"
-                                        style={resolvedAppearance() === 'dark'
-                                            ? 'filter: invert(1) brightness(1.5)'
-                                            : undefined}
                                     >
                                         <img
                                             src={qrCodeDataUrl}

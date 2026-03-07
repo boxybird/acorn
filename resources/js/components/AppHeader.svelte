@@ -55,7 +55,7 @@
     const { currentUrl, isCurrentUrl, whenCurrentUrl } = currentUrlState();
 
     const activeItemStyles =
-        'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
+        'text-neutral-900';
 
     const mainNavItems: NavItem[] = [
         {
@@ -102,7 +102,7 @@
                         <SheetTitle class="sr-only">Navigation menu</SheetTitle>
                         <SheetHeader class="flex justify-start text-left">
                             <AppLogoIcon
-                                class="size-6 fill-current text-black dark:text-white"
+                                class="size-6 fill-current text-black"
                             />
                         </SheetHeader>
                         <div
@@ -176,7 +176,7 @@
                                 </Link>
                                 {#if isCurrentUrl(item.href, $currentUrl)}
                                     <div
-                                        class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
+                                        class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black"
                                     ></div>
                                 {/if}
                             </NavigationMenuItem>
@@ -249,7 +249,7 @@
                                         />
                                     {/if}
                                     <AvatarFallback
-                                        class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
+                                        class="rounded-lg bg-neutral-200 font-semibold text-black"
                                     >
                                         {getInitials(auth.user?.name)}
                                     </AvatarFallback>
