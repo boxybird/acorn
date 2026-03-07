@@ -17,6 +17,9 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->profileRules($this->user()->id);
+        /** @var \App\Models\User $user */
+        $user = $this->user();
+
+        return $this->profileRules($user->id);
     }
 }
