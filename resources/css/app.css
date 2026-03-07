@@ -126,6 +126,17 @@
     --sidebar: hsl(33 33% 97%);
 }
 
+.staff {
+    --background: hsl(0 0% 98%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(11 48% 17%);
+    --secondary: hsl(0 0% 96%);
+    --muted: hsl(0 0% 96%);
+    --muted-foreground: hsl(0 0% 45%);
+    --border: hsl(0 0% 90%);
+    --input: hsl(0 0% 87%);
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
