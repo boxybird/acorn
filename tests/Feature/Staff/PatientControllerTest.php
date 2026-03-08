@@ -26,7 +26,7 @@ test('staff can view patient detail', function (): void {
         ->assertInertia(fn ($page) => $page
             ->component('staff/PatientDetail')
             ->has('patient')
-            ->has('formResponses')
+            ->has('intakes')
         );
 });
 

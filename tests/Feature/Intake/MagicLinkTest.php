@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Intake;
 use App\Models\Patient;
 
 test('intake landing page can be rendered', function (): void {
@@ -9,7 +10,8 @@ test('intake landing page can be rendered', function (): void {
 
 test('magic link can be requested with valid email', function (): void {
     $this->post(route('intake.request-link'), ['email' => 'parent@example.com'])
-        ->assertRedirect();
+        ->assertRedirect()
+        ->assertSessionHas('status');
 
     $this->assertDatabaseHas('patients', ['email' => 'parent@example.com']);
 });
@@ -23,10 +25,24 @@ test('valid magic link creates session and redirects to dashboard', function ():
     $patient = Patient::factory()->withMagicLink()->create();
 
     $this->get(route('intake.verify', ['token' => $patient->magic_link_token]))
-        ->assertRedirect(route('intake.dashboard'));
+        ->assertRedirect(route('intake.dashboard'))
+        ->assertSessionHas('patient_id', $patient->id)
+        ->assertSessionHas('intake_id');
 
     $patient->refresh();
     expect($patient->magic_link_token)->toBeNull();
+
+    $this->assertDatabaseHas('intakes', ['patient_id' => $patient->id]);
+});
+
+test('valid magic link with existing intake reuses it', function (): void {
+    $patient = Patient::factory()->withMagicLink()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+
+    $this->get(route('intake.verify', ['token' => $patient->magic_link_token]))
+        ->assertRedirect(route('intake.dashboard'))
+        ->assertSessionHas('patient_id', $patient->id)
+        ->assertSessionHas('intake_id', $intake->id);
 });
 
 test('expired magic link shows error', function (): void {
@@ -48,8 +64,9 @@ test('patient dashboard requires patient session', function (): void {
 
 test('patient dashboard is accessible with valid session', function (): void {
     $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
 
-    $this->withSession(['patient_id' => $patient->id])
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
         ->get(route('intake.dashboard'))
         ->assertOk();
 });

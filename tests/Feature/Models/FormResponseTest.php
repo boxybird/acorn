@@ -1,13 +1,13 @@
 <?php
 
 use App\Models\FormResponse;
-use App\Models\Patient;
+use App\Models\Intake;
 use Illuminate\Support\Facades\DB;
 
-test('form response belongs to a patient', function (): void {
+test('form response belongs to an intake', function (): void {
     $formResponse = FormResponse::factory()->create();
 
-    expect($formResponse->patient)->toBeInstanceOf(Patient::class);
+    expect($formResponse->intake)->toBeInstanceOf(Intake::class);
 });
 
 test('form response data is encrypted', function (): void {
@@ -23,12 +23,12 @@ test('form response data is encrypted', function (): void {
     expect($raw)->not->toContain('Jane');
 });
 
-test('patient can only have one response per schema key', function (): void {
-    $patient = Patient::factory()->create();
-    FormResponse::factory()->create(['patient_id' => $patient->id, 'schema_key' => 'demographics']);
+test('intake can only have one response per schema key', function (): void {
+    $intake = Intake::factory()->create();
+    FormResponse::factory()->create(['intake_id' => $intake->id, 'schema_key' => 'demographics']);
 
     expect(fn () => FormResponse::factory()->create([
-        'patient_id' => $patient->id,
+        'intake_id' => $intake->id,
         'schema_key' => 'demographics',
     ]))->toThrow(Exception::class);
 });

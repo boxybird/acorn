@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\FormResponse;
+use App\Models\Intake;
 use App\Models\Patient;
 use Illuminate\Support\Facades\DB;
 
@@ -24,16 +25,18 @@ test('magic link tokens are single use', function (): void {
     $this->get(route('intake.verify', ['token' => $token]))->assertRedirect(route('intake.landing'));
 });
 
-test('patient cannot access another patients form response', function (): void {
+test('patient cannot access another intakes form response', function (): void {
     $patient1 = Patient::factory()->create();
+    $intake1 = Intake::factory()->create(['patient_id' => $patient1->id]);
     $patient2 = Patient::factory()->create();
+    $intake2 = Intake::factory()->create(['patient_id' => $patient2->id]);
     FormResponse::factory()->create([
-        'patient_id' => $patient2->id,
+        'intake_id' => $intake2->id,
         'schema_key' => 'demographics',
         'data' => ['secret' => 'patient2-data'],
     ]);
 
-    $this->withSession(['patient_id' => $patient1->id])
+    $this->withSession(['patient_id' => $patient1->id, 'intake_id' => $intake1->id])
         ->get(route('intake.form.show', 'demographics'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page

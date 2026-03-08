@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Document;
 use App\Models\Patient;
 use App\Services\FormSchemaService;
 use App\Services\MondayService;
@@ -28,8 +29,13 @@ class SyncPatientToMonday implements ShouldQueue
 
         $itemId = $mondayService->createItem($this->patient, $columnValues);
 
-        /** @var list<\App\Models\Document> $documents */
-        $documents = array_values($this->patient->documents()->get()->all());
+        /** @var list<Document> $documents */
+        $documents = array_values(
+            Document::query()
+                ->whereIn('intake_id', $this->patient->intakes()->pluck('id'))
+                ->get()
+                ->all(),
+        );
 
         if ($documents !== []) {
             $mondayService->uploadFiles($itemId, $documents);
@@ -52,7 +58,9 @@ class SyncPatientToMonday implements ShouldQueue
     private function buildColumnValues(FormSchemaService $formSchemaService): array
     {
         $columnValues = [];
-        $responses = $this->patient->formResponses()->get();
+        $responses = \App\Models\FormResponse::query()
+            ->whereIn('intake_id', $this->patient->intakes()->pluck('id'))
+            ->get();
 
         foreach ($responses as $response) {
             $schema = $formSchemaService->get($response->schema_key);

@@ -2,12 +2,12 @@
 
 use App\Models\Document;
 use App\Models\FormResponse;
-use App\Models\Patient;
+use App\Models\Intake;
 
-test('document belongs to a patient', function (): void {
+test('document belongs to an intake', function (): void {
     $document = Document::factory()->create();
 
-    expect($document->patient)->toBeInstanceOf(Patient::class);
+    expect($document->intake)->toBeInstanceOf(Intake::class);
 });
 
 test('document belongs to a form response', function (): void {

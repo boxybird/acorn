@@ -12,7 +12,7 @@ class PatientController extends Controller
     public function index(): Response
     {
         $lengthAwarePaginator = Patient::query()
-            ->withCount('formResponses')
+            ->withCount('intakes')
             ->latest()
             ->paginate(20);
 
@@ -23,11 +23,11 @@ class PatientController extends Controller
 
     public function show(Patient $patient): Response
     {
-        $patient->load(['formResponses', 'documents', 'signatures']);
+        $patient->load(['intakes.formResponses', 'intakes.documents', 'intakes.signatures']);
 
         return Inertia::render('staff/PatientDetail', [
             'patient' => $patient,
-            'formResponses' => $patient->formResponses,
+            'intakes' => $patient->intakes,
         ]);
     }
 }
