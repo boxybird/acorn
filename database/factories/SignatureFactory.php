@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\FormResponse;
-use App\Models\Patient;
+use App\Models\Intake;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +17,7 @@ class SignatureFactory extends Factory
     public function definition(): array
     {
         return [
-            'patient_id' => Patient::factory(),
+            'intake_id' => Intake::factory(),
             'form_response_id' => FormResponse::factory(),
             'field_key' => 'consent_signature',
             'image_path' => 'signatures/'.fake()->uuid().'.png',

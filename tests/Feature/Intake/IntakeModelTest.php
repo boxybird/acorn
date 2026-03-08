@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\Patient;
 
@@ -41,4 +42,20 @@ test('intake without child name state works', function (): void {
     $intake = Intake::factory()->withoutChildName()->create();
 
     expect($intake->child_name)->toBeNull();
+});
+
+test('form response belongs to intake', function (): void {
+    $intake = Intake::factory()->create();
+    $formResponse = FormResponse::factory()->create(['intake_id' => $intake->id]);
+
+    expect($formResponse->intake->id)->toBe($intake->id);
+});
+
+test('intake has many form responses', function (): void {
+    $intake = Intake::factory()->create();
+    FormResponse::factory()->create(['intake_id' => $intake->id, 'schema_key' => 'demographics']);
+    FormResponse::factory()->create(['intake_id' => $intake->id, 'schema_key' => 'insurance']);
+    FormResponse::factory()->create(['intake_id' => $intake->id, 'schema_key' => 'medical_history']);
+
+    expect($intake->formResponses)->toHaveCount(3);
 });

@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\FormResponse;
-use App\Models\Patient;
+use App\Models\Intake;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +17,7 @@ class DocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'patient_id' => Patient::factory(),
+            'intake_id' => Intake::factory(),
             'form_response_id' => FormResponse::factory(),
             'field_key' => 'insurance_card',
             'file_path' => 'documents/'.fake()->uuid().'.pdf',

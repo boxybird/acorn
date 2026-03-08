@@ -13,16 +13,16 @@ class Signature extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'patient_id',
+        'intake_id',
         'form_response_id',
         'field_key',
         'image_path',
     ];
 
-    /** @return BelongsTo<Patient, $this> */
-    public function patient(): BelongsTo
+    /** @return BelongsTo<Intake, $this> */
+    public function intake(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Intake::class);
     }
 
     /** @return BelongsTo<FormResponse, $this> */

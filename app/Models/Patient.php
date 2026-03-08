@@ -48,24 +48,6 @@ class Patient extends Model
         return $this->hasMany(Intake::class);
     }
 
-    /** @return HasMany<FormResponse, $this> */
-    public function formResponses(): HasMany
-    {
-        return $this->hasMany(FormResponse::class);
-    }
-
-    /** @return HasMany<Document, $this> */
-    public function documents(): HasMany
-    {
-        return $this->hasMany(Document::class);
-    }
-
-    /** @return HasMany<Signature, $this> */
-    public function signatures(): HasMany
-    {
-        return $this->hasMany(Signature::class);
-    }
-
     public function hasValidMagicLink(): bool
     {
         return $this->magic_link_token !== null

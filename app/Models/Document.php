@@ -13,7 +13,7 @@ class Document extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'patient_id',
+        'intake_id',
         'form_response_id',
         'field_key',
         'file_path',
@@ -22,10 +22,10 @@ class Document extends Model
         'file_size',
     ];
 
-    /** @return BelongsTo<Patient, $this> */
-    public function patient(): BelongsTo
+    /** @return BelongsTo<Intake, $this> */
+    public function intake(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Intake::class);
     }
 
     /** @return BelongsTo<FormResponse, $this> */

@@ -13,7 +13,7 @@ class FormResponse extends Model
     use HasFactory;
 
     /** @var list<string> */
-    protected $fillable = ['patient_id', 'schema_key', 'data', 'status'];
+    protected $fillable = ['intake_id', 'schema_key', 'data', 'status'];
 
     /**
      * @return array<string, string>
@@ -25,10 +25,10 @@ class FormResponse extends Model
         ];
     }
 
-    /** @return BelongsTo<Patient, $this> */
-    public function patient(): BelongsTo
+    /** @return BelongsTo<Intake, $this> */
+    public function intake(): BelongsTo
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(Intake::class);
     }
 
     /** @return HasMany<Document, $this> */

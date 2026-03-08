@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Patient;
+use App\Models\Intake;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,7 +16,7 @@ class FormResponseFactory extends Factory
     public function definition(): array
     {
         return [
-            'patient_id' => Patient::factory(),
+            'intake_id' => Intake::factory(),
             'schema_key' => 'demographics',
             'data' => ['first_name' => fake()->firstName()],
             'status' => 'in_progress',
