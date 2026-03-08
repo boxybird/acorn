@@ -1,8 +1,6 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import { Separator } from '@/components/ui/separator';
-    import AppLogoIcon from '@/components/AppLogoIcon.svelte';
-    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
     import { show } from '@/routes/intake/form';
     import { dashboard } from '@/routes/intake';
 
@@ -48,18 +46,7 @@
     let strokeDashoffset = $derived(circumference - (progressPercent / 100) * circumference);
 </script>
 
-<aside class="sticky top-0 flex h-screen w-[280px] shrink-0 flex-col border-r bg-primary/5">
-    <!-- Header -->
-    <div class="flex items-center justify-between px-5 py-5">
-        <div class="flex items-center gap-3">
-            <AppLogoIcon class="size-7" />
-            <span class="text-base font-bold text-foreground">Acorn</span>
-        </div>
-        <LocaleToggle {locale} />
-    </div>
-
-    <Separator />
-
+<aside class="sticky top-14 flex h-[calc(100vh-3.5rem)] w-[280px] shrink-0 flex-col border-r bg-primary/5">
     <!-- Progress Ring -->
     <div class="flex items-center gap-3 px-5 py-4">
         <svg class="size-10 -rotate-90" viewBox="0 0 40 40">
