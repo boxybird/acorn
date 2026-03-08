@@ -32,9 +32,42 @@ class FormController extends Controller
             ->where('schema_key', $schemaKey)
             ->first();
 
+        /** @var array<string, string> $responseStatuses */
+        $responseStatuses = FormResponse::query()
+            ->where('patient_id', $patientId)
+            ->pluck('status', 'schema_key')
+            ->all();
+
+        $allSchemas = $formSchemaService->all();
+
+        $forms = array_map(function (array $s) use ($responseStatuses): array {
+            /** @var string $key */
+            $key = $s['key'];
+
+            /** @var list<array<string, mixed>> $sections */
+            $sections = $s['sections'];
+
+            return [
+                'key' => $key,
+                'title' => $s['title'],
+                'sections' => array_map(fn (array $section): array => [
+                    'key' => $section['key'],
+                    'title' => $section['title'],
+                ], $sections),
+                'status' => $responseStatuses[$key] ?? 'not_started',
+            ];
+        }, $allSchemas);
+
+        $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === 'completed'));
+
         return Inertia::render('intake/Form', [
             'schema' => $schema,
             'savedData' => $formResponse instanceof FormResponse ? $formResponse->data : [],
+            'forms' => $forms,
+            'progress' => [
+                'completed' => $completed,
+                'total' => count($forms),
+            ],
         ]);
     }
 

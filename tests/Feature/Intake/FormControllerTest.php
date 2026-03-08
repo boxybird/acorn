@@ -13,6 +13,9 @@ test('form show returns schema and saved data', function (): void {
             ->component('intake/Form')
             ->has('schema')
             ->has('savedData')
+            ->has('forms')
+            ->has('progress')
+            ->where('progress.total', 6)
         );
 });
 
