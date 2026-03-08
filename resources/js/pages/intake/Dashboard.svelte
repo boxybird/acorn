@@ -115,7 +115,7 @@
                     <p class="float-up text-sm text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">{t.estimatedTime[locale]} ~{timeEstimate} {t.minutes[locale]}</p>
                 {/if}
                 {#if nextFormKey}
-                    <div class="pop-in" class:visible={mounted} style="transition-delay: 180ms">
+                    <div class="float-up" class:visible={mounted} style="transition-delay: 180ms">
                         <Button size="lg" onclick={() => router.visit(show.url(nextFormKey))}>
                             {t.getStarted[locale]}
                         </Button>
@@ -124,7 +124,7 @@
             </div>
         {:else if allCompleted}
             <div class="flex flex-col items-center space-y-4 py-8 text-center">
-                <div class="pop-in flex size-20 items-center justify-center rounded-full bg-primary/10" class:visible={mounted}>
+                <div class="float-up flex size-20 items-center justify-center rounded-full bg-primary/10" class:visible={mounted}>
                     <svg class="size-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
@@ -147,7 +147,7 @@
                     <p class="mt-1 text-muted-foreground">{t.pickUp[locale]}</p>
                 </div>
 
-                <Card class="pop-in {mounted ? 'visible' : ''}" style="transition-delay: 60ms">
+                <Card class="float-up {mounted ? 'visible' : ''}" style="transition-delay: 60ms">
                     <CardContent class="p-6">
                         <div class="flex items-center justify-between">
                             <div class="space-y-1">
@@ -180,7 +180,7 @@
             <h2 class="float-up text-sm font-medium text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">{t.yourChildren[locale]}</h2>
                 <div class="grid gap-3 sm:grid-cols-2">
                     {#each allIntakes as intakeCard, i (intakeCard.id)}
-                        <Card class="pop-in transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {mounted ? 'visible' : ''} {intakeCard.is_current ? 'ring-2 ring-primary' : ''}" style="transition-delay: {180 + i * 60}ms">
+                        <Card class="float-up transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {mounted ? 'visible' : ''} {intakeCard.is_current ? 'ring-2 ring-primary' : ''}" style="transition-delay: {180 + i * 60}ms">
                             <CardContent class="p-4">
                                 <div class="flex items-center justify-between">
                                     <h3 class="font-semibold text-foreground">{childLabel(intakeCard, i)}</h3>
@@ -225,7 +225,7 @@
                         </Card>
                     {/each}
                     <button
-                        class="pop-in flex items-center justify-center rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:text-primary"
+                        class="float-up flex items-center justify-center rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:text-primary"
                         class:visible={mounted}
                         style="transition-delay: {180 + allIntakes.length * 60}ms"
                         onclick={() => router.post(create.url())}
