@@ -108,5 +108,7 @@ test('completion page shows completed form with next form', function (): void {
             ->has('nextForm')
             ->has('progress')
             ->where('completedForm.key', 'demographics')
+            ->has('completedForm.title')
+            ->where('nextForm.key', 'insurance')
         );
 });
