@@ -1,0 +1,132 @@
+<script lang="ts">
+    import { Link } from '@inertiajs/svelte';
+    import { Separator } from '@/components/ui/separator';
+    import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import { show } from '@/routes/intake/form';
+    import { dashboard } from '@/routes/intake';
+
+    type FormItem = {
+        key: string;
+        title: Record<string, string>;
+        sections: { key: string; title: Record<string, string> }[];
+        status: 'not_started' | 'in_progress' | 'completed';
+    };
+
+    type Progress = {
+        completed: number;
+        total: number;
+    };
+
+    let {
+        forms,
+        progress,
+        activeFormKey,
+        activeSectionIndex = 0,
+        locale = 'en',
+        onSectionClick,
+    }: {
+        forms: FormItem[];
+        progress: Progress;
+        activeFormKey: string;
+        activeSectionIndex?: number;
+        locale?: string;
+        onSectionClick?: (index: number) => void;
+    } = $props();
+
+    let progressPercent = $derived(
+        progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0,
+    );
+
+    const circumference = 2 * Math.PI * 18;
+    let strokeDashoffset = $derived(circumference - (progressPercent / 100) * circumference);
+</script>
+
+<aside class="flex h-screen w-[280px] shrink-0 flex-col border-r bg-primary/5">
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-5 py-5">
+        <AppLogoIcon class="size-7" />
+        <span class="text-base font-bold text-foreground">Acorn</span>
+    </div>
+
+    <Separator />
+
+    <!-- Progress Ring -->
+    <div class="flex items-center gap-3 px-5 py-4">
+        <svg class="size-10 -rotate-90" viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="3" class="text-border" />
+            <circle
+                cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="3"
+                class="text-primary transition-all duration-500"
+                stroke-dasharray={circumference}
+                stroke-dashoffset={strokeDashoffset}
+                stroke-linecap="round"
+            />
+        </svg>
+        <div>
+            <p class="text-sm font-medium text-foreground">{progress.completed} of {progress.total}</p>
+            <p class="text-xs text-muted-foreground">forms complete</p>
+        </div>
+    </div>
+
+    <Separator />
+
+    <!-- Form List -->
+    <nav class="flex-1 overflow-y-auto px-3 py-3">
+        <ul class="space-y-1">
+            {#each forms as form (form.key)}
+                {@const isActive = form.key === activeFormKey}
+                {@const isCompleted = form.status === 'completed'}
+                <li>
+                    <Link
+                        href={show.url(form.key)}
+                        class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors
+                            {isActive ? 'bg-primary/10 font-medium text-foreground' : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground'}"
+                    >
+                        <!-- Status indicator -->
+                        {#if isCompleted}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                            </svg>
+                        {:else if isActive}
+                            <div class="size-4 shrink-0 rounded-full border-2 border-primary bg-primary/20"></div>
+                        {:else}
+                            <div class="size-4 shrink-0 rounded-full border-2 border-muted-foreground/30"></div>
+                        {/if}
+
+                        <span class="truncate">{form.title[locale]}</span>
+                    </Link>
+
+                    <!-- Section sub-steps (only for active form) -->
+                    {#if isActive && form.sections.length > 1}
+                        <ul class="ml-5 mt-1 space-y-0.5 border-l-2 border-border pl-4">
+                            {#each form.sections as section, i (section.key)}
+                                <li>
+                                    <button
+                                        type="button"
+                                        onclick={() => onSectionClick?.(i)}
+                                        class="w-full rounded-md px-2 py-1.5 text-left text-xs transition-colors
+                                            {i === activeSectionIndex ? 'font-medium text-primary' : 'text-muted-foreground hover:text-foreground'}"
+                                    >
+                                        {section.title[locale]}
+                                    </button>
+                                </li>
+                            {/each}
+                        </ul>
+                    {/if}
+                </li>
+            {/each}
+        </ul>
+    </nav>
+
+    <Separator />
+
+    <!-- Footer -->
+    <div class="px-5 py-4">
+        <Link
+            href={dashboard.url()}
+            class="text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+            &larr; Back to Dashboard
+        </Link>
+    </div>
+</aside>
