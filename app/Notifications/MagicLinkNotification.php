@@ -25,11 +25,12 @@ class MagicLinkNotification extends Notification
         $url = url('/intake/verify/'.$this->token);
 
         return (new MailMessage)
-            ->subject('Continue Your JumpStart Intake')
-            ->greeting('Hello!')
-            ->line('Click the button below to continue your intake forms.')
+            ->subject('Your JumpStart Intake Link')
+            ->greeting('Welcome!')
+            ->line("You're one step away from starting your intake paperwork with JumpStart Autism Collective.")
+            ->line('Click the button below to securely access your forms. You can complete them at your own pace and pick up where you left off anytime.')
             ->action('Continue Your Intake', $url)
-            ->line('This link will expire in 30 minutes.')
-            ->line('If you did not request this, no action is needed.');
+            ->line('This link will expire in 30 minutes. If it expires, simply request a new one from the intake page.')
+            ->line("If you didn't request this link, you can safely ignore this email.");
     }
 }
