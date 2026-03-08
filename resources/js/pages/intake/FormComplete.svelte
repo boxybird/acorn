@@ -3,6 +3,7 @@
     import { Link } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
     import { show } from '@/routes/intake/form';
     import { dashboard } from '@/routes/intake';
 
@@ -10,13 +11,13 @@
         completedForm,
         nextForm,
         progress,
+        locale = 'en',
     }: {
         completedForm: { key: string; title: Record<string, string> };
         nextForm: { key: string; title: Record<string, string> } | null;
         progress: { completed: number; total: number };
+        locale?: string;
     } = $props();
-
-    const locale = 'en';
     const remaining = progress.total - progress.completed;
     const allDone = remaining === 0;
 
@@ -30,6 +31,10 @@
 </script>
 
 <div class="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+    <div class="fixed top-4 right-4 z-50">
+        <LocaleToggle {locale} />
+    </div>
+
     <div class="w-full max-w-md space-y-8 text-center">
         <!-- Animated checkmark -->
         <div class="flex justify-center">

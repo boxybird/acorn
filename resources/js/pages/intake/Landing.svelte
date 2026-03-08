@@ -8,7 +8,10 @@
     import { Separator } from '@/components/ui/separator';
     import AppLogoAnimated from '@/components/AppLogoAnimated.svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
     import { requestLink } from '@/routes/intake';
+
+    let { locale = 'en' }: { locale?: string } = $props();
 
     let contentVisible = $state(false);
     let desktopTextVisible = $state(false);
@@ -20,6 +23,10 @@
 </script>
 
 <div class="flex min-h-screen flex-col lg:flex-row">
+    <div class="fixed top-4 right-4 z-50">
+        <LocaleToggle {locale} authenticated={false} />
+    </div>
+
     <!-- Left Panel: Form -->
     <div class="flex min-h-screen w-full flex-col justify-center px-6 py-12 sm:px-12 lg:min-h-0 lg:w-[40%] lg:px-16 xl:px-24">
         <div class="mx-auto w-full max-w-md space-y-8">

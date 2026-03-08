@@ -4,6 +4,7 @@
     import { Button } from '@/components/ui/button';
     import { Card, CardContent } from '@/components/ui/card';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
     import { show } from '@/routes/intake/form';
     import { select } from '@/routes/intake';
 
@@ -24,14 +25,13 @@
         child_name: string | null;
     };
 
-    let { forms, progress, intake, hasMultipleIntakes }: {
+    let { forms, progress, intake, hasMultipleIntakes, locale = 'en' }: {
         forms: FormItem[];
         progress: Progress;
         intake: IntakeContext;
         hasMultipleIntakes: boolean;
+        locale?: string;
     } = $props();
-
-    const locale = 'en';
 
     const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
         not_started: { label: 'Not Started', variant: 'outline' },
@@ -46,9 +46,12 @@
 
 <div class="flex min-h-screen flex-col bg-background">
     <header class="border-b px-4 py-4">
-        <div class="mx-auto flex max-w-2xl items-center gap-3">
-            <AppLogoIcon class="size-8" />
-            <span class="text-lg font-bold text-foreground">Acorn</span>
+        <div class="mx-auto flex max-w-2xl items-center justify-between">
+            <div class="flex items-center gap-3">
+                <AppLogoIcon class="size-8" />
+                <span class="text-lg font-bold text-foreground">Acorn</span>
+            </div>
+            <LocaleToggle {locale} />
         </div>
     </header>
 

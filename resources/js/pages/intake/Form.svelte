@@ -3,6 +3,7 @@
     import IntakeSidebar from '@/components/intake/IntakeSidebar.svelte';
     import IntakeBottomNav from '@/components/intake/IntakeBottomNav.svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
     import { Link } from '@inertiajs/svelte';
     import { save, complete } from '@/routes/intake/form';
     import { dashboard } from '@/routes/intake';
@@ -24,14 +25,14 @@
         savedData,
         forms,
         progress,
+        locale = 'en',
     }: {
         schema: Record<string, any>;
         savedData: Record<string, any>;
         forms: FormItem[];
         progress: Progress;
+        locale?: string;
     } = $props();
-
-    const locale = 'en';
     const schemaKey = schema.key as string;
     const totalSections = (schema.sections ?? []).length;
 
@@ -65,12 +66,15 @@
                     <AppLogoIcon class="size-6" />
                     <span class="text-sm font-bold text-foreground">Acorn</span>
                 </div>
-                <Link
-                    href={dashboard.url()}
-                    class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    &times;
-                </Link>
+                <div class="flex items-center gap-3">
+                    <LocaleToggle {locale} />
+                    <Link
+                        href={dashboard.url()}
+                        class="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                        &times;
+                    </Link>
+                </div>
             </div>
         </header>
 
