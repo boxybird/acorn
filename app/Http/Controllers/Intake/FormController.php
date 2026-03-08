@@ -139,7 +139,7 @@ class FormController extends Controller
 
         $this->checkAndDispatchSync($patientId, $formSchemaService);
 
-        return redirect()->route('intake.dashboard');
+        return redirect()->route('intake.form.completed', $schemaKey);
     }
 
     private function checkAndDispatchSync(int $patientId, FormSchemaService $formSchemaService): void

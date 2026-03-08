@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Intake\DashboardController;
 use App\Http\Controllers\Intake\DocumentController;
+use App\Http\Controllers\Intake\FormCompleteController;
 use App\Http\Controllers\Intake\FormController;
 use App\Http\Controllers\Intake\MagicLinkController;
 use App\Http\Controllers\Intake\SignatureController;
@@ -36,6 +37,7 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
         Route::get('/form/{schemaKey}', [FormController::class, 'show'])->name('form.show');
         Route::put('/form/{schemaKey}', [FormController::class, 'save'])->name('form.save');
         Route::post('/form/{schemaKey}/complete', [FormController::class, 'complete'])->name('form.complete');
+        Route::get('/form/{schemaKey}/completed', [FormCompleteController::class, 'show'])->name('form.completed');
         Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
         Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
         Route::post('/signatures', [SignatureController::class, 'store'])->name('signatures.store');

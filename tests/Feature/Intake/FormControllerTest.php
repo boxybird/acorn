@@ -84,9 +84,29 @@ test('mark complete succeeds with valid data', function (): void {
                 'referral_source' => 'pediatrician',
             ],
         ])
-        ->assertRedirect(route('intake.dashboard'));
+        ->assertRedirect(route('intake.form.completed', 'demographics'));
 
     $formResponse = $patient->formResponses()->where('schema_key', 'demographics')->first();
 
     expect($formResponse->isCompleted())->toBeTrue();
+});
+
+test('completion page shows completed form with next form', function (): void {
+    $patient = Patient::factory()->create();
+    FormResponse::factory()->create([
+        'patient_id' => $patient->id,
+        'schema_key' => 'demographics',
+        'status' => 'completed',
+    ]);
+
+    $this->withSession(['patient_id' => $patient->id])
+        ->get(route('intake.form.completed', 'demographics'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('intake/FormComplete')
+            ->has('completedForm')
+            ->has('nextForm')
+            ->has('progress')
+            ->where('completedForm.key', 'demographics')
+        );
 });
