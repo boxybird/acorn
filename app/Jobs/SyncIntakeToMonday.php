@@ -2,15 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Models\Document;
-use App\Models\Patient;
+use App\Models\FormResponse;
+use App\Models\Intake;
 use App\Services\FormSchemaService;
 use App\Services\MondayService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Throwable;
 
-class SyncPatientToMonday implements ShouldQueue
+class SyncIntakeToMonday implements ShouldQueue
 {
     use Queueable;
 
@@ -19,29 +19,25 @@ class SyncPatientToMonday implements ShouldQueue
     /** @var list<int> */
     public array $backoff = [60, 300, 900];
 
-    public function __construct(private readonly Patient $patient) {}
+    public function __construct(private readonly Intake $intake) {}
 
     public function handle(MondayService $mondayService, FormSchemaService $formSchemaService): void
     {
-        $this->patient->update(['sync_status' => 'syncing']);
+        $this->intake->update(['sync_status' => 'syncing']);
 
         $columnValues = $this->buildColumnValues($formSchemaService);
 
-        $itemId = $mondayService->createItem($this->patient, $columnValues);
+        /** @var \App\Models\Patient $patient */
+        $patient = $this->intake->patient;
+        $itemId = $mondayService->createItem($patient, $columnValues);
 
-        /** @var list<Document> $documents */
-        $documents = array_values(
-            Document::query()
-                ->whereIn('intake_id', $this->patient->intakes()->pluck('id'))
-                ->get()
-                ->all(),
-        );
+        $documents = array_values($this->intake->documents->all());
 
         if ($documents !== []) {
             $mondayService->uploadFiles($itemId, $documents);
         }
 
-        $this->patient->update([
+        $this->intake->update([
             'sync_status' => 'synced',
             'synced_at' => now(),
         ]);
@@ -49,7 +45,7 @@ class SyncPatientToMonday implements ShouldQueue
 
     public function failed(Throwable $throwable): void
     {
-        $this->patient->update(['sync_status' => 'failed']);
+        $this->intake->update(['sync_status' => 'failed']);
     }
 
     /**
@@ -58,9 +54,9 @@ class SyncPatientToMonday implements ShouldQueue
     private function buildColumnValues(FormSchemaService $formSchemaService): array
     {
         $columnValues = [];
-        $responses = \App\Models\FormResponse::query()
-            ->whereIn('intake_id', $this->patient->intakes()->pluck('id'))
-            ->get();
+
+        /** @var \Illuminate\Database\Eloquent\Collection<int, FormResponse> $responses */
+        $responses = $this->intake->formResponses;
 
         foreach ($responses as $response) {
             $schema = $formSchemaService->get($response->schema_key);

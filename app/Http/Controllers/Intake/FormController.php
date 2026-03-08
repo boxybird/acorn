@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Intake;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SyncPatientToMonday;
+use App\Jobs\SyncIntakeToMonday;
 use App\Models\FormResponse;
-use App\Models\Patient;
+use App\Models\Intake;
 use App\Services\FormSchemaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -118,9 +118,6 @@ class FormController extends Controller
         /** @var int $intakeId */
         $intakeId = $request->session()->get('intake_id');
 
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
-
         $rules = $formSchemaService->validationRules($schemaKey);
 
         /** @var array<string, list<string>> $prefixedRules */
@@ -140,12 +137,12 @@ class FormController extends Controller
             ['data' => $validatedData, 'status' => 'completed'],
         );
 
-        $this->checkAndDispatchSync($intakeId, $patientId, $formSchemaService);
+        $this->checkAndDispatchSync($intakeId, $formSchemaService);
 
         return redirect()->route('intake.form.completed', $schemaKey);
     }
 
-    private function checkAndDispatchSync(int $intakeId, int $patientId, FormSchemaService $formSchemaService): void
+    private function checkAndDispatchSync(int $intakeId, FormSchemaService $formSchemaService): void
     {
         $totalSchemas = count($formSchemaService->all());
         $completedCount = FormResponse::query()
@@ -154,9 +151,9 @@ class FormController extends Controller
             ->count();
 
         if ($completedCount >= $totalSchemas && config('services.monday.api_token')) {
-            /** @var Patient $patient */
-            $patient = Patient::query()->findOrFail($patientId);
-            SyncPatientToMonday::dispatch($patient);
+            /** @var Intake $intake */
+            $intake = Intake::query()->findOrFail($intakeId);
+            SyncIntakeToMonday::dispatch($intake);
         }
     }
 }

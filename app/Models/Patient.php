@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property \Illuminate\Support\Carbon|null $magic_link_expires_at
- * @property \Illuminate\Support\Carbon|null $synced_at
  */
 class Patient extends Model
 {
@@ -27,8 +26,6 @@ class Patient extends Model
         'preferred_locale',
         'magic_link_token',
         'magic_link_expires_at',
-        'sync_status',
-        'synced_at',
     ];
 
     /**
@@ -38,7 +35,6 @@ class Patient extends Model
     {
         return [
             'magic_link_expires_at' => 'datetime',
-            'synced_at' => 'datetime',
         ];
     }
 

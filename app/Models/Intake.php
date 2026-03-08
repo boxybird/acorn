@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ */
 class Intake extends Model
 {
     /** @use HasFactory<\Database\Factories\IntakeFactory> */
     use HasFactory;
 
     /** @var list<string> */
-    protected $fillable = ['patient_id', 'child_name', 'status'];
+    protected $fillable = ['patient_id', 'child_name', 'status', 'sync_status', 'synced_at'];
 
     /** @return BelongsTo<Patient, $this> */
     public function patient(): BelongsTo
@@ -47,5 +50,15 @@ class Intake extends Model
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'synced_at' => 'datetime',
+        ];
     }
 }
