@@ -4,6 +4,7 @@ use App\Http\Controllers\Intake\DashboardController;
 use App\Http\Controllers\Intake\DocumentController;
 use App\Http\Controllers\Intake\FormCompleteController;
 use App\Http\Controllers\Intake\FormController;
+use App\Http\Controllers\Intake\IntakeSelectorController;
 use App\Http\Controllers\Intake\MagicLinkController;
 use App\Http\Controllers\Intake\SignatureController;
 use App\Http\Middleware\AuthenticatePatient;
@@ -21,6 +22,9 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
     Route::get('/verify/{token}', [MagicLinkController::class, 'verify'])->name('verify');
 
     Route::middleware([AuthenticatePatient::class, SetPatientLocale::class])->group(function (): void {
+        Route::get('/select', [IntakeSelectorController::class, 'index'])->name('select');
+        Route::post('/select/new', [IntakeSelectorController::class, 'create'])->name('select.new');
+        Route::post('/select/{intake}', [IntakeSelectorController::class, 'choose'])->name('select.choose');
         Route::post('/set-locale', function (Request $request): JsonResponse {
             $request->validate(['locale' => ['required', 'string', 'in:en,es']]);
 
