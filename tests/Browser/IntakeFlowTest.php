@@ -219,3 +219,62 @@ it('shows time estimate on hub', function (): void {
         ->assertSee('minutes')
         ->assertNoJavaScriptErrors();
 });
+
+it('shows global header with breadcrumb on dashboard', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-header-dashboard',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $pendingAwaitablePage = visit('/intake/verify/test-header-dashboard');
+
+    $pendingAwaitablePage->assertPathIs('/intake/dashboard')
+        ->assertSee('Acorn')
+        ->assertSee('Dashboard')
+        ->assertSee('EN')
+        ->assertNoJavaScriptErrors();
+});
+
+it('shows global header with breadcrumb on form page', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-header-form',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $pendingAwaitablePage = visit('/intake/verify/test-header-form');
+
+    $pendingAwaitablePage->click('Get Started')
+        ->assertSee('Acorn')
+        ->assertSee('Dashboard')
+        ->assertSee('Parent/Guardian Information')
+        ->assertNoJavaScriptErrors();
+});
+
+it('shows global header on mobile form page', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-header-mobile',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $on = visit('/intake/verify/test-header-mobile')->on()->mobile();
+
+    $on->click('Get Started')
+        ->assertSee('Acorn')
+        ->assertSee('EN')
+        ->assertNoJavaScriptErrors();
+});
+
+it('global header breadcrumb links back to dashboard from form', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-header-nav',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $pendingAwaitablePage = visit('/intake/verify/test-header-nav');
+
+    $pendingAwaitablePage->click('Get Started')
+        ->assertSee('Parent/Guardian Information')
+        ->click('Dashboard')
+        ->assertPathIs('/intake/dashboard')
+        ->assertNoJavaScriptErrors();
+});
