@@ -65,6 +65,7 @@ class FormCompleteController extends Controller
                 'completed' => $completed,
                 'total' => count($allSchemas),
             ],
+            'locale' => app()->getLocale(),
         ]);
     }
 }

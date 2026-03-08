@@ -45,6 +45,17 @@ test('valid magic link with existing intake reuses it', function (): void {
         ->assertSessionHas('intake_id', $intake->id);
 });
 
+test('valid magic link with multiple intakes sets first intake and redirects to dashboard', function (): void {
+    $patient = Patient::factory()->withMagicLink()->create();
+    $firstIntake = Intake::factory()->create(['patient_id' => $patient->id]);
+    Intake::factory()->create(['patient_id' => $patient->id]);
+
+    $this->get(route('intake.verify', ['token' => $patient->magic_link_token]))
+        ->assertRedirect(route('intake.dashboard'))
+        ->assertSessionHas('patient_id', $patient->id)
+        ->assertSessionHas('intake_id', $firstIntake->id);
+});
+
 test('expired magic link shows error', function (): void {
     $patient = Patient::factory()->withExpiredMagicLink()->create();
 

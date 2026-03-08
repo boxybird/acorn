@@ -76,23 +76,17 @@ class MagicLinkController extends Controller
             }
         }
 
-        $intakeCount = Intake::query()->where('patient_id', $patient->id)->count();
+        $intake = Intake::query()
+            ->where('patient_id', $patient->id)
+            ->oldest()
+            ->first();
 
-        if ($intakeCount === 0) {
+        if (! $intake) {
             $intake = Intake::query()->create(['patient_id' => $patient->id]);
-            $request->session()->put('intake_id', $intake->id);
-
-            return redirect()->route('intake.dashboard');
         }
 
-        if ($intakeCount === 1) {
-            /** @var Intake $intake */
-            $intake = Intake::query()->where('patient_id', $patient->id)->sole();
-            $request->session()->put('intake_id', $intake->id);
+        $request->session()->put('intake_id', $intake->id);
 
-            return redirect()->route('intake.dashboard');
-        }
-
-        return redirect()->route('intake.select');
+        return redirect()->route('intake.dashboard');
     }
 }

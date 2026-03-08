@@ -30,7 +30,6 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
     Route::get('/verify/{token}', [MagicLinkController::class, 'verify'])->name('verify');
 
     Route::middleware([AuthenticatePatient::class, SetPatientLocale::class])->group(function (): void {
-        Route::get('/select', [IntakeSelectorController::class, 'index'])->name('select');
         Route::post('/select/new', [IntakeSelectorController::class, 'create'])->name('select.new');
         Route::post('/select/{intake}', [IntakeSelectorController::class, 'choose'])->name('select.choose');
         Route::post('/set-locale', function (Request $request): JsonResponse {

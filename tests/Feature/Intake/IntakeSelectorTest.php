@@ -4,19 +4,6 @@ use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\Patient;
 
-test('intake selector shows all intakes for patient', function (): void {
-    $patient = Patient::factory()->create();
-    Intake::factory()->count(2)->create(['patient_id' => $patient->id]);
-
-    $this->withSession(['patient_id' => $patient->id])
-        ->get(route('intake.select'))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('intake/IntakeSelector')
-            ->has('intakes', 2)
-        );
-});
-
 test('selecting an intake sets intake_id in session', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);
@@ -79,12 +66,4 @@ test('creating new intake copies demographics and insurance data', function (): 
     // Child-specific forms are NOT copied
     $childInfo = $newIntake->formResponses()->where('schema_key', 'child_information')->first();
     expect($childInfo)->toBeNull();
-});
-
-test('magic link with multiple intakes redirects to selector', function (): void {
-    $patient = Patient::factory()->withMagicLink()->create();
-    Intake::factory()->count(2)->create(['patient_id' => $patient->id]);
-
-    $this->get(route('intake.verify', ['token' => $patient->magic_link_token]))
-        ->assertRedirect(route('intake.select'));
 });

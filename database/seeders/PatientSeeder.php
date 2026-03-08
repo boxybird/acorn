@@ -18,6 +18,7 @@ class PatientSeeder extends Seeder
         $this->createPartialPatient();
         $this->createNewPatient();
         $this->createSpanishSpeakingPatient();
+        $this->createMultiChildPatient();
     }
 
     private function createCompletedPatient(): void
@@ -25,6 +26,8 @@ class PatientSeeder extends Seeder
         $patient = Patient::factory()->create([
             'name' => 'Maria Garcia',
             'email' => 'maria.garcia@example.com',
+            'magic_link_token' => 'seed-maria-garcia',
+            'magic_link_expires_at' => now()->addYear(),
         ]);
 
         $intake = Intake::factory()->create([
@@ -128,6 +131,8 @@ class PatientSeeder extends Seeder
         $patient = Patient::factory()->create([
             'name' => 'James Thompson',
             'email' => 'james.thompson@example.com',
+            'magic_link_token' => 'seed-james-thompson',
+            'magic_link_expires_at' => now()->addYear(),
         ]);
 
         $intake = Intake::factory()->create([
@@ -181,6 +186,8 @@ class PatientSeeder extends Seeder
         Patient::factory()->create([
             'name' => 'Ashley Begay',
             'email' => 'ashley.begay@example.com',
+            'magic_link_token' => 'seed-ashley-begay',
+            'magic_link_expires_at' => now()->addYear(),
         ]);
     }
 
@@ -189,6 +196,8 @@ class PatientSeeder extends Seeder
         $patient = Patient::factory()->spanishSpeaking()->create([
             'name' => 'Rosa Martinez',
             'email' => 'rosa.martinez@example.com',
+            'magic_link_token' => 'seed-rosa-martinez',
+            'magic_link_expires_at' => now()->addYear(),
         ]);
 
         $intake = Intake::factory()->create([
@@ -209,6 +218,68 @@ class PatientSeeder extends Seeder
                 'secondary_guardian_name' => 'Diego Martinez',
                 'secondary_guardian_phone' => '(505) 555-0502',
                 'referral_source' => 'friend_family',
+            ],
+        ]);
+    }
+
+    private function createMultiChildPatient(): void
+    {
+        $patient = Patient::factory()->create([
+            'name' => 'Sarah Williams',
+            'email' => 'sarah.williams@example.com',
+            'magic_link_token' => 'seed-sarah-williams',
+            'magic_link_expires_at' => now()->addYear(),
+        ]);
+
+        $firstIntake = Intake::factory()->create([
+            'patient_id' => $patient->id,
+            'child_name' => 'Liam Williams',
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $firstIntake->id,
+            'schema_key' => 'demographics',
+            'data' => [
+                'first_name' => 'Sarah',
+                'last_name' => 'Williams',
+                'phone' => '(505) 555-0601',
+                'email' => 'sarah.williams@example.com',
+                'address' => '321 Rio Grande Blvd, Albuquerque, NM 87104',
+                'preferred_language' => 'en',
+                'has_secondary_guardian' => false,
+                'referral_source' => 'pediatrician',
+            ],
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $firstIntake->id,
+            'schema_key' => 'child_information',
+            'data' => [
+                'child_first_name' => 'Liam',
+                'child_last_name' => 'Williams',
+                'child_dob' => '2021-03-10',
+                'child_gender' => 'male',
+                'pediatrician_name' => 'Dr. Amy Patel',
+                'pediatrician_phone' => '(505) 555-0700',
+            ],
+        ]);
+
+        $secondIntake = Intake::factory()->withoutChildName()->create([
+            'patient_id' => $patient->id,
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $secondIntake->id,
+            'schema_key' => 'demographics',
+            'data' => [
+                'first_name' => 'Sarah',
+                'last_name' => 'Williams',
+                'phone' => '(505) 555-0601',
+                'email' => 'sarah.williams@example.com',
+                'address' => '321 Rio Grande Blvd, Albuquerque, NM 87104',
+                'preferred_language' => 'en',
+                'has_secondary_guardian' => false,
+                'referral_source' => 'pediatrician',
             ],
         ]);
     }

@@ -46,12 +46,12 @@ it('authenticates via magic link and reaches dashboard', function (): void {
     $pendingAwaitablePage = visit('/intake/verify/test-browser-token');
 
     $pendingAwaitablePage->assertPathIs('/intake/dashboard')
-        ->assertSee('Your Intake Dashboard')
-        ->assertSee('Family Demographics')
+        ->assertSee('Welcome!')
+        ->assertSee('Get Started')
         ->assertNoJavaScriptErrors();
 });
 
-it('shows the form with split-screen layout on desktop', function (): void {
+it('navigates to first form via Get Started button', function (): void {
     $patient = Patient::factory()->create([
         'magic_link_token' => 'test-form-token',
         'magic_link_expires_at' => now()->addMinutes(30),
@@ -60,8 +60,7 @@ it('shows the form with split-screen layout on desktop', function (): void {
     $pendingAwaitablePage = visit('/intake/verify/test-form-token');
 
     $pendingAwaitablePage->assertPathIs('/intake/dashboard')
-        ->click('Family Demographics')
-        ->assertPathIs('/intake/form/demographics')
+        ->click('Get Started')
         ->assertSee('Parent/Guardian Information')
         ->assertSee('First Name')
         ->assertSee('Last Name')
@@ -76,7 +75,7 @@ it('navigates between form sections', function (): void {
 
     $pendingAwaitablePage = visit('/intake/verify/test-nav-token');
 
-    $pendingAwaitablePage->click('Family Demographics')
+    $pendingAwaitablePage->click('Get Started')
         ->assertSee('Parent/Guardian Information')
         ->click('Next')
         ->assertSee('Referral Information')
@@ -94,7 +93,7 @@ it('shows the form on mobile with bottom navigation', function (): void {
 
     $on = visit('/intake/verify/test-mobile-token')->on()->mobile();
 
-    $on->click('Family Demographics')
+    $on->click('Get Started')
         ->assertSee('Parent/Guardian Information')
         ->assertSee('Step 1 / 2')
         ->assertNoJavaScriptErrors();
@@ -124,7 +123,7 @@ it('smoke tests all intake pages', function (): void {
         ->assertNoJavaScriptErrors();
 
     $pendingAwaitablePage->navigate('/intake/dashboard')
-        ->assertSee('Your Intake Dashboard')
+        ->assertSee('Your Intake')
         ->assertNoJavaScriptErrors();
 });
 
@@ -137,7 +136,7 @@ it('auto-creates first intake on magic link verification', function (): void {
     $pendingAwaitablePage = visit('/intake/verify/test-auto-intake');
 
     $pendingAwaitablePage->assertPathIs('/intake/dashboard')
-        ->assertSee('Your Intake Dashboard')
+        ->assertSee('Welcome!')
         ->assertNoJavaScriptErrors();
 
     expect(Intake::query()->where('patient_id', $patient->id)->count())->toBe(1);
@@ -177,17 +176,46 @@ it('switches language on dashboard and persists', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows intake selector for patients with multiple intakes', function (): void {
+it('shows child cards on hub for patients with multiple intakes', function (): void {
     $patient = Patient::factory()->create([
         'magic_link_token' => 'test-multi-intake',
         'magic_link_expires_at' => now()->addMinutes(30),
     ]);
-    Intake::factory()->count(2)->create(['patient_id' => $patient->id]);
+    Intake::factory()->create(['patient_id' => $patient->id, 'child_name' => 'Liam']);
+    Intake::factory()->create(['patient_id' => $patient->id, 'child_name' => 'Emma']);
 
     $pendingAwaitablePage = visit('/intake/verify/test-multi-intake');
 
-    $pendingAwaitablePage->assertPathIs('/intake/select')
-        ->assertSee('Select an Intake')
-        ->assertSee('Start intake for another child')
+    $pendingAwaitablePage->assertPathIs('/intake/dashboard')
+        ->assertSee('Liam')
+        ->assertSee('Emma')
+        ->assertSee('Add child')
+        ->assertNoJavaScriptErrors();
+});
+
+it('shows welcome card when no forms started', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-welcome',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $pendingAwaitablePage = visit('/intake/verify/test-welcome');
+
+    $pendingAwaitablePage->assertPathIs('/intake/dashboard')
+        ->assertSee('Welcome!')
+        ->assertSee('Your progress saves automatically')
+        ->assertNoJavaScriptErrors();
+});
+
+it('shows time estimate on hub', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-time-estimate',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $pendingAwaitablePage = visit('/intake/verify/test-time-estimate');
+
+    $pendingAwaitablePage->assertPathIs('/intake/dashboard')
+        ->assertSee('minutes')
         ->assertNoJavaScriptErrors();
 });

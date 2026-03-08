@@ -68,6 +68,7 @@ class FormController extends Controller
                 'completed' => $completed,
                 'total' => count($forms),
             ],
+            'locale' => app()->getLocale(),
         ]);
     }
 

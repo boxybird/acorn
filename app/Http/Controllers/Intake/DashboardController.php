@@ -22,8 +22,6 @@ class DashboardController extends Controller
         /** @var Intake $intake */
         $intake = Intake::query()->findOrFail($intakeId);
 
-        $hasMultipleIntakes = Intake::query()->where('patient_id', $patientId)->count() > 1;
-
         $schemas = $formSchemaService->all();
 
         /** @var array<string, string> $responseStatuses */
@@ -47,6 +45,40 @@ class DashboardController extends Controller
 
         $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === 'completed'));
 
+        // Time estimate: sum estimated_minutes for non-completed forms
+        $timeEstimate = 0;
+        foreach ($forms as $form) {
+            if ($form['status'] !== 'completed') {
+                /** @var int $minutes */
+                $minutes = $form['estimated_minutes'] ?? 0;
+                $timeEstimate += $minutes;
+            }
+        }
+
+        // All intakes for this patient (for child cards)
+        $allIntakes = Intake::query()
+            ->where('patient_id', $patientId)
+            ->withCount([
+                'formResponses as completed_forms_count' => function ($query): void {
+                    $query->where('status', 'completed');
+                },
+            ])
+            ->oldest()
+            ->get()
+            ->map(function (Intake $intake) use ($intakeId): array {
+                /** @var int $completedCount */
+                $completedCount = $intake->getAttribute('completed_forms_count');
+
+                return [
+                    'id' => $intake->id,
+                    'child_name' => $intake->child_name,
+                    'status' => $intake->status,
+                    'completed_forms_count' => $completedCount,
+                    'is_current' => $intake->id === $intakeId,
+                ];
+            })
+            ->all();
+
         return Inertia::render('intake/Dashboard', [
             'forms' => $forms,
             'progress' => [
@@ -54,9 +86,12 @@ class DashboardController extends Controller
                 'total' => count($forms),
             ],
             'intake' => [
+                'id' => $intake->id,
                 'child_name' => $intake->child_name,
             ],
-            'hasMultipleIntakes' => $hasMultipleIntakes,
+            'allIntakes' => array_values($allIntakes),
+            'timeEstimate' => $timeEstimate,
+            'locale' => app()->getLocale(),
         ]);
     }
 }
