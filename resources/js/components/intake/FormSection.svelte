@@ -56,11 +56,10 @@
 </script>
 
 <div class="space-y-6">
-    <h2 class="text-lg font-semibold text-foreground">{section.title[locale]}</h2>
     {#each section.fields as field (field.key)}
         {#if shouldShow(field)}
-            <svelte:component
-                this={getComponent(field.type)}
+            {@const FieldComponent = getComponent(field.type)}
+            <FieldComponent
                 {field}
                 bind:value={formData[field.key]}
                 {locale}
