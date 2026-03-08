@@ -21,6 +21,20 @@
     const remaining = progress.total - progress.completed;
     const allDone = remaining === 0;
 
+    const t = {
+        complete: { en: 'Complete!', es: '¡Completo!' },
+        allDone: {
+            en: "You're all done! Your intake paperwork has been submitted. The JumpStart team will review your information and reach out soon.",
+            es: '¡Ha terminado! Su documentación ha sido enviada. El equipo de JumpStart revisará su información y se pondrá en contacto pronto.',
+        },
+        of: { en: 'of', es: 'de' },
+        formsComplete: { en: 'forms complete', es: 'formularios completos' },
+        justOneMore: { en: 'just 1 more to go!', es: '¡solo queda 1 más!' },
+        moreToGo: { en: 'more to go!', es: 'más por completar.' },
+        backToDashboard: { en: 'Back to Dashboard', es: 'Volver al Panel' },
+        continueTo: { en: 'Continue to', es: 'Continuar a' },
+    } as const;
+
     let visible = $state(false);
     let checkVisible = $state(false);
 
@@ -65,16 +79,16 @@
             <h1 class="text-2xl font-bold text-foreground">
                 {completedForm.title[locale]}
             </h1>
-            <p class="text-lg text-primary">Complete!</p>
+            <p class="text-lg text-primary">{t.complete[locale]}</p>
 
             {#if allDone}
                 <p class="text-sm text-muted-foreground">
-                    You're all done! Your intake paperwork has been submitted. The JumpStart team will review your information and reach out soon.
+                    {t.allDone[locale]}
                 </p>
             {:else}
                 <p class="text-sm text-muted-foreground">
-                    {progress.completed} of {progress.total} forms complete &mdash;
-                    {remaining === 1 ? 'just 1 more to go!' : `${remaining} more to go!`}
+                    {progress.completed} {t.of[locale]} {progress.total} {t.formsComplete[locale]} &mdash;
+                    {remaining === 1 ? t.justOneMore[locale] : `${remaining} ${t.moreToGo[locale]}`}
                 </p>
             {/if}
         </div>
@@ -91,7 +105,7 @@
                 <Button asChild size="lg" class="w-full">
                     {#snippet children(props)}
                         <Link href={dashboard.url()} {...props}>
-                            Back to Dashboard
+                            {t.backToDashboard[locale]}
                         </Link>
                     {/snippet}
                 </Button>
@@ -99,14 +113,14 @@
                 <Button asChild size="lg" class="w-full">
                     {#snippet children(props)}
                         <Link href={show.url(nextForm.key)} {...props}>
-                            Continue to {nextForm.title[locale]}
+                            {t.continueTo[locale]} {nextForm.title[locale]}
                         </Link>
                     {/snippet}
                 </Button>
                 <Button asChild variant="outline" size="lg" class="w-full">
                     {#snippet children(props)}
                         <Link href={dashboard.url()} {...props}>
-                            Back to Dashboard
+                            {t.backToDashboard[locale]}
                         </Link>
                     {/snippet}
                 </Button>
@@ -114,7 +128,7 @@
                 <Button asChild size="lg" class="w-full">
                     {#snippet children(props)}
                         <Link href={dashboard.url()} {...props}>
-                            Back to Dashboard
+                            {t.backToDashboard[locale]}
                         </Link>
                     {/snippet}
                 </Button>

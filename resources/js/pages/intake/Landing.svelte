@@ -13,6 +13,45 @@
 
     let { locale = 'en' }: { locale?: string } = $props();
 
+    const t = {
+        getStarted: { en: 'Get Started', es: 'Comenzar' },
+        enterEmail: {
+            en: "Enter your email address to begin your intake forms. We'll send you a secure link to access your paperwork.",
+            es: 'Ingrese su correo electrónico para comenzar sus formularios. Le enviaremos un enlace seguro para acceder a su documentación.',
+        },
+        emailAddress: { en: 'Email Address', es: 'Correo Electrónico' },
+        placeholder: { en: 'parent@example.com', es: 'padre@ejemplo.com' },
+        sending: { en: 'Sending...', es: 'Enviando...' },
+        sendLink: { en: 'Send Secure Link', es: 'Enviar Enlace Seguro' },
+        alreadyHaveLink: {
+            en: 'Already have a link? Check your email for a previous access link.',
+            es: '¿Ya tiene un enlace? Revise su correo electrónico para un enlace de acceso anterior.',
+        },
+        welcomeHeading: {
+            en: 'Welcome to Your Intake Journey',
+            es: 'Bienvenido a Su Proceso de Admisión',
+        },
+        welcomeBody: {
+            en: "We've made the intake process simple and secure. Complete your forms at your own pace from any device.",
+            es: 'Hemos simplificado el proceso de admisión. Complete sus formularios a su propio ritmo desde cualquier dispositivo.',
+        },
+        secureTitle: { en: 'Secure & Private', es: 'Seguro y Privado' },
+        secureDesc: {
+            en: 'Your information is encrypted and HIPAA compliant',
+            es: 'Su información está encriptada y cumple con HIPAA',
+        },
+        saveTitle: { en: 'Save & Resume', es: 'Guardar y Continuar' },
+        saveDesc: {
+            en: 'Your progress is saved automatically — pick up where you left off',
+            es: 'Su progreso se guarda automáticamente — continúe donde lo dejó',
+        },
+        bilingualTitle: { en: 'Bilingual Support', es: 'Soporte Bilingüe' },
+        bilingualDesc: {
+            en: 'Available in English and Spanish',
+            es: 'Disponible en inglés y español',
+        },
+    } as const;
+
     let contentVisible = $state(false);
     let desktopTextVisible = $state(false);
 
@@ -60,9 +99,9 @@
                 style="transition-delay: 160ms;"
                 class:visible={contentVisible}
             >
-                <h2 class="text-xl font-semibold text-foreground">Get Started</h2>
+                <h2 class="text-xl font-semibold text-foreground">{t.getStarted[locale]}</h2>
                 <p class="text-sm text-muted-foreground">
-                    Enter your email address to begin your intake forms. We'll send you a secure link to access your paperwork.
+                    {t.enterEmail[locale]}
                 </p>
             </div>
 
@@ -98,12 +137,12 @@
                     style="transition-delay: 240ms;"
                     class:visible={contentVisible}
                 >
-                    <Label for="email">Email Address</Label>
+                    <Label for="email">{t.emailAddress[locale]}</Label>
                     <input
                         id="email"
                         name="email"
                         type="email"
-                        placeholder="parent@example.com"
+                        placeholder={t.placeholder[locale]}
                         required
                         class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     />
@@ -119,7 +158,7 @@
                     class:visible={contentVisible}
                 >
                     <Button type="submit" class="w-full" size="lg" disabled={processing}>
-                        {processing ? 'Sending...' : 'Send Secure Link'}
+                        {processing ? t.sending[locale] : t.sendLink[locale]}
                     </Button>
                 </div>
             </Form>
@@ -130,7 +169,7 @@
                 style="transition-delay: 400ms;"
                 class:visible={contentVisible}
             >
-                Already have a link? Check your email for a previous access link.
+                {t.alreadyHaveLink[locale]}
             </p>
         </div>
     </div>
@@ -152,14 +191,14 @@
                     style="transition-delay: 0ms;"
                     class:visible={desktopTextVisible}
                 >
-                    Welcome to Your Intake Journey
+                    {t.welcomeHeading[locale]}
                 </h2>
                 <p
                     class="stagger-item text-sm leading-relaxed text-muted-foreground"
                     style="transition-delay: 100ms;"
                     class:visible={desktopTextVisible}
                 >
-                    We've made the intake process simple and secure. Complete your forms at your own pace from any device.
+                    {t.welcomeBody[locale]}
                 </p>
 
                 <div class="grid w-full gap-4 text-left">
@@ -174,8 +213,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-foreground">Secure & Private</p>
-                            <p class="text-xs text-muted-foreground">Your information is encrypted and HIPAA compliant</p>
+                            <p class="text-sm font-medium text-foreground">{t.secureTitle[locale]}</p>
+                            <p class="text-xs text-muted-foreground">{t.secureDesc[locale]}</p>
                         </div>
                     </div>
                     <div
@@ -189,8 +228,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-foreground">Save & Resume</p>
-                            <p class="text-xs text-muted-foreground">Your progress is saved automatically — pick up where you left off</p>
+                            <p class="text-sm font-medium text-foreground">{t.saveTitle[locale]}</p>
+                            <p class="text-xs text-muted-foreground">{t.saveDesc[locale]}</p>
                         </div>
                     </div>
                     <div
@@ -204,8 +243,8 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-foreground">Bilingual Support</p>
-                            <p class="text-xs text-muted-foreground">Available in English and Spanish</p>
+                            <p class="text-sm font-medium text-foreground">{t.bilingualTitle[locale]}</p>
+                            <p class="text-xs text-muted-foreground">{t.bilingualDesc[locale]}</p>
                         </div>
                     </div>
                 </div>

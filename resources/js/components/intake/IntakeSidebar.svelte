@@ -34,6 +34,12 @@
         onSectionClick?: (index: number) => void;
     } = $props();
 
+    const t = {
+        of: { en: 'of', es: 'de' },
+        formsComplete: { en: 'forms complete', es: 'formularios completos' },
+        backToDashboard: { en: 'Back to Dashboard', es: 'Volver al Panel' },
+    } as const;
+
     let progressPercent = $derived(
         progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0,
     );
@@ -67,8 +73,8 @@
             />
         </svg>
         <div>
-            <p class="text-sm font-medium text-foreground">{progress.completed} of {progress.total}</p>
-            <p class="text-xs text-muted-foreground">forms complete</p>
+            <p class="text-sm font-medium text-foreground">{progress.completed} {t.of[locale]} {progress.total}</p>
+            <p class="text-xs text-muted-foreground">{t.formsComplete[locale]}</p>
         </div>
     </div>
 
@@ -130,7 +136,7 @@
             href={dashboard.url()}
             class="text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-            &larr; Back to Dashboard
+            &larr; {t.backToDashboard[locale]}
         </Link>
     </div>
 </aside>
