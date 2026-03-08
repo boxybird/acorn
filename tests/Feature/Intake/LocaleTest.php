@@ -9,7 +9,7 @@ test('patient preferred locale can be updated', function (): void {
 
     $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
         ->post(route('intake.set-locale'), ['locale' => 'es'])
-        ->assertOk();
+        ->assertRedirect();
 
     $patient->refresh();
 
@@ -32,7 +32,7 @@ test('set locale requires authentication', function (): void {
 
 test('guest can set locale in session', function (): void {
     $this->post(route('intake.set-locale-guest'), ['locale' => 'es'])
-        ->assertOk();
+        ->assertRedirect();
 
     $this->get(route('intake.landing'))
         ->assertOk();

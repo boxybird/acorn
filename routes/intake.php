@@ -10,7 +10,7 @@ use App\Http\Controllers\Intake\SignatureController;
 use App\Http\Middleware\AuthenticatePatient;
 use App\Http\Middleware\SetPatientLocale;
 use App\Models\Patient;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,11 +18,11 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
     Route::get('/', [MagicLinkController::class, 'landing'])
         ->middleware(SetPatientLocale::class)
         ->name('landing');
-    Route::post('/set-locale-guest', function (Request $request): JsonResponse {
+    Route::post('/set-locale-guest', function (Request $request): RedirectResponse {
         $request->validate(['locale' => ['required', 'string', 'in:en,es']]);
         $request->session()->put('locale', $request->input('locale'));
 
-        return response()->json(['status' => 'ok']);
+        return back();
     })->name('set-locale-guest');
     Route::post('/request-link', [MagicLinkController::class, 'requestLink'])
         ->middleware('throttle:3,1')
@@ -32,7 +32,7 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
     Route::middleware([AuthenticatePatient::class, SetPatientLocale::class])->group(function (): void {
         Route::post('/select/new', [IntakeSelectorController::class, 'create'])->name('select.new');
         Route::post('/select/{intake}', [IntakeSelectorController::class, 'choose'])->name('select.choose');
-        Route::post('/set-locale', function (Request $request): JsonResponse {
+        Route::post('/set-locale', function (Request $request): RedirectResponse {
             $request->validate(['locale' => ['required', 'string', 'in:en,es']]);
 
             /** @var int $patientId */
@@ -42,7 +42,7 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
                 'preferred_locale' => $request->input('locale'),
             ]);
 
-            return response()->json(['status' => 'ok']);
+            return back();
         })->name('set-locale');
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::get('/form/{schemaKey}', [FormController::class, 'show'])->name('form.show');

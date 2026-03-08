@@ -19,9 +19,6 @@
 
         router.post(endpoint.url(), { locale: newLocale }, {
             preserveScroll: true,
-            onSuccess: () => {
-                router.reload({ preserveScroll: true });
-            },
         });
     }
 </script>
