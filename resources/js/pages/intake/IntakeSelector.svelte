@@ -5,7 +5,7 @@
     import { Card, CardContent } from '@/components/ui/card';
     import { Separator } from '@/components/ui/separator';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
-    import { choose, create } from '@/actions/App/Http/Controllers/Intake/IntakeSelectorController';
+    import { choose, newMethod as create } from '@/routes/intake/select';
 
     type IntakeItem = {
         id: number;

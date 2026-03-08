@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\FormResponse;
+use App\Models\Intake;
 use App\Models\Patient;
 use Illuminate\Database\Seeder;
 
@@ -24,12 +25,18 @@ class PatientSeeder extends Seeder
         $patient = Patient::factory()->create([
             'name' => 'Maria Garcia',
             'email' => 'maria.garcia@example.com',
+        ]);
+
+        $intake = Intake::factory()->create([
+            'patient_id' => $patient->id,
+            'child_name' => 'Sofia Garcia',
+            'status' => 'completed',
             'sync_status' => 'synced',
             'synced_at' => now()->subDays(2),
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'demographics',
             'data' => [
                 'first_name' => 'Maria',
@@ -48,7 +55,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'insurance',
             'data' => [
                 'insurance_provider' => 'Blue Cross Blue Shield of NM',
@@ -61,7 +68,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'child_information',
             'data' => [
                 'child_first_name' => 'Sofia',
@@ -75,7 +82,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'medical_history',
             'data' => [
                 'has_autism_diagnosis' => true,
@@ -90,7 +97,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'developmental_concerns',
             'data' => [
                 'first_words_age' => '24',
@@ -104,7 +111,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'consent',
             'data' => [
                 'consent_evaluation' => true,
@@ -123,8 +130,13 @@ class PatientSeeder extends Seeder
             'email' => 'james.thompson@example.com',
         ]);
 
-        FormResponse::factory()->completed()->create([
+        $intake = Intake::factory()->create([
             'patient_id' => $patient->id,
+            'child_name' => 'Ethan Thompson',
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
             'schema_key' => 'demographics',
             'data' => [
                 'first_name' => 'James',
@@ -139,7 +151,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->completed()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'insurance',
             'data' => [
                 'insurance_provider' => 'Presbyterian Health Plan',
@@ -152,7 +164,7 @@ class PatientSeeder extends Seeder
         ]);
 
         FormResponse::factory()->create([
-            'patient_id' => $patient->id,
+            'intake_id' => $intake->id,
             'schema_key' => 'child_information',
             'status' => 'in_progress',
             'data' => [
@@ -179,8 +191,12 @@ class PatientSeeder extends Seeder
             'email' => 'rosa.martinez@example.com',
         ]);
 
-        FormResponse::factory()->completed()->create([
+        $intake = Intake::factory()->create([
             'patient_id' => $patient->id,
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
             'schema_key' => 'demographics',
             'data' => [
                 'first_name' => 'Rosa',
