@@ -77,6 +77,12 @@
                 </div>
             </div>
         </header>
+        <div class="h-1.5 w-full bg-muted lg:hidden">
+            <div
+                class="h-full bg-primary transition-all duration-500"
+                style="width: {progressPercent}%"
+            ></div>
+        </div>
 
         <!-- Form Content -->
         <main class="mx-auto w-full max-w-2xl flex-1 px-4 py-8 pb-24 sm:px-6 lg:px-8 lg:pb-8">

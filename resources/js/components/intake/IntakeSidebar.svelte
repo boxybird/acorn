@@ -48,7 +48,7 @@
     let strokeDashoffset = $derived(circumference - (progressPercent / 100) * circumference);
 </script>
 
-<aside class="flex h-screen w-[280px] shrink-0 flex-col border-r bg-primary/5">
+<aside class="sticky top-0 flex h-screen w-[280px] shrink-0 flex-col border-r bg-primary/5">
     <!-- Header -->
     <div class="flex items-center justify-between px-5 py-5">
         <div class="flex items-center gap-3">
