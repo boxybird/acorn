@@ -42,6 +42,12 @@ class Patient extends Model
         ];
     }
 
+    /** @return HasMany<Intake, $this> */
+    public function intakes(): HasMany
+    {
+        return $this->hasMany(Intake::class);
+    }
+
     /** @return HasMany<FormResponse, $this> */
     public function formResponses(): HasMany
     {
