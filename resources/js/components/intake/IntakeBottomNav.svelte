@@ -31,7 +31,7 @@
         <div class="w-24">
             {#if currentStep > 1}
                 <Button variant="ghost" size="sm" onclick={onPrevious}>
-                    {locale === 'es' ? 'Anterior' : 'Previous'}
+                    {{ en: 'Previous', es: 'Anterior' }[locale]}
                 </Button>
             {/if}
         </div>
@@ -49,7 +49,7 @@
                 />
             </svg>
             <span class="text-xs text-muted-foreground">
-                {locale === 'es' ? 'Paso' : 'Step'} {currentStep} / {totalSteps}
+                {{ en: 'Step', es: 'Paso' }[locale]} {currentStep} / {totalSteps}
             </span>
         </div>
 
@@ -57,11 +57,11 @@
         <div class="w-24 text-right">
             {#if isLastSection}
                 <Button size="sm" onclick={onComplete}>
-                    {locale === 'es' ? 'Completar' : 'Complete'}
+                    {{ en: 'Complete', es: 'Completar' }[locale]}
                 </Button>
             {:else}
                 <Button variant="outline" size="sm" onclick={onNext}>
-                    {locale === 'es' ? 'Siguiente' : 'Next'}
+                    {{ en: 'Next', es: 'Siguiente' }[locale]}
                 </Button>
             {/if}
         </div>

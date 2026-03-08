@@ -142,6 +142,34 @@ test('session locale does not overwrite existing patient locale preference of en
     expect($patient->preferred_locale)->toBe('en');
 });
 
+test('magic link request flash message is in english by default', function (): void {
+    $this->post(route('intake.request-link'), ['email' => 'parent@example.com'])
+        ->assertSessionHas('status', 'Check your email for a magic link.');
+});
+
+test('magic link request flash message is in spanish when session locale is es', function (): void {
+    $this->withSession(['locale' => 'es'])
+        ->post(route('intake.request-link'), ['email' => 'parent@example.com'])
+        ->assertSessionHas('status', 'Revise su correo electrónico para un enlace de acceso.');
+});
+
+test('expired magic link error message is in english by default', function (): void {
+    $patient = Patient::factory()->withExpiredMagicLink()->create();
+
+    $this->get(route('intake.verify', ['token' => $patient->magic_link_token]))
+        ->assertRedirect(route('intake.landing'))
+        ->assertSessionHas('error', 'This link is invalid or has expired.');
+});
+
+test('expired magic link error message is in spanish when session locale is es', function (): void {
+    $patient = Patient::factory()->withExpiredMagicLink()->create();
+
+    $this->withSession(['locale' => 'es'])
+        ->get(route('intake.verify', ['token' => $patient->magic_link_token]))
+        ->assertRedirect(route('intake.landing'))
+        ->assertSessionHas('error', 'Este enlace es inválido o ha expirado.');
+});
+
 test('magic link verify without session locale does not change patient locale', function (): void {
     $patient = Patient::factory()->withMagicLink()->create(['preferred_locale' => 'en']);
 

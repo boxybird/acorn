@@ -75,7 +75,7 @@
         ></canvas>
     </div>
     <Button variant="outline" size="sm" onclick={clear}>
-        {locale === 'es' ? 'Borrar' : 'Clear'}
+        {{ en: 'Clear', es: 'Borrar' }[locale]}
     </Button>
     {#if error}
         <p class="text-sm text-destructive">{error}</p>

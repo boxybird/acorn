@@ -28,7 +28,14 @@ class MagicLinkController extends Controller
 
         $magicLinkService->sendToEmail($email);
 
-        return back()->with('status', 'Check your email for a magic link.');
+        /** @var string $locale */
+        $locale = $requestMagicLinkRequest->session()->get('locale', 'en');
+
+        $message = $locale === 'es'
+            ? 'Revise su correo electrónico para un enlace de acceso.'
+            : 'Check your email for a magic link.';
+
+        return back()->with('status', $message);
     }
 
     public function verify(string $token, Request $request): RedirectResponse
@@ -38,8 +45,15 @@ class MagicLinkController extends Controller
             ->first();
 
         if (! $patient || ! $patient->hasValidMagicLink()) {
+            /** @var string $locale */
+            $locale = $request->session()->get('locale', 'en');
+
+            $errorMessage = $locale === 'es'
+                ? 'Este enlace es inválido o ha expirado.'
+                : 'This link is invalid or has expired.';
+
             return redirect()->route('intake.landing')
-                ->with('error', 'This link is invalid or has expired.');
+                ->with('error', $errorMessage);
         }
 
         $patient->update([

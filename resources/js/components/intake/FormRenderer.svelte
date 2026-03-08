@@ -144,14 +144,14 @@
         <div class="flex items-center gap-3">
             {#if saveStatus === 'saving'}
                 <span class="text-xs text-muted-foreground">
-                    {locale === 'es' ? 'Guardando...' : 'Saving...'}
+                    {{ en: 'Saving...', es: 'Guardando...' }[locale]}
                 </span>
             {:else if saveStatus === 'saved'}
                 <span class="flex items-center gap-1 text-xs text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
                     </svg>
-                    {locale === 'es' ? 'Guardado' : 'Saved'}
+                    {{ en: 'Saved', es: 'Guardado' }[locale]}
                 </span>
             {/if}
         </div>
@@ -185,22 +185,22 @@
         <div>
             {#if isFirstSection}
                 <Button variant="outline" onclick={() => router.visit(dashboardUrl)}>
-                    {locale === 'es' ? 'Guardar y Salir' : 'Save & Exit'}
+                    {{ en: 'Save & Exit', es: 'Guardar y Salir' }[locale]}
                 </Button>
             {:else}
                 <Button variant="outline" onclick={handlePrevious}>
-                    {locale === 'es' ? 'Anterior' : 'Previous'}
+                    {{ en: 'Previous', es: 'Anterior' }[locale]}
                 </Button>
             {/if}
         </div>
         <div>
             {#if isLastSection}
                 <Button onclick={handleComplete}>
-                    {locale === 'es' ? 'Completar Formulario' : 'Complete Form'}
+                    {{ en: 'Complete Form', es: 'Completar Formulario' }[locale]}
                 </Button>
             {:else}
                 <Button onclick={handleNext}>
-                    {locale === 'es' ? 'Siguiente' : 'Next'}
+                    {{ en: 'Next', es: 'Siguiente' }[locale]}
                 </Button>
             {/if}
         </div>
