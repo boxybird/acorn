@@ -2,8 +2,7 @@
     import { onMount } from 'svelte';
     import { Link } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
-    import AppLogoIcon from '@/components/AppLogoIcon.svelte';
-    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
+    import IntakeHeader from '@/components/intake/IntakeHeader.svelte';
     import { show } from '@/routes/intake/form';
     import { dashboard } from '@/routes/intake';
 
@@ -44,11 +43,17 @@
     });
 </script>
 
-<div class="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-    <div class="fixed top-4 right-4 z-50">
-        <LocaleToggle {locale} />
-    </div>
+<div class="flex min-h-screen flex-col bg-background">
+    <IntakeHeader
+        {locale}
+        {progress}
+        breadcrumbs={[
+            { label: { en: 'Dashboard', es: 'Panel' }, href: dashboard.url() },
+            { label: completedForm.title },
+        ]}
+    />
 
+    <div class="flex flex-1 flex-col items-center justify-center px-6">
     <div class="w-full max-w-md space-y-8 text-center">
         <!-- Animated checkmark -->
         <div class="flex justify-center">
@@ -135,14 +140,6 @@
             {/if}
         </div>
 
-        <!-- Branding -->
-        <div
-            class="flex items-center justify-center gap-2 pt-4 transition-all duration-500 delay-200"
-            class:opacity-0={!visible}
-            class:opacity-100={visible}
-        >
-            <AppLogoIcon class="size-5" />
-            <span class="text-xs text-muted-foreground">JumpStart Autism Collective</span>
-        </div>
+    </div>
     </div>
 </div>
