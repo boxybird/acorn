@@ -20,12 +20,12 @@ class FormCompleteController extends Controller
             throw new NotFoundHttpException;
         }
 
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         /** @var array<string, string> $responseStatuses */
         $responseStatuses = FormResponse::query()
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->pluck('status', 'schema_key')
             ->all();
 

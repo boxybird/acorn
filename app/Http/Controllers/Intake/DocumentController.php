@@ -19,25 +19,25 @@ class DocumentController extends Controller
             'file' => ['required', 'file', 'max:10240'],
         ]);
 
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         /** @var int $formResponseId */
         $formResponseId = $request->input('form_response_id');
 
         $formResponse = FormResponse::query()
             ->where('id', $formResponseId)
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->firstOrFail();
 
         /** @var \Illuminate\Http\UploadedFile $file */
         $file = $request->file('file');
 
         /** @var string $path */
-        $path = $file->store('documents/'.$patientId, 'local');
+        $path = $file->store('documents/'.$intakeId, 'local');
 
         $document = Document::query()->create([
-            'patient_id' => $patientId,
+            'intake_id' => $intakeId,
             'form_response_id' => $formResponse->id,
             'field_key' => $request->input('field_key'),
             'file_path' => $path,
@@ -51,10 +51,10 @@ class DocumentController extends Controller
 
     public function destroy(Document $document, Request $request): JsonResponse
     {
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
-        if ($document->patient_id !== $patientId) {
+        if ($document->intake_id !== $intakeId) {
             abort(403);
         }
 

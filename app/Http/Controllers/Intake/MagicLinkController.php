@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Intake;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Intake\RequestMagicLinkRequest;
+use App\Models\Intake;
 use App\Models\Patient;
 use App\Services\MagicLinkService;
 use Illuminate\Http\RedirectResponse;
@@ -44,8 +45,27 @@ class MagicLinkController extends Controller
             'magic_link_expires_at' => null,
         ]);
 
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         $request->session()->put('patient_id', $patient->id);
 
-        return redirect()->route('intake.dashboard');
+        $intakeCount = Intake::query()->where('patient_id', $patient->id)->count();
+
+        if ($intakeCount === 0) {
+            $intake = Intake::query()->create(['patient_id' => $patient->id]);
+            $request->session()->put('intake_id', $intake->id);
+
+            return redirect()->route('intake.dashboard');
+        }
+
+        if ($intakeCount === 1) {
+            /** @var Intake $intake */
+            $intake = Intake::query()->where('patient_id', $patient->id)->sole();
+            $request->session()->put('intake_id', $intake->id);
+
+            return redirect()->route('intake.dashboard');
+        }
+
+        return redirect()->route('intake.select');
     }
 }

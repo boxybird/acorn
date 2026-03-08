@@ -24,17 +24,17 @@ class FormController extends Controller
             throw new NotFoundHttpException;
         }
 
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         $formResponse = FormResponse::query()
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->where('schema_key', $schemaKey)
             ->first();
 
         /** @var array<string, string> $responseStatuses */
         $responseStatuses = FormResponse::query()
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->pluck('status', 'schema_key')
             ->all();
 
@@ -79,14 +79,14 @@ class FormController extends Controller
             throw new NotFoundHttpException;
         }
 
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         /** @var array<string, mixed> $incomingData */
         $incomingData = $request->input('data', []);
 
         $formResponse = FormResponse::query()
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->where('schema_key', $schemaKey)
             ->first();
 
@@ -98,7 +98,7 @@ class FormController extends Controller
             ]);
         } else {
             FormResponse::query()->create([
-                'patient_id' => $patientId,
+                'intake_id' => $intakeId,
                 'schema_key' => $schemaKey,
                 'data' => $incomingData,
             ]);
@@ -114,6 +114,9 @@ class FormController extends Controller
         if ($schema === null) {
             throw new NotFoundHttpException;
         }
+
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         /** @var int $patientId */
         $patientId = $request->session()->get('patient_id');
@@ -133,20 +136,20 @@ class FormController extends Controller
         $validatedData = $request->input('data', []);
 
         FormResponse::query()->updateOrCreate(
-            ['patient_id' => $patientId, 'schema_key' => $schemaKey],
+            ['intake_id' => $intakeId, 'schema_key' => $schemaKey],
             ['data' => $validatedData, 'status' => 'completed'],
         );
 
-        $this->checkAndDispatchSync($patientId, $formSchemaService);
+        $this->checkAndDispatchSync($intakeId, $patientId, $formSchemaService);
 
         return redirect()->route('intake.form.completed', $schemaKey);
     }
 
-    private function checkAndDispatchSync(int $patientId, FormSchemaService $formSchemaService): void
+    private function checkAndDispatchSync(int $intakeId, int $patientId, FormSchemaService $formSchemaService): void
     {
         $totalSchemas = count($formSchemaService->all());
         $completedCount = FormResponse::query()
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->where('status', 'completed')
             ->count();
 

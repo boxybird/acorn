@@ -20,15 +20,15 @@ class SignatureController extends Controller
             'signature' => ['required', 'string'],
         ]);
 
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         /** @var int $formResponseId */
         $formResponseId = $request->input('form_response_id');
 
         $formResponse = FormResponse::query()
             ->where('id', $formResponseId)
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->firstOrFail();
 
         /** @var string $signatureData */
@@ -43,11 +43,11 @@ class SignatureController extends Controller
             return response()->json(['error' => 'Invalid signature data'], 422);
         }
 
-        $filename = 'signatures/'.$patientId.'/'.Str::uuid().'.png';
+        $filename = 'signatures/'.$intakeId.'/'.Str::uuid().'.png';
         Storage::disk('local')->put($filename, $imageData);
 
         $signature = Signature::query()->create([
-            'patient_id' => $patientId,
+            'intake_id' => $intakeId,
             'form_response_id' => $formResponse->id,
             'field_key' => $request->input('field_key'),
             'image_path' => $filename,

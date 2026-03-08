@@ -12,14 +12,14 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request, FormSchemaService $formSchemaService): Response
     {
-        /** @var int $patientId */
-        $patientId = $request->session()->get('patient_id');
+        /** @var int $intakeId */
+        $intakeId = $request->session()->get('intake_id');
 
         $schemas = $formSchemaService->all();
 
         /** @var array<string, string> $responseStatuses */
         $responseStatuses = \App\Models\FormResponse::query()
-            ->where('patient_id', $patientId)
+            ->where('intake_id', $intakeId)
             ->pluck('status', 'schema_key')
             ->all();
 
