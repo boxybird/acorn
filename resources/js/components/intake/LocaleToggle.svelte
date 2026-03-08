@@ -29,7 +29,7 @@
         role="radio"
         aria-checked={locale === 'en'}
         aria-label="Switch to English"
-        class="rounded-full px-2 py-0.5 text-xs font-medium transition-colors {locale === 'en' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}"
+        class="cursor-pointer rounded-full px-2 py-0.5 text-xs font-medium transition-colors {locale === 'en' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}"
         onclick={() => switchLocale('en')}
     >
         EN
@@ -40,7 +40,7 @@
         role="radio"
         aria-checked={locale === 'es'}
         aria-label="Cambiar a Español"
-        class="rounded-full px-2 py-0.5 text-xs font-medium transition-colors {locale === 'es' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}"
+        class="cursor-pointer rounded-full px-2 py-0.5 text-xs font-medium transition-colors {locale === 'es' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}"
         onclick={() => switchLocale('es')}
     >
         ES
