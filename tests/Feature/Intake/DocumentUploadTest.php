@@ -58,6 +58,25 @@ test('document upload rejects files over 10mb', function (): void {
         ->assertUnprocessable();
 });
 
+test('document upload prevents access to other intake form responses', function (): void {
+    Storage::fake('local');
+
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+    $otherIntake = Intake::factory()->create();
+    $otherFormResponse = FormResponse::factory()->create(['intake_id' => $otherIntake->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->postJson(route('intake.documents.store'), [
+            'form_response_id' => $otherFormResponse->id,
+            'field_key' => 'insurance_card',
+            'file' => UploadedFile::fake()->create('insurance.pdf', 1024, 'application/pdf'),
+        ])
+        ->assertNotFound();
+
+    expect(Document::query()->count())->toBe(0);
+});
+
 test('document can be deleted by owner', function (): void {
     Storage::fake('local');
 
