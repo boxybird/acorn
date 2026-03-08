@@ -2,8 +2,7 @@
     import { router } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
     import { Card, CardContent } from '@/components/ui/card';
-    import AppLogoIcon from '@/components/AppLogoIcon.svelte';
-    import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
+    import IntakeHeader from '@/components/intake/IntakeHeader.svelte';
     import { show } from '@/routes/intake/form';
     import { choose, newMethod as create } from '@/routes/intake/select';
 
@@ -93,15 +92,13 @@
 </script>
 
 <div class="flex min-h-screen flex-col bg-primary/5">
-    <header class="border-b bg-background px-4 py-4">
-        <div class="mx-auto flex max-w-2xl items-center justify-between">
-            <div class="flex items-center gap-3">
-                <AppLogoIcon class="size-8" />
-                <span class="text-lg font-bold text-foreground">Acorn</span>
-            </div>
-            <LocaleToggle {locale} />
-        </div>
-    </header>
+    <IntakeHeader
+        {locale}
+        {progress}
+        breadcrumbs={[
+            { label: { en: 'Dashboard', es: 'Panel' } },
+        ]}
+    />
 
     <main class="mx-auto w-full max-w-2xl flex-1 p-4 py-8">
         {#if allNotStarted}
