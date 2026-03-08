@@ -5,6 +5,7 @@
     import { Card, CardContent } from '@/components/ui/card';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import { show } from '@/routes/intake/form';
+    import { select } from '@/routes/intake';
 
     type FormItem = {
         key: string;
@@ -19,7 +20,16 @@
         total: number;
     };
 
-    let { forms, progress }: { forms: FormItem[]; progress: Progress } = $props();
+    type IntakeContext = {
+        child_name: string | null;
+    };
+
+    let { forms, progress, intake, hasMultipleIntakes }: {
+        forms: FormItem[];
+        progress: Progress;
+        intake: IntakeContext;
+        hasMultipleIntakes: boolean;
+    } = $props();
 
     const locale = 'en';
 
@@ -44,8 +54,20 @@
 
     <main class="mx-auto w-full max-w-2xl flex-1 space-y-8 p-4 py-8">
         <div>
-            <h1 class="text-2xl font-bold text-foreground">Your Intake Dashboard</h1>
-            <p class="mt-1 text-muted-foreground">Complete the sections below to finish your intake.</p>
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-foreground">Your Intake Dashboard</h1>
+                    {#if intake.child_name}
+                        <p class="mt-0.5 text-sm font-medium text-primary">{intake.child_name}</p>
+                    {/if}
+                    <p class="mt-1 text-muted-foreground">Complete the sections below to finish your intake.</p>
+                </div>
+                {#if hasMultipleIntakes}
+                    <Link href={select.url()} class="shrink-0 text-sm font-medium text-primary hover:underline">
+                        Switch child
+                    </Link>
+                {/if}
+            </div>
         </div>
 
         <div class="space-y-2">

@@ -7,8 +7,7 @@ test('patient can be created with factory', function (): void {
 
     expect($patient)->toBeInstanceOf(Patient::class)
         ->and($patient->email)->not->toBeEmpty()
-        ->and($patient->preferred_locale)->toBe('en')
-        ->and($patient->sync_status)->toBe('pending');
+        ->and($patient->preferred_locale)->toBe('en');
 });
 
 test('patient with magic link factory state works', function (): void {

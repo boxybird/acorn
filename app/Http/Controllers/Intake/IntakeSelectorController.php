@@ -26,7 +26,6 @@ class IntakeSelectorController extends Controller
                 'formResponses as completed_forms_count' => function ($query): void {
                     $query->where('status', 'completed');
                 },
-                'formResponses as total_forms_count',
             ])
             ->latest()
             ->get()

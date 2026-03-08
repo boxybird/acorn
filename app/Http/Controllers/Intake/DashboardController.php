@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Intake;
 
 use App\Http\Controllers\Controller;
+use App\Models\Intake;
 use App\Services\FormSchemaService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,6 +15,14 @@ class DashboardController extends Controller
     {
         /** @var int $intakeId */
         $intakeId = $request->session()->get('intake_id');
+
+        /** @var int $patientId */
+        $patientId = $request->session()->get('patient_id');
+
+        /** @var Intake $intake */
+        $intake = Intake::query()->findOrFail($intakeId);
+
+        $hasMultipleIntakes = Intake::query()->where('patient_id', $patientId)->count() > 1;
 
         $schemas = $formSchemaService->all();
 
@@ -44,6 +53,10 @@ class DashboardController extends Controller
                 'completed' => $completed,
                 'total' => count($forms),
             ],
+            'intake' => [
+                'child_name' => $intake->child_name,
+            ],
+            'hasMultipleIntakes' => $hasMultipleIntakes,
         ]);
     }
 }

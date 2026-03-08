@@ -21,8 +21,6 @@ class PatientFactory extends Factory
             'preferred_locale' => 'en',
             'magic_link_token' => null,
             'magic_link_expires_at' => null,
-            'sync_status' => 'pending',
-            'synced_at' => null,
         ];
     }
 

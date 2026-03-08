@@ -9,6 +9,7 @@ test('sync job updates intake status on success', function (): void {
 
     $mock = Mockery::mock(MondayService::class);
     $mock->shouldReceive('createItem')->once()->andReturn('12345');
+    $mock->shouldReceive('uploadFiles')->never();
     app()->instance(MondayService::class, $mock);
 
     SyncIntakeToMonday::dispatchSync($intake);

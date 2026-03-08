@@ -137,9 +137,30 @@ class FormController extends Controller
             ['data' => $validatedData, 'status' => 'completed'],
         );
 
+        if ($schemaKey === 'child_information') {
+            $this->extractChildName($intakeId, $validatedData);
+        }
+
         $this->checkAndDispatchSync($intakeId, $formSchemaService);
 
         return redirect()->route('intake.form.completed', $schemaKey);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function extractChildName(int $intakeId, array $data): void
+    {
+        /** @var string|null $firstName */
+        $firstName = $data['child_first_name'] ?? null;
+        /** @var string|null $lastName */
+        $lastName = $data['child_last_name'] ?? null;
+
+        $childName = trim(($firstName ?? '').' '.($lastName ?? ''));
+
+        if ($childName !== '') {
+            Intake::query()->where('id', $intakeId)->update(['child_name' => $childName]);
+        }
     }
 
     private function checkAndDispatchSync(int $intakeId, FormSchemaService $formSchemaService): void

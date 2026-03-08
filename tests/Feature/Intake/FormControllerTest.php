@@ -98,6 +98,47 @@ test('mark complete succeeds with valid data', function (): void {
     expect($formResponse->isCompleted())->toBeTrue();
 });
 
+test('completing child information updates intake child_name', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->withoutChildName()->create(['patient_id' => $patient->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->post(route('intake.form.complete', 'child_information'), [
+            'data' => [
+                'child_first_name' => 'Emma',
+                'child_last_name' => 'Garcia',
+                'child_dob' => '2020-05-15',
+                'child_gender' => 'female',
+            ],
+        ])
+        ->assertRedirect(route('intake.form.completed', 'child_information'));
+
+    $intake->refresh();
+    expect($intake->child_name)->toBe('Emma Garcia');
+});
+
+test('completing non-child form does not change intake child_name', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id, 'child_name' => 'Existing Name']);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->post(route('intake.form.complete', 'demographics'), [
+            'data' => [
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'phone' => '505-555-1234',
+                'email' => 'jane@example.com',
+                'address' => '123 Main St, Albuquerque, NM 87101',
+                'preferred_language' => 'en',
+                'referral_source' => 'pediatrician',
+            ],
+        ])
+        ->assertRedirect();
+
+    $intake->refresh();
+    expect($intake->child_name)->toBe('Existing Name');
+});
+
 test('completion page shows completed form with next form', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);

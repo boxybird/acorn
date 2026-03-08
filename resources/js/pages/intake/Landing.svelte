@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { fly } from 'svelte/transition';
     import { page } from '@inertiajs/svelte';
     import { Form } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
@@ -60,13 +61,25 @@
 
             <!-- Flash Messages -->
             {#if $page.props.flash?.status}
-                <div class="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <div
+                    in:fly={{ y: -8, duration: 300 }}
+                    class="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
                     <p class="text-sm text-primary">{$page.props.flash.status}</p>
                 </div>
             {/if}
 
             {#if $page.props.flash?.error}
-                <div class="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+                <div
+                    in:fly={{ y: -8, duration: 300 }}
+                    class="flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 size-4 shrink-0 text-destructive" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
                     <p class="text-sm text-destructive">{$page.props.flash.error}</p>
                 </div>
             {/if}

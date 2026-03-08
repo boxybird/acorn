@@ -5,6 +5,7 @@
     import { Card, CardContent } from '@/components/ui/card';
     import { Separator } from '@/components/ui/separator';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
+    import { choose, create } from '@/actions/App/Http/Controllers/Intake/IntakeSelectorController';
 
     type IntakeItem = {
         id: number;
@@ -25,7 +26,7 @@
     function chooseIntake(id: number) {
         if (processing) return;
         processing = true;
-        router.post(`/intake/select/${id}`, {}, {
+        router.post(choose.url(id), {}, {
             onFinish: () => processing = false,
         });
     }
@@ -33,7 +34,7 @@
     function createNewIntake() {
         if (processing) return;
         processing = true;
-        router.post('/intake/select/new', {}, {
+        router.post(create.url(), {}, {
             onFinish: () => processing = false,
         });
     }

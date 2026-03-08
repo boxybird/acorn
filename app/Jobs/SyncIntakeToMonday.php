@@ -8,6 +8,7 @@ use App\Services\FormSchemaService;
 use App\Services\MondayService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SyncIntakeToMonday implements ShouldQueue
@@ -45,6 +46,11 @@ class SyncIntakeToMonday implements ShouldQueue
 
     public function failed(Throwable $throwable): void
     {
+        Log::error('Monday.com sync failed for intake', [
+            'intake_id' => $this->intake->id,
+            'error' => $throwable->getMessage(),
+        ]);
+
         $this->intake->update(['sync_status' => 'failed']);
     }
 
