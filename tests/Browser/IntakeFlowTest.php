@@ -143,6 +143,40 @@ it('auto-creates first intake on magic link verification', function (): void {
     expect(Intake::query()->where('patient_id', $patient->id)->count())->toBe(1);
 });
 
+it('shows locale toggle on landing page', function (): void {
+    $pendingAwaitablePage = visit('/intake');
+
+    $pendingAwaitablePage->assertSee('EN')
+        ->assertSee('ES')
+        ->assertNoJavaScriptErrors();
+});
+
+it('switches language on landing page', function (): void {
+    $pendingAwaitablePage = visit('/intake');
+
+    $pendingAwaitablePage->assertSee('Get Started')
+        ->assertSee('Send Secure Link')
+        ->click('ES')
+        ->assertSee('Comenzar')
+        ->assertSee('Enviar Enlace Seguro')
+        ->assertNoJavaScriptErrors();
+});
+
+it('switches language on dashboard and persists', function (): void {
+    $patient = Patient::factory()->create([
+        'magic_link_token' => 'test-locale-toggle',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
+
+    $pendingAwaitablePage = visit('/intake/verify/test-locale-toggle');
+
+    $pendingAwaitablePage->assertPathIs('/intake/dashboard')
+        ->assertSee('Welcome!')
+        ->click('ES')
+        ->assertSee('¡Bienvenido!')
+        ->assertNoJavaScriptErrors();
+});
+
 it('shows intake selector for patients with multiple intakes', function (): void {
     $patient = Patient::factory()->create([
         'magic_link_token' => 'test-multi-intake',
