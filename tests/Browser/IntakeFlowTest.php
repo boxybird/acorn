@@ -123,7 +123,7 @@ it('smoke tests all intake pages', function (): void {
         ->assertNoJavaScriptErrors();
 
     $pendingAwaitablePage->navigate('/intake/dashboard')
-        ->assertSee('Your Intake')
+        ->assertSee('Dashboard')
         ->assertNoJavaScriptErrors();
 });
 
@@ -189,7 +189,7 @@ it('shows child cards on hub for patients with multiple intakes', function (): v
     $pendingAwaitablePage->assertPathIs('/intake/dashboard')
         ->assertSee('Liam')
         ->assertSee('Emma')
-        ->assertSee('Add child')
+        ->assertSee('Add another child')
         ->assertNoJavaScriptErrors();
 });
 
