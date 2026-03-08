@@ -18,7 +18,7 @@ class PatientFactory extends Factory
         return [
             'email' => fake()->unique()->safeEmail(),
             'name' => fake()->name(),
-            'preferred_locale' => 'en',
+            'preferred_locale' => null,
             'magic_link_token' => null,
             'magic_link_expires_at' => null,
         ];

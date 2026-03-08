@@ -15,7 +15,7 @@ return new class extends Migration
             $blueprint->id();
             $blueprint->string('email')->unique();
             $blueprint->string('name')->nullable();
-            $blueprint->string('preferred_locale', 5)->default('en');
+            $blueprint->string('preferred_locale', 5)->nullable();
             $blueprint->string('magic_link_token', 64)->nullable()->unique();
             $blueprint->timestamp('magic_link_expires_at')->nullable();
             $blueprint->string('sync_status')->default('pending');

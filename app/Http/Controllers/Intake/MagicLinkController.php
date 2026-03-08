@@ -16,7 +16,9 @@ class MagicLinkController extends Controller
 {
     public function landing(): Response
     {
-        return Inertia::render('intake/Landing');
+        return Inertia::render('intake/Landing', [
+            'locale' => app()->getLocale(),
+        ]);
     }
 
     public function requestLink(RequestMagicLinkRequest $requestMagicLinkRequest, MagicLinkService $magicLinkService): RedirectResponse
@@ -45,9 +47,20 @@ class MagicLinkController extends Controller
             'magic_link_expires_at' => null,
         ]);
 
+        /** @var string|null $sessionLocale */
+        $sessionLocale = $request->session()->get('locale');
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         $request->session()->put('patient_id', $patient->id);
+
+        if ($sessionLocale) {
+            $request->session()->put('locale', $sessionLocale);
+
+            if ($patient->preferred_locale === null) {
+                $patient->update(['preferred_locale' => $sessionLocale]);
+            }
+        }
 
         $intakeCount = Intake::query()->where('patient_id', $patient->id)->count();
 

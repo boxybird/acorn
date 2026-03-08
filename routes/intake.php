@@ -15,7 +15,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('intake')->name('intake.')->group(function (): void {
-    Route::get('/', [MagicLinkController::class, 'landing'])->name('landing');
+    Route::get('/', [MagicLinkController::class, 'landing'])
+        ->middleware(SetPatientLocale::class)
+        ->name('landing');
+    Route::post('/set-locale-guest', function (Request $request): JsonResponse {
+        $request->validate(['locale' => ['required', 'string', 'in:en,es']]);
+        $request->session()->put('locale', $request->input('locale'));
+
+        return response()->json(['status' => 'ok']);
+    })->name('set-locale-guest');
     Route::post('/request-link', [MagicLinkController::class, 'requestLink'])
         ->middleware('throttle:3,1')
         ->name('request-link');

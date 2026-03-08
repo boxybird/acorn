@@ -22,8 +22,18 @@ class SetPatientLocale
             if ($patient instanceof Patient) {
                 $locale = $patient->preferred_locale ?? $this->detectLocale($request);
                 app()->setLocale($locale);
+
+                return $next($request);
             }
         }
+
+        /** @var string|null $sessionLocale */
+        $sessionLocale = $request->session()->get('locale');
+
+        $locale = (is_string($sessionLocale) && in_array($sessionLocale, ['en', 'es'], true))
+            ? $sessionLocale
+            : $this->detectLocale($request);
+        app()->setLocale($locale);
 
         return $next($request);
     }
