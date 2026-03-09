@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
     import BookOpen from 'lucide-svelte/icons/book-open';
+    import ClipboardList from 'lucide-svelte/icons/clipboard-list';
     import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
     import LayoutGrid from 'lucide-svelte/icons/layout-grid';
     import type { Snippet } from 'svelte';
@@ -18,6 +19,7 @@
         SidebarMenuItem,
     } from '@/components/ui/sidebar';
     import { toUrl } from '@/lib/utils';
+    import { index as staffIntakesIndex } from '@/actions/App/Http/Controllers/Staff/IntakeController';
     import { dashboard } from '@/routes';
     import type { NavItem } from '@/types';
 
@@ -32,6 +34,11 @@
             title: 'Dashboard',
             href: dashboard(),
             icon: LayoutGrid,
+        },
+        {
+            title: 'Intakes',
+            href: staffIntakesIndex(),
+            icon: ClipboardList,
         },
     ];
 
