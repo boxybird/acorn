@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff;
 
 use App\Actions\ApproveIntake;
 use App\Actions\FlagFormResponse;
+use App\Actions\ResolveIntakeFlag;
 use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\FlagFormRequest;
@@ -116,15 +117,9 @@ class IntakeController extends Controller
         return back();
     }
 
-    public function resolveFlag(Intake $intake, IntakeFlag $intakeFlag): RedirectResponse
+    public function resolveFlag(Intake $intake, IntakeFlag $intakeFlag, ResolveIntakeFlag $resolveIntakeFlag): RedirectResponse
     {
-        $intakeFlag->update(['resolved_at' => now()]);
-
-        $unresolvedCount = $intake->flags()->whereNull('resolved_at')->count();
-
-        if ($unresolvedCount === 0) {
-            $intake->update(['status' => IntakeStatus::UnderReview]);
-        }
+        $resolveIntakeFlag->handle($intake, $intakeFlag);
 
         return back();
     }
