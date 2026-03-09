@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::prefix('staff')->name('staff.')->group(function (): void {
         Route::get('/intakes', [IntakeController::class, 'index'])->name('intakes.index');
+        Route::get('/intakes/{intake}', [IntakeController::class, 'show'])->name('intakes.show');
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
     });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IntakeStatus;
 use App\Models\Intake;
 use App\Models\User;
 
@@ -56,4 +57,40 @@ it('excludes active intakes from the list', function (): void {
 it('requires authentication', function (): void {
     auth()->logout();
     $this->get('/staff/intakes')->assertRedirect('/login');
+});
+
+it('displays the intake detail page', function (): void {
+    $intake = Intake::factory()->submitted()->create();
+    $intake->formResponses()->create([
+        'schema_key' => 'demographics',
+        'data' => ['first_name' => 'Jane'],
+        'status' => 'completed',
+    ]);
+
+    $this->get('/staff/intakes/'.$intake->id)
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('staff/IntakeDetail')
+            ->has('intake')
+            ->has('formResponses')
+            ->has('notes')
+            ->has('flags')
+            ->has('schemas')
+        );
+});
+
+it('auto-transitions intake to under review when staff views it', function (): void {
+    $intake = Intake::factory()->submitted()->create();
+
+    $this->get('/staff/intakes/'.$intake->id);
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::UnderReview);
+});
+
+it('does not transition non-submitted intakes to under review', function (): void {
+    $intake = Intake::factory()->flagged()->create();
+
+    $this->get('/staff/intakes/'.$intake->id);
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::Flagged);
 });

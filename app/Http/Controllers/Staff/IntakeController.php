@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Intake;
+use App\Services\FormSchemaService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -47,6 +48,38 @@ class IntakeController extends Controller
                 'status' => $request->string('status')->toString(),
                 'search' => $request->string('search')->toString(),
             ],
+        ]);
+    }
+
+    public function show(Intake $intake, FormSchemaService $formSchemaService): Response
+    {
+        if ($intake->status === IntakeStatus::Submitted) {
+            $intake->update(['status' => IntakeStatus::UnderReview]);
+        }
+
+        $intake->load(['patient', 'formResponses', 'notes.user', 'notes.patient', 'flags.formResponse', 'flags.user']);
+
+        $schemas = collect($formSchemaService->all())
+            ->map(function (array $schema): array {
+                /** @var string $title */
+                $title = $schema['title'];
+
+                return [
+                    'key' => $schema['key'],
+                    'title' => __($title),
+                    'order' => $schema['order'],
+                ];
+            })
+            ->sortBy('order')
+            ->values()
+            ->all();
+
+        return Inertia::render('staff/IntakeDetail', [
+            'intake' => $intake,
+            'formResponses' => $intake->formResponses,
+            'notes' => $intake->notes->sortBy('created_at')->values(),
+            'flags' => $intake->flags,
+            'schemas' => $schemas,
         ]);
     }
 }
