@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Actions\ApproveIntake;
 use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\FlagFormRequest;
 use App\Http\Requests\Staff\StoreNoteRequest;
-use App\Jobs\SyncIntakeToMonday;
 use App\Models\Intake;
 use App\Models\IntakeFlag;
 use App\Models\IntakeNote;
@@ -90,15 +90,11 @@ class IntakeController extends Controller
         ]);
     }
 
-    public function approve(Intake $intake): RedirectResponse
+    public function approve(Intake $intake, ApproveIntake $approveIntake): RedirectResponse
     {
         abort_if($intake->status === IntakeStatus::Active, 422, 'Cannot approve an intake that is still in progress.');
 
-        $intake->update(['status' => IntakeStatus::Approved]);
-
-        if (config('services.monday.api_token')) {
-            SyncIntakeToMonday::dispatch($intake);
-        }
+        $approveIntake->handle($intake);
 
         return back();
     }
