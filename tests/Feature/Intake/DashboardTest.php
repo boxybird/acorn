@@ -2,7 +2,10 @@
 
 use App\Models\FormResponse;
 use App\Models\Intake;
+use App\Models\IntakeFlag;
+use App\Models\IntakeNote;
 use App\Models\Patient;
+use App\Models\User;
 
 test('dashboard shows all form sections with status', function (): void {
     $patient = Patient::factory()->create();
@@ -84,5 +87,57 @@ test('dashboard provides single intake for single-intake patients', function ():
         ->assertInertia(fn ($page) => $page
             ->component('intake/Dashboard')
             ->has('allIntakes', 1)
+        );
+});
+
+test('dashboard includes unresolved flags with form response', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+    $formResponse = FormResponse::factory()->create([
+        'intake_id' => $intake->id,
+        'schema_key' => 'demographics',
+    ]);
+    IntakeFlag::factory()->create([
+        'intake_id' => $intake->id,
+        'form_response_id' => $formResponse->id,
+        'reason' => 'Missing date of birth',
+    ]);
+    IntakeFlag::factory()->resolved()->create([
+        'intake_id' => $intake->id,
+        'form_response_id' => $formResponse->id,
+    ]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->get(route('intake.dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('intake/Dashboard')
+            ->has('flags', 1)
+            ->where('flags.0.reason', 'Missing date of birth')
+            ->has('flags.0.form_response')
+        );
+});
+
+test('dashboard includes notes with user and patient relations', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+    $user = User::factory()->create();
+    IntakeNote::factory()->create([
+        'intake_id' => $intake->id,
+        'user_id' => $user->id,
+        'body' => 'Staff note',
+    ]);
+    IntakeNote::factory()->fromPatient()->create([
+        'intake_id' => $intake->id,
+        'patient_id' => $patient->id,
+        'body' => 'Parent note',
+    ]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->get(route('intake.dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('intake/Dashboard')
+            ->has('notes', 2)
         );
 });

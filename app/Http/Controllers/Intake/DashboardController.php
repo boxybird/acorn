@@ -94,6 +94,8 @@ class DashboardController extends Controller
             ],
             'allIntakes' => array_values($allIntakes),
             'timeEstimate' => $timeEstimate,
+            'flags' => $intake->flags()->with('formResponse')->whereNull('resolved_at')->get(),
+            'notes' => $intake->notes()->with(['user', 'patient'])->latest()->get(),
         ]);
     }
 }

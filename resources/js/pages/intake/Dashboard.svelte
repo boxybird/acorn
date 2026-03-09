@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { page, router } from '@inertiajs/svelte';
+    import { page, router, useForm } from '@inertiajs/svelte';
+    import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+    import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
     import { Card, CardContent } from '@/components/ui/card';
     import IntakeHeader from '@/components/intake/IntakeHeader.svelte';
@@ -33,12 +35,33 @@
         child_name: string | null;
     };
 
-    let { forms, progress, intake, allIntakes, timeEstimate }: {
+    type FlagItem = {
+        id: number;
+        reason: string;
+        form_response: {
+            id: number;
+            schema_key: string;
+        } | null;
+    };
+
+    type NoteItem = {
+        id: number;
+        body: string;
+        created_at: string;
+        user_id: number | null;
+        patient_id: number | null;
+        user?: { id: number; name: string } | null;
+        patient?: { id: number; name: string | null; email: string } | null;
+    };
+
+    let { forms, progress, intake, allIntakes, timeEstimate, flags, notes }: {
         forms: FormItem[];
         progress: Progress;
         intake: IntakeContext;
         allIntakes: IntakeCard[];
         timeEstimate: number;
+        flags: FlagItem[];
+        notes: NoteItem[];
     } = $props();
 
     let t = $derived($page.props.translations as Record<string, string>);
@@ -65,6 +88,29 @@
             : 0;
     }
 
+    const noteForm = useForm({ body: '' });
+
+    function submitNote(): void {
+        $noteForm.post('/intake/notes', {
+            onSuccess: () => $noteForm.reset(),
+        });
+    }
+
+    function getFormTitle(schemaKey: string): string {
+        const form = forms.find(f => f.key === schemaKey);
+        return form?.title ?? schemaKey;
+    }
+
+    function getNoteAuthor(note: NoteItem): { name: string; role: 'Staff' | 'Parent' } {
+        if (note.user) {
+            return { name: note.user.name, role: 'Staff' };
+        }
+        if (note.patient) {
+            return { name: note.patient.name ?? note.patient.email, role: 'Parent' };
+        }
+        return { name: 'Unknown', role: 'Parent' };
+    }
+
     let mounted = $state(false);
     onMount(() => { mounted = true; });
 </script>
@@ -78,6 +124,38 @@
     />
 
     <main class="mx-auto w-full max-w-2xl flex-1 p-4 py-8">
+        {#if flags.length > 0}
+            <Alert variant="destructive" class="mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <path d="M12 9v4" />
+                    <path d="M12 17h.01" />
+                </svg>
+                <AlertTitle>{t.action_needed ?? 'Action needed'}</AlertTitle>
+                <AlertDescription>
+                    <ul class="mt-1 list-inside list-disc space-y-1">
+                        {#each flags as flag (flag.id)}
+                            <li>
+                                {#if flag.form_response}
+                                    <a
+                                        href={show.url(flag.form_response.schema_key)}
+                                        class="font-medium underline underline-offset-2 hover:text-destructive/80"
+                                    >
+                                        {getFormTitle(flag.form_response.schema_key)}
+                                    </a>
+                                    {#if flag.reason}
+                                        &mdash; {flag.reason}
+                                    {/if}
+                                {:else}
+                                    {flag.reason}
+                                {/if}
+                            </li>
+                        {/each}
+                    </ul>
+                </AlertDescription>
+            </Alert>
+        {/if}
+
         {#if allNotStarted}
             <div class="flex flex-col items-center space-y-6 py-8 text-center">
                 <h1 class="float-up text-2xl font-bold text-foreground" class:visible={mounted}>{t.welcome}</h1>
@@ -206,6 +284,53 @@
                         {t.add_child}
                     </button>
                 </div>
+        </div>
+
+        <div class="mt-8 space-y-3">
+            <h2 class="text-sm font-medium text-muted-foreground">{t.notes ?? 'Notes'}</h2>
+
+            {#each notes as note (note.id)}
+                {@const author = getNoteAuthor(note)}
+                <Card>
+                    <CardContent class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-medium">{author.name}</span>
+                            <Badge variant={author.role === 'Staff' ? 'secondary' : 'outline'}>
+                                {author.role}
+                            </Badge>
+                            <span class="text-xs text-muted-foreground">
+                                {new Date(note.created_at).toLocaleString()}
+                            </span>
+                        </div>
+                        <p class="mt-2 text-sm text-foreground">{note.body}</p>
+                    </CardContent>
+                </Card>
+            {/each}
+
+            <Card>
+                <CardContent class="p-4">
+                    <form onsubmit={(e) => { e.preventDefault(); submitNote(); }}>
+                        <label for="note-body" class="mb-1 block text-sm font-medium">
+                            {t.add_note ?? 'Add a note'}
+                        </label>
+                        <textarea
+                            id="note-body"
+                            bind:value={$noteForm.body}
+                            class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            rows="3"
+                            placeholder={t.note_placeholder ?? 'Write a note...'}
+                        ></textarea>
+                        {#if $noteForm.errors.body}
+                            <p class="mt-1 text-sm text-destructive">{$noteForm.errors.body}</p>
+                        {/if}
+                        <div class="mt-2">
+                            <Button type="submit" size="sm" disabled={$noteForm.processing}>
+                                {$noteForm.processing ? (t.adding ?? 'Adding...') : (t.add_note_button ?? 'Add Note')}
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     </main>
 </div>
