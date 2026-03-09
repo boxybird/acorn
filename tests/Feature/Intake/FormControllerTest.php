@@ -98,6 +98,23 @@ test('mark complete succeeds with valid data', function (): void {
     expect($formResponse->isCompleted())->toBeTrue();
 });
 
+test('auto-save extracts child name on child information form', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->withoutChildName()->create(['patient_id' => $patient->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->put(route('intake.form.save', 'child_information'), [
+            'data' => [
+                'child_first_name' => 'Liam',
+                'child_last_name' => 'Chen',
+            ],
+        ])
+        ->assertOk();
+
+    $intake->refresh();
+    expect($intake->child_name)->toBe('Liam Chen');
+});
+
 test('completing child information updates intake child_name', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->withoutChildName()->create(['patient_id' => $patient->id]);

@@ -112,6 +112,10 @@ class FormController extends Controller
             ]);
         }
 
+        if ($schemaKey === 'child_information') {
+            $this->extractChildName($intakeId, $incomingData);
+        }
+
         return response()->json(['status' => 'saved']);
     }
 
