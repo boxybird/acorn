@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Intake;
 
 use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
-use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\IntakeNote;
 use App\Services\FormSchemaService;
@@ -26,19 +25,19 @@ class DashboardController extends Controller
 
         $allIntakes = Intake::query()
             ->where('patient_id', $patientId)
-            ->with(['flags' => function ($query): void {
-                $query->with('formResponse')->whereNull('resolved_at');
-            }])
+            ->with([
+                'formResponses:id,intake_id,schema_key,status',
+                'flags' => function ($query): void {
+                    $query->with('formResponse')->whereNull('resolved_at');
+                },
+            ])
             ->oldest()
             ->get();
 
         /** @var list<array<string, mixed>> $intakes */
         $intakes = $allIntakes->map(function (Intake $intake) use ($schemas, $intakeId): array {
             /** @var array<string, FormResponseStatus> $responseStatuses */
-            $responseStatuses = FormResponse::query()
-                ->where('intake_id', $intake->id)
-                ->pluck('status', 'schema_key')
-                ->all();
+            $responseStatuses = $intake->formResponses->pluck('status', 'schema_key')->all();
 
             $forms = array_map(function (array $schema) use ($responseStatuses): array {
                 /** @var string $key */
