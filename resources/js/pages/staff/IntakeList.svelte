@@ -41,6 +41,7 @@
     } = $props();
 
     const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+        active: { label: 'In Progress', variant: 'outline' },
         submitted: { label: 'Submitted', variant: 'default' },
         under_review: { label: 'Under Review', variant: 'secondary' },
         flagged: { label: 'Flagged', variant: 'destructive' },

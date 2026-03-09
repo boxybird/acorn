@@ -71,6 +71,7 @@
     } = $props();
 
     const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
+        active: { label: 'In Progress', variant: 'outline' },
         submitted: { label: 'Submitted', variant: 'default' },
         under_review: { label: 'Under Review', variant: 'secondary' },
         flagged: { label: 'Flagged', variant: 'destructive' },
@@ -79,7 +80,11 @@
         synced_to_monday: { label: 'Synced', variant: 'secondary' },
     };
 
-    let openForms = $state<Record<number, boolean>>({});
+    let isActive = $derived(intake.status === 'active');
+
+    let openForms = $state<Record<number, boolean>>(
+        Object.fromEntries(formResponses.map((r) => [r.id, false])),
+    );
     let flaggingFormId = $state<number | null>(null);
 
     const approveForm = useForm({});
@@ -183,7 +188,7 @@
                 <Button
                     variant="default"
                     onclick={submitApprove}
-                    disabled={$approveForm.processing || intake.status === 'approved'}
+                    disabled={$approveForm.processing || isActive || intake.status === 'approved'}
                 >
                     {$approveForm.processing ? 'Approving...' : 'Approve'}
                 </Button>
@@ -304,6 +309,7 @@
                                                         variant="outline"
                                                         size="sm"
                                                         onclick={() => startFlagging(response.id)}
+                                                        disabled={isActive}
                                                     >
                                                         Flag this form
                                                     </Button>

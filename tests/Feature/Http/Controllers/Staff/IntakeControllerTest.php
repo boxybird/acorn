@@ -44,14 +44,62 @@ it('returns status counts for all statuses', function (): void {
         );
 });
 
-it('excludes active intakes from the list', function (): void {
+it('includes active intakes in the list', function (): void {
     Intake::factory()->count(2)->create();
     Intake::factory()->submitted()->count(1)->create();
 
     $this->get('/staff/intakes')
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->has('intakes.data', 1)
+            ->has('intakes.data', 3)
+        );
+});
+
+it('includes active status in status counts', function (): void {
+    Intake::factory()->count(2)->create();
+    Intake::factory()->submitted()->count(1)->create();
+
+    $this->get('/staff/intakes')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('statusCounts.active', 2)
+            ->where('statusCounts.submitted', 1)
+        );
+});
+
+it('cannot approve an active intake', function (): void {
+    $intake = Intake::factory()->create();
+
+    $this->post(sprintf('/staff/intakes/%s/approve', $intake->id))
+        ->assertStatus(422);
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::Active);
+});
+
+it('cannot flag an active intake', function (): void {
+    $intake = Intake::factory()->create();
+    $formResponse = $intake->formResponses()->create([
+        'schema_key' => 'demographics',
+        'data' => ['first_name' => 'Jane'],
+        'status' => 'in_progress',
+    ]);
+
+    $this->post(sprintf('/staff/intakes/%s/flag', $intake->id), [
+        'form_response_id' => $formResponse->id,
+        'reason' => 'Missing info',
+    ])->assertStatus(422);
+
+    expect($intake->flags)->toHaveCount(0);
+});
+
+it('filters intakes by active status', function (): void {
+    Intake::factory()->count(2)->create();
+    Intake::factory()->submitted()->count(3)->create();
+
+    $this->get('/staff/intakes?status=active')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('intakes.data', 2)
         );
 });
 
@@ -78,6 +126,37 @@ it('displays the intake detail page', function (): void {
             ->has('flags')
             ->has('schemas')
         );
+});
+
+it('passes form response ids needed for collapsible state initialization', function (): void {
+    $intake = Intake::factory()->submitted()->create();
+    $intake->formResponses()->createMany([
+        ['schema_key' => 'demographics', 'data' => ['first_name' => 'Jane'], 'status' => 'completed'],
+        ['schema_key' => 'insurance', 'data' => ['provider' => 'BCBS'], 'status' => 'completed'],
+        ['schema_key' => 'child_information', 'data' => ['child_first_name' => 'Max'], 'status' => 'in_progress'],
+    ]);
+
+    $this->get('/staff/intakes/'.$intake->id)
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('formResponses', 3)
+            ->has('formResponses.0.id')
+            ->has('formResponses.1.id')
+            ->has('formResponses.2.id')
+        );
+});
+
+it('displays an active intake detail page without transitioning status', function (): void {
+    $intake = Intake::factory()->create();
+
+    $this->get('/staff/intakes/'.$intake->id)
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('staff/IntakeDetail')
+            ->has('intake')
+        );
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::Active);
 });
 
 it('auto-transitions intake to under review when staff views it', function (): void {

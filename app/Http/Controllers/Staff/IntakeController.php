@@ -23,7 +23,6 @@ class IntakeController extends Controller
     {
         $builder = Intake::query()
             ->with('patient')
-            ->whereNot('status', IntakeStatus::Active)
             ->latest();
 
         if ($request->filled('status')) {
@@ -39,10 +38,6 @@ class IntakeController extends Controller
         $statusCounts = [];
 
         foreach (IntakeStatus::cases() as $status) {
-            if ($status === IntakeStatus::Active) {
-                continue;
-            }
-
             $statusCounts[$status->value] = Intake::query()
                 ->where('status', $status)
                 ->count();
@@ -92,6 +87,8 @@ class IntakeController extends Controller
 
     public function approve(Intake $intake): RedirectResponse
     {
+        abort_if($intake->status === IntakeStatus::Active, 422, 'Cannot approve an intake that is still in progress.');
+
         $intake->update(['status' => IntakeStatus::Approved]);
 
         if (config('services.monday.api_token')) {
@@ -103,6 +100,8 @@ class IntakeController extends Controller
 
     public function flag(Intake $intake, FlagFormRequest $flagFormRequest): RedirectResponse
     {
+        abort_if($intake->status === IntakeStatus::Active, 422, 'Cannot flag an intake that is still in progress.');
+
         $intakeFlag = IntakeFlag::query()->create([
             'intake_id' => $intake->id,
             'form_response_id' => $flagFormRequest->validated('form_response_id'),

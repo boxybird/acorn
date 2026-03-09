@@ -19,7 +19,8 @@ After running `php artisan migrate:fresh --seed`, the following test patients ar
 
 | Parent | Status | Child | Magic Link |
 |--------|--------|-------|------------|
-| Maria Garcia | **All 6 forms complete** | Sofia Garcia | [Login](http://acorn.test/intake/verify/seed-maria-garcia) |
+| Maria Garcia | **All 6 forms complete**, staff approved | Sofia Garcia | [Login](http://acorn.test/intake/verify/seed-maria-garcia) |
+| David Chavez | **All 6 forms complete**, awaiting staff review | Isabella Chavez | [Login](http://acorn.test/intake/verify/seed-david-chavez) |
 | James Thompson | **3 forms done**, child info in progress | Ethan Thompson | [Login](http://acorn.test/intake/verify/seed-james-thompson) |
 | Ashley Begay | **Brand new** — no intake started | — | [Login](http://acorn.test/intake/verify/seed-ashley-begay) |
 | Rosa Martinez | **1 form done** (demographics), Spanish-speaking | — | [Login](http://acorn.test/intake/verify/seed-rosa-martinez) |
@@ -27,7 +28,8 @@ After running `php artisan migrate:fresh --seed`, the following test patients ar
 
 ### What each account shows
 
-- **Maria Garcia** — "All Done!" completion state on the Hub.
+- **Maria Garcia** — "All Done!" completion state on the Hub. Staff dashboard shows as Approved.
+- **David Chavez** — "All Done!" completion state on the Hub. Staff dashboard shows as Submitted — use this to test the flag/approve/review workflow.
 - **James Thompson** — In-progress Hub with progress bar, percentage, time estimate, and "Continue" button.
 - **Ashley Begay** — Welcome screen with "Get Started" button (no forms touched).
 - **Rosa Martinez** — In-progress Hub, Spanish locale preference.

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\IntakeStatus;
 use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\Patient;
@@ -15,6 +16,7 @@ class PatientSeeder extends Seeder
     public function run(): void
     {
         $this->createCompletedPatient();
+        $this->createSubmittedPatient();
         $this->createPartialPatient();
         $this->createNewPatient();
         $this->createSpanishSpeakingPatient();
@@ -33,7 +35,7 @@ class PatientSeeder extends Seeder
         $intake = Intake::factory()->create([
             'patient_id' => $patient->id,
             'child_name' => 'Sofia Garcia',
-            'status' => 'completed',
+            'status' => IntakeStatus::Approved,
             'sync_status' => 'synced',
             'synced_at' => now()->subDays(2),
         ]);
@@ -122,6 +124,108 @@ class PatientSeeder extends Seeder
                 'consent_photo_video' => 'yes',
                 'guardian_signature' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==',
                 'signature_date' => '2026-03-01',
+            ],
+        ]);
+    }
+
+    private function createSubmittedPatient(): void
+    {
+        $patient = Patient::factory()->create([
+            'name' => 'David Chavez',
+            'email' => 'david.chavez@example.com',
+            'magic_link_token' => 'seed-david-chavez',
+            'magic_link_expires_at' => now()->addYear(),
+        ]);
+
+        $intake = Intake::factory()->submitted()->create([
+            'patient_id' => $patient->id,
+            'child_name' => 'Isabella Chavez',
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => 'demographics',
+            'data' => [
+                'first_name' => 'David',
+                'last_name' => 'Chavez',
+                'phone' => '(505) 555-0401',
+                'email' => 'david.chavez@example.com',
+                'address' => '456 Eubank Blvd NE, Albuquerque, NM 87112',
+                'preferred_language' => 'en',
+                'has_secondary_guardian' => true,
+                'secondary_guardian_name' => 'Elena Chavez',
+                'secondary_guardian_phone' => '(505) 555-0402',
+                'secondary_guardian_email' => 'elena.chavez@example.com',
+                'referral_source' => 'pediatrician',
+                'referring_provider' => 'Dr. Lisa Romero',
+            ],
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => 'insurance',
+            'data' => [
+                'insurance_provider' => 'Molina Healthcare of NM',
+                'policy_number' => 'MOL-555123456',
+                'group_number' => 'GRP-44221',
+                'policyholder_name' => 'David Chavez',
+                'policyholder_dob' => '1992-07-10',
+                'policyholder_relationship' => 'parent',
+            ],
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => 'child_information',
+            'data' => [
+                'child_first_name' => 'Isabella',
+                'child_last_name' => 'Chavez',
+                'child_dob' => '2022-09-03',
+                'child_gender' => 'female',
+                'pediatrician_name' => 'Dr. Lisa Romero',
+                'pediatrician_phone' => '(505) 555-0450',
+                'school_name' => 'Little Sprouts Preschool',
+            ],
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => 'medical_history',
+            'data' => [
+                'has_autism_diagnosis' => true,
+                'diagnosis_provider' => 'Dr. Karen White, Lovelace Pediatric Neurology',
+                'diagnosis_date' => '2025-11-15',
+                'other_diagnoses' => 'Sensory processing disorder',
+                'current_medications' => 'Melatonin 1mg (sleep)',
+                'allergies' => 'Peanuts',
+                'prior_evaluations' => 'Developmental eval at Lovelace (Oct 2025)',
+                'prior_aba_therapy' => false,
+            ],
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => 'developmental_concerns',
+            'data' => [
+                'first_words_age' => '20',
+                'first_walking_age' => '13',
+                'toilet_trained' => 'no',
+                'primary_concerns' => 'Difficulty with social interaction, limited eye contact, repetitive hand movements.',
+                'communication_level' => 'phrases',
+                'behavioral_concerns' => 'Meltdowns in new environments, very rigid routines.',
+                'strengths' => 'Excellent memory, loves animals, enjoys water play, recognizes all letters and numbers.',
+            ],
+        ]);
+
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => 'consent',
+            'data' => [
+                'consent_evaluation' => true,
+                'consent_information_sharing' => true,
+                'consent_photo_video' => 'no',
+                'guardian_signature' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==',
+                'signature_date' => '2026-03-08',
             ],
         ]);
     }
