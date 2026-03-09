@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers\Intake;
 
-use App\Enums\IntakeStatus;
+use App\Actions\CompleteForm;
 use App\Http\Controllers\Controller;
-use App\Jobs\SyncIntakeToMonday;
 use App\Models\FormResponse;
 use App\Models\Intake;
-use App\Models\User;
-use App\Notifications\CorrectionSubmittedNotification;
 use App\Services\FormSchemaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -117,13 +113,21 @@ class FormController extends Controller
         }
 
         if ($schemaKey === 'child_information') {
-            $this->extractChildName($intakeId, $incomingData);
+            /** @var string|null $firstName */
+            $firstName = $incomingData['child_first_name'] ?? null;
+            /** @var string|null $lastName */
+            $lastName = $incomingData['child_last_name'] ?? null;
+            $childName = trim(($firstName ?? '').' '.($lastName ?? ''));
+
+            if ($childName !== '') {
+                Intake::query()->findOrFail($intakeId)->update(['child_name' => $childName]);
+            }
         }
 
         return response()->json(['status' => 'saved']);
     }
 
-    public function complete(string $schemaKey, Request $request, FormSchemaService $formSchemaService): RedirectResponse
+    public function complete(string $schemaKey, Request $request, FormSchemaService $formSchemaService, CompleteForm $completeForm): RedirectResponse
     {
         $schema = $formSchemaService->get($schemaKey);
 
@@ -148,64 +152,12 @@ class FormController extends Controller
         /** @var array<string, mixed> $validatedData */
         $validatedData = $request->input('data', []);
 
-        FormResponse::query()->updateOrCreate(
-            ['intake_id' => $intakeId, 'schema_key' => $schemaKey],
-            ['data' => $validatedData, 'status' => 'completed'],
+        $completeForm->handle(
+            intakeId: $intakeId,
+            schemaKey: $schemaKey,
+            data: $validatedData,
         );
 
-        if ($schemaKey === 'child_information') {
-            $this->extractChildName($intakeId, $validatedData);
-        }
-
-        $intake = Intake::query()->findOrFail($intakeId);
-
-        if ($intake->status === IntakeStatus::Flagged) {
-            $intake->update(['status' => IntakeStatus::CorrectionSubmitted]);
-
-            $staffUsers = User::all();
-            Notification::send($staffUsers, new CorrectionSubmittedNotification($intake));
-        }
-
-        $this->checkAndDispatchSync($intakeId, $formSchemaService);
-
         return redirect()->route('intake.form.completed', $schemaKey);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    private function extractChildName(int $intakeId, array $data): void
-    {
-        /** @var string|null $firstName */
-        $firstName = $data['child_first_name'] ?? null;
-        /** @var string|null $lastName */
-        $lastName = $data['child_last_name'] ?? null;
-
-        $childName = trim(($firstName ?? '').' '.($lastName ?? ''));
-
-        if ($childName !== '') {
-            /** @var Intake $intake */
-            $intake = Intake::query()->findOrFail($intakeId);
-            $intake->update(['child_name' => $childName]);
-        }
-    }
-
-    private function checkAndDispatchSync(int $intakeId, FormSchemaService $formSchemaService): void
-    {
-        $totalSchemas = count($formSchemaService->all());
-        $completedCount = FormResponse::query()
-            ->where('intake_id', $intakeId)
-            ->where('status', 'completed')
-            ->count();
-
-        if ($completedCount >= $totalSchemas) {
-            /** @var Intake $intake */
-            $intake = Intake::query()->findOrFail($intakeId);
-            $intake->update(['status' => IntakeStatus::Submitted]);
-
-            if (config('services.monday.api_token')) {
-                SyncIntakeToMonday::dispatch($intake);
-            }
-        }
     }
 }
