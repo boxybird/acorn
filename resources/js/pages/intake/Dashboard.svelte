@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { router } from '@inertiajs/svelte';
+    import { page, router } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
     import { Card, CardContent } from '@/components/ui/card';
     import IntakeHeader from '@/components/intake/IntakeHeader.svelte';
@@ -9,7 +9,7 @@
 
     type FormItem = {
         key: string;
-        title: Record<string, string>;
+        title: string;
         icon: string | null;
         estimated_minutes: number | null;
         status: 'not_started' | 'in_progress' | 'completed';
@@ -33,41 +33,15 @@
         child_name: string | null;
     };
 
-    let { forms, progress, intake, allIntakes, timeEstimate, locale = 'en' }: {
+    let { forms, progress, intake, allIntakes, timeEstimate }: {
         forms: FormItem[];
         progress: Progress;
         intake: IntakeContext;
         allIntakes: IntakeCard[];
         timeEstimate: number;
-        locale?: string;
     } = $props();
 
-    const t = {
-        welcome: { en: 'Welcome!', es: '¡Bienvenido!' },
-        welcomeDesc: {
-            en: 'short forms at your own pace. Your progress saves automatically — come back anytime.',
-            es: 'formularios cortos a su propio ritmo. Su progreso se guarda automáticamente — regrese cuando quiera.',
-        },
-        estimatedTime: { en: 'Estimated time:', es: 'Tiempo estimado:' },
-        minutes: { en: 'minutes', es: 'minutos' },
-        getStarted: { en: 'Get Started', es: 'Comenzar' },
-        allDone: { en: 'All Done!', es: '¡Todo Listo!' },
-        allDoneDesc: {
-            en: "forms are complete. Your information is being processed — we'll be in touch soon.",
-            es: 'formularios están completos. Su información está siendo procesada — nos pondremos en contacto pronto.',
-        },
-        intakeSuffix: { en: "'s Intake", es: ' — Admisión' },
-        yourIntake: { en: 'Your Intake', es: 'Su Admisión' },
-        pickUp: { en: 'Pick up where you left off.', es: 'Continúe donde lo dejó.' },
-        of: { en: 'of', es: 'de' },
-        formsComplete: { en: 'forms complete', es: 'formularios completos' },
-        minRemaining: { en: 'min remaining', es: 'min restantes' },
-        continue_: { en: 'Continue', es: 'Continuar' },
-        yourChildren: { en: 'Your Children', es: 'Sus Hijos' },
-        complete: { en: 'Complete', es: 'Completo' },
-        switchTo: { en: 'Switch to', es: 'Cambiar a' },
-        addChild: { en: '+ Add another child', es: '+ Agregar otro hijo' },
-    } as const;
+    let t = $derived($page.props.translations as Record<string, string>);
 
     let progressPercent = $derived(
         progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0,
@@ -97,27 +71,26 @@
 
 <div class="flex min-h-screen flex-col bg-primary/5">
     <IntakeHeader
-        {locale}
         {progress}
         breadcrumbs={[
-            { label: { en: 'Dashboard', es: 'Panel' } },
+            { label: t.dashboard },
         ]}
     />
 
     <main class="mx-auto w-full max-w-2xl flex-1 p-4 py-8">
         {#if allNotStarted}
             <div class="flex flex-col items-center space-y-6 py-8 text-center">
-                <h1 class="float-up text-2xl font-bold text-foreground" class:visible={mounted}>{t.welcome[locale]}</h1>
+                <h1 class="float-up text-2xl font-bold text-foreground" class:visible={mounted}>{t.welcome}</h1>
                 <p class="float-up max-w-md text-muted-foreground" class:visible={mounted} style="transition-delay: 60ms">
-                    {locale === 'en' ? `Complete ${forms.length}` : `Complete ${forms.length}`} {t.welcomeDesc[locale]}
+                    Complete {forms.length} {t.welcome_desc}
                 </p>
                 {#if timeEstimate > 0}
-                    <p class="float-up text-sm text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">{t.estimatedTime[locale]} ~{timeEstimate} {t.minutes[locale]}</p>
+                    <p class="float-up text-sm text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">{t.estimated_time} ~{timeEstimate} {t.minutes}</p>
                 {/if}
                 {#if nextFormKey}
                     <div class="float-up" class:visible={mounted} style="transition-delay: 180ms">
                         <Button size="lg" onclick={() => router.visit(show.url(nextFormKey))}>
-                            {t.getStarted[locale]}
+                            {t.get_started}
                         </Button>
                     </div>
                 {/if}
@@ -129,9 +102,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h1 class="float-up text-2xl font-bold text-foreground" class:visible={mounted} style="transition-delay: 60ms">{t.allDone[locale]}</h1>
+                <h1 class="float-up text-2xl font-bold text-foreground" class:visible={mounted} style="transition-delay: 60ms">{t.all_done}</h1>
                 <p class="float-up max-w-md text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">
-                    {locale === 'en' ? `All ${progress.total}` : `Los ${progress.total}`} {t.allDoneDesc[locale]}
+                    {progress.total} {t.all_done_desc}
                 </p>
             </div>
         {:else}
@@ -139,12 +112,12 @@
                 <div class="float-up" class:visible={mounted}>
                     <h1 class="text-2xl font-bold text-foreground">
                         {#if intake.child_name}
-                            {intake.child_name}{t.intakeSuffix[locale]}
+                            {intake.child_name}{t.intake_suffix}
                         {:else}
-                            {t.yourIntake[locale]}
+                            {t.your_intake}
                         {/if}
                     </h1>
-                    <p class="mt-1 text-muted-foreground">{t.pickUp[locale]}</p>
+                    <p class="mt-1 text-muted-foreground">{t.pick_up}</p>
                 </div>
 
                 <Card class="float-up {mounted ? 'visible' : ''}" style="transition-delay: 60ms">
@@ -153,15 +126,15 @@
                             <div class="space-y-1">
                                 <p class="text-3xl font-bold text-foreground">{progressPercent}%</p>
                                 <p class="text-sm text-muted-foreground">
-                                    {progress.completed} {t.of[locale]} {progress.total} {t.formsComplete[locale]}
+                                    {progress.completed} {t.of} {progress.total} {t.forms_complete}
                                 </p>
                                 {#if timeEstimate > 0}
-                                    <p class="text-sm text-muted-foreground">~{timeEstimate} {t.minRemaining[locale]}</p>
+                                    <p class="text-sm text-muted-foreground">~{timeEstimate} {t.min_remaining}</p>
                                 {/if}
                             </div>
                             {#if nextFormKey}
                                 <Button size="lg" onclick={() => router.visit(show.url(nextFormKey))}>
-                                    {t.continue_[locale]}
+                                    {t.continue}
                                 </Button>
                             {/if}
                         </div>
@@ -177,7 +150,7 @@
         {/if}
 
         <div class="mt-8 space-y-3">
-            <h2 class="float-up text-sm font-medium text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">{t.yourChildren[locale]}</h2>
+            <h2 class="float-up text-sm font-medium text-muted-foreground" class:visible={mounted} style="transition-delay: 120ms">{t.your_children}</h2>
                 <div class="grid gap-3 sm:grid-cols-2">
                     {#each allIntakes as intakeCard, i (intakeCard.id)}
                         <Card class="float-up transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {mounted ? 'visible' : ''} {intakeCard.is_current ? 'ring-2 ring-primary' : ''}" style="transition-delay: {180 + i * 60}ms">
@@ -185,7 +158,7 @@
                                 <div class="flex items-center justify-between">
                                     <h3 class="font-semibold text-foreground">{childLabel(intakeCard, i)}</h3>
                                     {#if intakeCard.completed_forms_count === progress.total}
-                                        <span class="text-xs font-medium text-primary">{t.complete[locale]}</span>
+                                        <span class="text-xs font-medium text-primary">{t.complete}</span>
                                     {:else}
                                         <span class="text-xs text-muted-foreground">
                                             {intakeCard.completed_forms_count}/{progress.total}
@@ -207,7 +180,7 @@
                                                 class="w-full"
                                                 onclick={() => router.visit(show.url(nextFormKey))}
                                             >
-                                                {t.continue_[locale]}
+                                                {t.continue}
                                             </Button>
                                         {/if}
                                     {:else}
@@ -217,7 +190,7 @@
                                             class="w-full"
                                             onclick={() => router.post(choose.url(intakeCard.id))}
                                         >
-                                            {t.switchTo[locale]} {childLabel(intakeCard, i)}
+                                            {t.switch_to} {childLabel(intakeCard, i)}
                                         </Button>
                                     {/if}
                                 </div>
@@ -230,7 +203,7 @@
                         style="transition-delay: {180 + allIntakes.length * 60}ms"
                         onclick={() => router.post(create.url())}
                     >
-                        {t.addChild[locale]}
+                        {t.add_child}
                     </button>
                 </div>
         </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { page } from '@inertiajs/svelte';
     import FormRenderer from '@/components/intake/FormRenderer.svelte';
     import IntakeSidebar from '@/components/intake/IntakeSidebar.svelte';
     import IntakeBottomNav from '@/components/intake/IntakeBottomNav.svelte';
@@ -9,8 +10,8 @@
 
     type FormItem = {
         key: string;
-        title: Record<string, string>;
-        sections: { key: string; title: Record<string, string> }[];
+        title: string;
+        sections: { key: string; title: string }[];
         status: 'not_started' | 'in_progress' | 'completed';
     };
 
@@ -24,14 +25,15 @@
         savedData,
         forms,
         progress,
-        locale = 'en',
     }: {
         schema: Record<string, any>;
         savedData: Record<string, any>;
         forms: FormItem[];
         progress: Progress;
-        locale?: string;
     } = $props();
+
+    let t = $derived($page.props.translations as Record<string, string>);
+
     const schemaKey = schema.key as string;
     const totalSections = (schema.sections ?? []).length;
 
@@ -49,10 +51,9 @@
 <div class="flex min-h-screen flex-col bg-background">
     <!-- Global Header -->
     <IntakeHeader
-        {locale}
         {progress}
         breadcrumbs={[
-            { label: { en: 'Dashboard', es: 'Panel' }, href: dashboard.url() },
+            { label: t.dashboard, href: dashboard.url() },
             { label: schema.title },
         ]}
     />
@@ -65,7 +66,6 @@
                 {progress}
                 activeFormKey={schemaKey}
                 activeSectionIndex={currentSectionIndex}
-                {locale}
                 onSectionClick={(index) => formRenderer?.navigateToSection(index)}
             />
         </div>
@@ -78,7 +78,6 @@
                     bind:this={formRenderer}
                     {schema}
                     {savedData}
-                    {locale}
                     saveUrl={save.url(schemaKey)}
                     completeUrl={complete.url(schemaKey)}
                     dashboardUrl={dashboard.url()}
@@ -95,7 +94,6 @@
         totalSteps={totalSections}
         {progressPercent}
         isLastSection={currentSectionIndex === totalSections - 1}
-        {locale}
         onPrevious={() => formRenderer?.handlePrevious()}
         onNext={() => formRenderer?.handleNext()}
         onComplete={() => formRenderer?.handleComplete()}

@@ -4,20 +4,18 @@
     let {
         field,
         value = $bindable(''),
-        locale = 'en',
         error = '',
         onblur,
     }: {
         field: Record<string, any>;
         value: string;
-        locale: string;
         error: string;
         onblur?: () => void;
     } = $props();
 </script>
 
 <div class="space-y-2">
-    <Label>{field.label[locale]}</Label>
+    <Label>{field.label}</Label>
     <div class="space-y-2">
         {#each field.options ?? [] as option (option.value)}
             <label class="flex items-center gap-3 cursor-pointer">
@@ -29,7 +27,7 @@
                     onchange={() => { value = option.value; if (onblur) onblur(); }}
                     class="size-4 border-input text-primary focus:ring-ring"
                 />
-                <span class="text-sm">{option.label[locale]}</span>
+                <span class="text-sm">{option.label}</span>
             </label>
         {/each}
     </div>

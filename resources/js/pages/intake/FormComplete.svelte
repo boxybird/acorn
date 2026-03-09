@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { Link } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
     import IntakeHeader from '@/components/intake/IntakeHeader.svelte';
     import { show } from '@/routes/intake/form';
@@ -10,29 +10,16 @@
         completedForm,
         nextForm,
         progress,
-        locale = 'en',
     }: {
-        completedForm: { key: string; title: Record<string, string> };
-        nextForm: { key: string; title: Record<string, string> } | null;
+        completedForm: { key: string; title: string };
+        nextForm: { key: string; title: string } | null;
         progress: { completed: number; total: number };
-        locale?: string;
     } = $props();
+
+    let t = $derived($page.props.translations as Record<string, string>);
+
     const remaining = progress.total - progress.completed;
     const allDone = remaining === 0;
-
-    const t = {
-        complete: { en: 'Complete!', es: '¡Completo!' },
-        allDone: {
-            en: "You're all done! Your intake paperwork has been submitted. The JumpStart team will review your information and reach out soon.",
-            es: '¡Ha terminado! Su documentación ha sido enviada. El equipo de JumpStart revisará su información y se pondrá en contacto pronto.',
-        },
-        of: { en: 'of', es: 'de' },
-        formsComplete: { en: 'forms complete', es: 'formularios completos' },
-        justOneMore: { en: 'just 1 more to go!', es: '¡solo queda 1 más!' },
-        moreToGo: { en: 'more to go!', es: 'más por completar.' },
-        backToDashboard: { en: 'Back to Dashboard', es: 'Volver al Panel' },
-        continueTo: { en: 'Continue to', es: 'Continuar a' },
-    } as const;
 
     let visible = $state(false);
     let checkVisible = $state(false);
@@ -45,10 +32,9 @@
 
 <div class="flex min-h-screen flex-col bg-background">
     <IntakeHeader
-        {locale}
         {progress}
         breadcrumbs={[
-            { label: { en: 'Dashboard', es: 'Panel' }, href: dashboard.url() },
+            { label: t.dashboard, href: dashboard.url() },
             { label: completedForm.title },
         ]}
     />
@@ -82,18 +68,18 @@
                 class:translate-y-0={visible}
             >
                 <h1 class="text-2xl font-bold text-foreground">
-                    {completedForm.title[locale]}
+                    {completedForm.title}
                 </h1>
-                <p class="text-lg text-primary">{t.complete[locale]}</p>
+                <p class="text-lg text-primary">{t.complete_exclaim}</p>
 
                 {#if allDone}
                     <p class="text-sm text-muted-foreground">
-                        {t.allDone[locale]}
+                        {t.all_done_final}
                     </p>
                 {:else}
                     <p class="text-sm text-muted-foreground">
-                        {progress.completed} {t.of[locale]} {progress.total} {t.formsComplete[locale]} &mdash;
-                        {remaining === 1 ? t.justOneMore[locale] : `${remaining} ${t.moreToGo[locale]}`}
+                        {progress.completed} {t.of} {progress.total} {t.forms_complete} &mdash;
+                        {remaining === 1 ? t.just_one_more : `${remaining} ${t.more_to_go}`}
                     </p>
                 {/if}
             </div>
@@ -110,7 +96,7 @@
                     <Button asChild size="lg" class="w-full">
                         {#snippet children(props)}
                             <Link href={dashboard.url()} {...props}>
-                                {t.backToDashboard[locale]}
+                                {t.back_to_dashboard}
                             </Link>
                         {/snippet}
                     </Button>
@@ -118,14 +104,14 @@
                     <Button asChild size="lg" class="w-full">
                         {#snippet children(props)}
                             <Link href={show.url(nextForm.key)} {...props}>
-                                {t.continueTo[locale]} {nextForm.title[locale]}
+                                {t.continue_to} {nextForm.title}
                             </Link>
                         {/snippet}
                     </Button>
                     <Button asChild variant="outline" size="lg" class="w-full">
                         {#snippet children(props)}
                             <Link href={dashboard.url()} {...props}>
-                                {t.backToDashboard[locale]}
+                                {t.back_to_dashboard}
                             </Link>
                         {/snippet}
                     </Button>
@@ -133,7 +119,7 @@
                     <Button asChild size="lg" class="w-full">
                         {#snippet children(props)}
                             <Link href={dashboard.url()} {...props}>
-                                {t.backToDashboard[locale]}
+                                {t.back_to_dashboard}
                             </Link>
                         {/snippet}
                     </Button>

@@ -5,13 +5,11 @@
     let {
         field,
         value = $bindable(false),
-        locale = 'en',
         error = '',
         onblur,
     }: {
         field: Record<string, any>;
         value: boolean;
-        locale: string;
         error: string;
         onblur?: () => void;
     } = $props();
@@ -23,7 +21,7 @@
         bind:checked={value}
         onchange={onblur}
     />
-    <Label for={field.key} class="cursor-pointer">{field.label[locale]}</Label>
+    <Label for={field.key} class="cursor-pointer">{field.label}</Label>
 </div>
 {#if error}
     <p class="text-sm text-destructive">{error}</p>

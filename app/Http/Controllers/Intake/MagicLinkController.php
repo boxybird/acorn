@@ -16,9 +16,7 @@ class MagicLinkController extends Controller
 {
     public function landing(): Response
     {
-        return Inertia::render('intake/Landing', [
-            'locale' => app()->getLocale(),
-        ]);
+        return Inertia::render('intake/Landing');
     }
 
     public function requestLink(RequestMagicLinkRequest $requestMagicLinkRequest, MagicLinkService $magicLinkService): RedirectResponse
@@ -28,14 +26,7 @@ class MagicLinkController extends Controller
 
         $magicLinkService->sendToEmail($email);
 
-        /** @var string $locale */
-        $locale = $requestMagicLinkRequest->session()->get('locale', 'en');
-
-        $message = $locale === 'es'
-            ? 'Revise su correo electrónico para un enlace de acceso.'
-            : 'Check your email for a magic link.';
-
-        return back()->with('status', $message);
+        return back()->with('status', __('intake.magic_link_sent'));
     }
 
     public function verify(string $token, Request $request): RedirectResponse
@@ -45,15 +36,8 @@ class MagicLinkController extends Controller
             ->first();
 
         if (! $patient || ! $patient->hasValidMagicLink()) {
-            /** @var string $locale */
-            $locale = $request->session()->get('locale', 'en');
-
-            $errorMessage = $locale === 'es'
-                ? 'Este enlace es inválido o ha expirado.'
-                : 'This link is invalid or has expired.';
-
             return redirect()->route('intake.landing')
-                ->with('error', $errorMessage);
+                ->with('error', __('intake.link_expired'));
         }
 
         $patient->update([

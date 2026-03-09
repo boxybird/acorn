@@ -25,9 +25,11 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
         return back();
     })->name('set-locale-guest');
     Route::post('/request-link', [MagicLinkController::class, 'requestLink'])
-        ->middleware('throttle:3,1')
+        ->middleware([SetPatientLocale::class, 'throttle:3,1'])
         ->name('request-link');
-    Route::get('/verify/{token}', [MagicLinkController::class, 'verify'])->name('verify');
+    Route::get('/verify/{token}', [MagicLinkController::class, 'verify'])
+        ->middleware(SetPatientLocale::class)
+        ->name('verify');
 
     Route::middleware([AuthenticatePatient::class, SetPatientLocale::class])->group(function (): void {
         Route::post('/select/new', [IntakeSelectorController::class, 'create'])->name('select.new');

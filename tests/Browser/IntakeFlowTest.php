@@ -150,7 +150,7 @@ it('shows locale toggle on landing page', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
-it('switches language on landing page', function (): void {
+it('switches language to spanish on landing page', function (): void {
     $pendingAwaitablePage = visit('/intake');
 
     $pendingAwaitablePage->assertSee('Get Started')
@@ -158,6 +158,19 @@ it('switches language on landing page', function (): void {
         ->click('ES')
         ->assertSee('Comenzar')
         ->assertSee('Enviar Enlace Seguro')
+        ->assertDontSee('Get Started')
+        ->assertNoJavaScriptErrors();
+});
+
+it('switches language back to english on landing page', function (): void {
+    $pendingAwaitablePage = visit('/intake');
+
+    $pendingAwaitablePage->click('ES')
+        ->assertSee('Comenzar')
+        ->click('EN')
+        ->assertSee('Get Started')
+        ->assertSee('Send Secure Link')
+        ->assertDontSee('Comenzar')
         ->assertNoJavaScriptErrors();
 });
 

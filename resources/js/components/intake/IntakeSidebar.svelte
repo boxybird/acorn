@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import { Separator } from '@/components/ui/separator';
     import { show } from '@/routes/intake/form';
     import { dashboard } from '@/routes/intake';
 
     type FormItem = {
         key: string;
-        title: Record<string, string>;
-        sections: { key: string; title: Record<string, string> }[];
+        title: string;
+        sections: { key: string; title: string }[];
         status: 'not_started' | 'in_progress' | 'completed';
     };
 
@@ -21,22 +21,16 @@
         progress,
         activeFormKey,
         activeSectionIndex = 0,
-        locale = 'en',
         onSectionClick,
     }: {
         forms: FormItem[];
         progress: Progress;
         activeFormKey: string;
         activeSectionIndex?: number;
-        locale?: string;
         onSectionClick?: (index: number) => void;
     } = $props();
 
-    const t = {
-        of: { en: 'of', es: 'de' },
-        formsComplete: { en: 'forms complete', es: 'formularios completos' },
-        backToDashboard: { en: 'Back to Dashboard', es: 'Volver al Panel' },
-    } as const;
+    let t = $derived($page.props.translations as Record<string, string>);
 
     let progressPercent = $derived(
         progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0,
@@ -60,8 +54,8 @@
             />
         </svg>
         <div>
-            <p class="text-sm font-medium text-foreground">{progress.completed} {t.of[locale]} {progress.total}</p>
-            <p class="text-xs text-muted-foreground">{t.formsComplete[locale]}</p>
+            <p class="text-sm font-medium text-foreground">{progress.completed} {t.of} {progress.total}</p>
+            <p class="text-xs text-muted-foreground">{t.forms_complete}</p>
         </div>
     </div>
 
@@ -90,7 +84,7 @@
                             <div class="size-4 shrink-0 rounded-full border-2 border-muted-foreground/30"></div>
                         {/if}
 
-                        <span class="truncate">{form.title[locale]}</span>
+                        <span class="truncate">{form.title}</span>
                     </Link>
 
                     <!-- Section sub-steps (only for active form) -->
@@ -104,7 +98,7 @@
                                         class="w-full rounded-md px-2 py-1.5 text-left text-xs transition-colors
                                             {i === activeSectionIndex ? 'font-medium text-primary' : 'text-muted-foreground hover:text-foreground'}"
                                     >
-                                        {section.title[locale]}
+                                        {section.title}
                                     </button>
                                 </li>
                             {/each}
@@ -123,7 +117,7 @@
             href={dashboard.url()}
             class="text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-            &larr; {t.backToDashboard[locale]}
+            &larr; {t.back_to_dashboard}
         </Link>
     </div>
 </aside>

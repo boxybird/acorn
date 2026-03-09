@@ -1,27 +1,23 @@
 <script lang="ts">
-    import { Link } from '@inertiajs/svelte';
+    import { Link, page } from '@inertiajs/svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import LocaleToggle from '@/components/intake/LocaleToggle.svelte';
 
     type Breadcrumb = {
-        label: Record<string, string>;
+        label: string;
         href?: string;
     };
 
     let {
-        locale = 'en',
         progress,
         breadcrumbs = [],
     }: {
-        locale?: string;
         progress: { completed: number; total: number };
         breadcrumbs?: Breadcrumb[];
     } = $props();
 
-    const t = {
-        of: { en: 'of', es: 'de' },
-        complete: { en: 'complete', es: 'completos' },
-    } as const;
+    let t = $derived($page.props.translations as Record<string, string>);
+    let locale = $derived($page.props.locale as string);
 
     const circumference = 2 * Math.PI * 8;
     let progressPercent = $derived(
@@ -48,10 +44,10 @@
                                 href={crumb.href}
                                 class="text-muted-foreground transition-colors hover:text-foreground"
                             >
-                                {crumb.label[locale]}
+                                {crumb.label}
                             </Link>
                         {:else}
-                            <span class="font-medium text-foreground">{crumb.label[locale]}</span>
+                            <span class="font-medium text-foreground">{crumb.label}</span>
                         {/if}
                     {/each}
                 </nav>
@@ -72,7 +68,7 @@
                     />
                 </svg>
                 <span class="hidden text-xs text-muted-foreground sm:inline">
-                    {progress.completed} {t.of[locale]} {progress.total} {t.complete[locale]}
+                    {progress.completed} {t.of} {progress.total} {t.complete}
                 </span>
             </div>
             <LocaleToggle {locale} />

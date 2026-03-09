@@ -35,7 +35,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
+        /** @var array<string, mixed> $shared */
+        $shared = [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
@@ -47,5 +48,12 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
             ],
         ];
+
+        if ($request->is('intake*')) {
+            $shared['translations'] = fn (): array => (array) __('intake');
+            $shared['locale'] = fn (): string => app()->getLocale();
+        }
+
+        return $shared;
     }
 }

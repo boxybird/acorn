@@ -34,9 +34,12 @@ class DashboardController extends Controller
             /** @var string $key */
             $key = $schema['key'];
 
+            /** @var string $titleKey */
+            $titleKey = $schema['title'];
+
             return [
                 'key' => $key,
-                'title' => $schema['title'],
+                'title' => __($titleKey),
                 'icon' => $schema['icon'] ?? null,
                 'estimated_minutes' => $schema['estimated_minutes'] ?? null,
                 'status' => $responseStatuses[$key] ?? 'not_started',
@@ -91,7 +94,6 @@ class DashboardController extends Controller
             ],
             'allIntakes' => array_values($allIntakes),
             'timeEstimate' => $timeEstimate,
-            'locale' => app()->getLocale(),
         ]);
     }
 }

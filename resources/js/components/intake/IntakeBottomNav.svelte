@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '@inertiajs/svelte';
     import { Button } from '@/components/ui/button';
 
     let {
@@ -6,7 +7,6 @@
         totalSteps,
         progressPercent = 0,
         isLastSection = false,
-        locale = 'en',
         onPrevious,
         onNext,
         onComplete,
@@ -15,11 +15,12 @@
         totalSteps: number;
         progressPercent?: number;
         isLastSection?: boolean;
-        locale?: string;
         onPrevious?: () => void;
         onNext?: () => void;
         onComplete?: () => void;
     } = $props();
+
+    let t = $derived($page.props.translations as Record<string, string>);
 
     const circumference = 2 * Math.PI * 10;
     let strokeDashoffset = $derived(circumference - (progressPercent / 100) * circumference);
@@ -31,7 +32,7 @@
         <div class="w-24">
             {#if currentStep > 1}
                 <Button variant="ghost" size="sm" onclick={onPrevious}>
-                    {{ en: 'Previous', es: 'Anterior' }[locale]}
+                    {t.previous}
                 </Button>
             {/if}
         </div>
@@ -49,7 +50,7 @@
                 />
             </svg>
             <span class="text-xs text-muted-foreground">
-                {{ en: 'Step', es: 'Paso' }[locale]} {currentStep} / {totalSteps}
+                {t.step} {currentStep} / {totalSteps}
             </span>
         </div>
 
@@ -57,11 +58,11 @@
         <div class="w-24 text-right">
             {#if isLastSection}
                 <Button size="sm" onclick={onComplete}>
-                    {{ en: 'Complete', es: 'Completar' }[locale]}
+                    {t.complete}
                 </Button>
             {:else}
                 <Button variant="outline" size="sm" onclick={onNext}>
-                    {{ en: 'Next', es: 'Siguiente' }[locale]}
+                    {t.next}
                 </Button>
             {/if}
         </div>

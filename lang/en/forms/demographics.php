@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title' => 'Family Demographics',
+    'section_parent_info' => 'Parent/Guardian Information',
+    'section_referral_info' => 'Referral Information',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'phone' => 'Phone Number',
+    'email' => 'Email Address',
+    'address' => 'Home Address',
+    'preferred_language' => 'Preferred Language',
+    'option_lang_english' => 'English',
+    'option_lang_spanish' => 'Spanish',
+    'option_lang_other' => 'Other',
+    'has_secondary_guardian' => 'Is there a second parent/guardian?',
+    'secondary_guardian_name' => 'Second Guardian Full Name',
+    'secondary_guardian_phone' => 'Second Guardian Phone',
+    'secondary_guardian_email' => 'Second Guardian Email',
+    'referral_source' => 'How did you hear about us?',
+    'option_ref_pediatrician' => 'Pediatrician',
+    'option_ref_school' => 'School',
+    'option_ref_friend_family' => 'Friend or Family',
+    'option_ref_online' => 'Online Search',
+    'option_ref_other' => 'Other',
+    'referring_provider' => 'Referring Provider Name',
+];

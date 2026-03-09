@@ -4,20 +4,18 @@
     let {
         field,
         value = $bindable(''),
-        locale = 'en',
         error = '',
         onblur,
     }: {
         field: Record<string, any>;
         value: string;
-        locale: string;
         error: string;
         onblur?: () => void;
     } = $props();
 </script>
 
 <div class="space-y-2">
-    <Label for={field.key}>{field.label[locale]}</Label>
+    <Label for={field.key}>{field.label}</Label>
     <textarea
         id={field.key}
         bind:value

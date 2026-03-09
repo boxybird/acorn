@@ -4,13 +4,11 @@
     let {
         field,
         value = $bindable<File | null>(null),
-        locale = 'en',
         error = '',
         onblur,
     }: {
         field: Record<string, any>;
         value: File | null;
-        locale: string;
         error: string;
         onblur?: () => void;
     } = $props();
@@ -23,7 +21,7 @@
 </script>
 
 <div class="space-y-2">
-    <Label for={field.key}>{field.label[locale]}</Label>
+    <Label for={field.key}>{field.label}</Label>
     <input
         id={field.key}
         type="file"

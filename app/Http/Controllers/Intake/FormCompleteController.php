@@ -44,9 +44,11 @@ class FormCompleteController extends Controller
             }
 
             if ($foundCurrent && $nextForm === null && ! $isCompleted) {
+                /** @var string $nextTitleKey */
+                $nextTitleKey = $allSchema['title'];
                 $nextForm = [
                     'key' => $key,
-                    'title' => $allSchema['title'],
+                    'title' => __($nextTitleKey),
                 ];
             }
 
@@ -55,17 +57,19 @@ class FormCompleteController extends Controller
             }
         }
 
+        /** @var string $completedTitleKey */
+        $completedTitleKey = $schema['title'];
+
         return Inertia::render('intake/FormComplete', [
             'completedForm' => [
                 'key' => $schema['key'],
-                'title' => $schema['title'],
+                'title' => __($completedTitleKey),
             ],
             'nextForm' => $nextForm,
             'progress' => [
                 'completed' => $completed,
                 'total' => count($allSchemas),
             ],
-            'locale' => app()->getLocale(),
         ]);
     }
 }

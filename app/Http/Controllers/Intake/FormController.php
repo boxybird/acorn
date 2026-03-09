@@ -18,7 +18,7 @@ class FormController extends Controller
 {
     public function show(string $schemaKey, Request $request, FormSchemaService $formSchemaService): Response
     {
-        $schema = $formSchemaService->get($schemaKey);
+        $schema = $formSchemaService->getResolved($schemaKey);
 
         if ($schema === null) {
             throw new NotFoundHttpException;
@@ -47,13 +47,21 @@ class FormController extends Controller
             /** @var list<array<string, mixed>> $sections */
             $sections = $s['sections'];
 
+            /** @var string $formTitleKey */
+            $formTitleKey = $s['title'];
+
             return [
                 'key' => $key,
-                'title' => $s['title'],
-                'sections' => array_map(fn (array $section): array => [
-                    'key' => $section['key'],
-                    'title' => $section['title'],
-                ], $sections),
+                'title' => __($formTitleKey),
+                'sections' => array_map(function (array $section): array {
+                    /** @var string $sectionTitleKey */
+                    $sectionTitleKey = $section['title'];
+
+                    return [
+                        'key' => $section['key'],
+                        'title' => __($sectionTitleKey),
+                    ];
+                }, $sections),
                 'status' => $responseStatuses[$key] ?? 'not_started',
             ];
         }, $allSchemas);
@@ -68,7 +76,6 @@ class FormController extends Controller
                 'completed' => $completed,
                 'total' => count($forms),
             ],
-            'locale' => app()->getLocale(),
         ]);
     }
 

@@ -18,8 +18,8 @@ test('form schema service loads a schema by key', function (): void {
 
     expect($schema)->not->toBeNull()
         ->and($schema['key'])->toBe('demographics')
-        ->and($schema['title'])->toBeArray()
-        ->and($schema['title']['en'])->toBeString()
+        ->and($schema['title'])->toBeString()
+        ->and($schema['title'])->toStartWith('forms/')
         ->and($schema['sections'])->toBeArray();
 });
 

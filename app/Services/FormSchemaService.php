@@ -49,6 +49,41 @@ class FormSchemaService
         return $rules;
     }
 
+    /**
+     * Get a schema with all translation keys resolved to the current locale.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getResolved(string $key): ?array
+    {
+        $schema = $this->get($key);
+
+        if ($schema === null) {
+            return null;
+        }
+
+        /** @var array<string, mixed> $resolved */
+        $resolved = self::resolveRecursive($schema);
+
+        return $resolved;
+    }
+
+    /**
+     * Recursively resolve translation keys in a schema structure.
+     */
+    private static function resolveRecursive(mixed $value): mixed
+    {
+        if (is_string($value) && str_starts_with($value, 'forms/')) {
+            return __($value);
+        }
+
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        return array_map(fn (mixed $item): mixed => self::resolveRecursive($item), $value);
+    }
+
     /** @return array<string, array<string, mixed>> */
     private function loadSchemas(): array
     {

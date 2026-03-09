@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title' => 'Demografía Familiar',
+    'section_parent_info' => 'Información del Padre/Tutor',
+    'section_referral_info' => 'Información de Referencia',
+    'first_name' => 'Nombre',
+    'last_name' => 'Apellido',
+    'phone' => 'Número de Teléfono',
+    'email' => 'Correo Electrónico',
+    'address' => 'Dirección',
+    'preferred_language' => 'Idioma Preferido',
+    'option_lang_english' => 'Inglés',
+    'option_lang_spanish' => 'Español',
+    'option_lang_other' => 'Otro',
+    'has_secondary_guardian' => '¿Hay un segundo padre/tutor?',
+    'secondary_guardian_name' => 'Nombre Completo del Segundo Tutor',
+    'secondary_guardian_phone' => 'Teléfono del Segundo Tutor',
+    'secondary_guardian_email' => 'Correo del Segundo Tutor',
+    'referral_source' => '¿Cómo se enteró de nosotros?',
+    'option_ref_pediatrician' => 'Pediatra',
+    'option_ref_school' => 'Escuela',
+    'option_ref_friend_family' => 'Amigo o Familiar',
+    'option_ref_online' => 'Búsqueda en Línea',
+    'option_ref_other' => 'Otro',
+    'referring_provider' => 'Nombre del Proveedor que Refiere',
+];

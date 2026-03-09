@@ -17,13 +17,11 @@
     let {
         section,
         formData = $bindable({}),
-        locale = 'en',
         errors = {},
         onFieldBlur,
     }: {
         section: Record<string, any>;
         formData: Record<string, any>;
-        locale: string;
         errors: Record<string, string>;
         onFieldBlur?: (fieldKey: string) => void;
     } = $props();
@@ -62,7 +60,6 @@
             <FieldComponent
                 {field}
                 bind:value={formData[field.key]}
-                {locale}
                 error={errors[field.key] ?? ''}
                 onblur={() => onFieldBlur?.(field.key)}
             />
