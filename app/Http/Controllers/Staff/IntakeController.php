@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Actions\ApproveIntake;
+use App\Actions\FlagFormResponse;
 use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\FlagFormRequest;
@@ -10,7 +11,6 @@ use App\Http\Requests\Staff\StoreNoteRequest;
 use App\Models\Intake;
 use App\Models\IntakeFlag;
 use App\Models\IntakeNote;
-use App\Notifications\IntakeFlaggedNotification;
 use App\Services\FormSchemaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -99,21 +99,19 @@ class IntakeController extends Controller
         return back();
     }
 
-    public function flag(Intake $intake, FlagFormRequest $flagFormRequest): RedirectResponse
+    public function flag(Intake $intake, FlagFormRequest $flagFormRequest, FlagFormResponse $flagFormResponse): RedirectResponse
     {
         abort_if($intake->status === IntakeStatus::Active, 422, 'Cannot flag an intake that is still in progress.');
 
-        $intakeFlag = IntakeFlag::query()->create([
-            'intake_id' => $intake->id,
-            'form_response_id' => $flagFormRequest->validated('form_response_id'),
-            'user_id' => auth()->id(),
-            'reason' => $flagFormRequest->validated('reason'),
-        ]);
+        /** @var array{form_response_id: int, reason: string} $validated */
+        $validated = $flagFormRequest->validated();
 
-        $intake->update(['status' => IntakeStatus::Flagged]);
-
-        $intake->load('patient');
-        $intake->patient?->notify(new IntakeFlaggedNotification($intake, $intakeFlag));
+        $flagFormResponse->handle(
+            intake: $intake,
+            formResponseId: $validated['form_response_id'],
+            userId: (int) auth()->id(),
+            reason: $validated['reason'],
+        );
 
         return back();
     }
