@@ -10,9 +10,6 @@ use Illuminate\Database\Seeder;
 
 class PatientSeeder extends Seeder
 {
-    /**
-     * Seed sample patients at different intake stages.
-     */
     public function run(): void
     {
         $this->createCompletedPatient();

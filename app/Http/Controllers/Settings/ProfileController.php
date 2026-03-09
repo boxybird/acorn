@@ -14,9 +14,6 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    /**
-     * Show the user's profile settings page.
-     */
     public function edit(Request $request): Response
     {
         return Inertia::render('settings/Profile', [
@@ -25,9 +22,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
     public function update(ProfileUpdateRequest $profileUpdateRequest): RedirectResponse
     {
         /** @var \App\Models\User $user */
@@ -44,9 +38,6 @@ class ProfileController extends Controller
         return to_route('profile.edit');
     }
 
-    /**
-     * Delete the user's profile.
-     */
     public function destroy(ProfileDeleteRequest $profileDeleteRequest): RedirectResponse
     {
         /** @var \App\Models\User $user */

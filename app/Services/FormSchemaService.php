@@ -62,10 +62,8 @@ class FormSchemaService
             return null;
         }
 
-        /** @var array<string, mixed> $resolved */
-        $resolved = self::resolveRecursive($schema);
-
-        return $resolved;
+        /** @var array<string, mixed> */
+        return self::resolveRecursive($schema);
     }
 
     /**

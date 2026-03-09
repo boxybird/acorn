@@ -63,11 +63,7 @@ class MagicLinkController extends Controller
         $intake = Intake::query()
             ->where('patient_id', $patient->id)
             ->oldest()
-            ->first();
-
-        if (! $intake) {
-            $intake = Intake::query()->create(['patient_id' => $patient->id]);
-        }
+            ->firstOrCreate(['patient_id' => $patient->id]);
 
         $request->session()->put('intake_id', $intake->id);
 

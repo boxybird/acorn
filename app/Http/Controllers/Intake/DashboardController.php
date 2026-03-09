@@ -48,15 +48,19 @@ class DashboardController extends Controller
 
         $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === 'completed'));
 
-        // Time estimate: sum estimated_minutes for non-completed forms
-        $timeEstimate = 0;
-        foreach ($forms as $form) {
-            if ($form['status'] !== 'completed') {
+        $timeEstimate = array_sum(array_map(
+            function (array $form): int {
+                if ($form['status'] === 'completed') {
+                    return 0;
+                }
+
                 /** @var int $minutes */
                 $minutes = $form['estimated_minutes'] ?? 0;
-                $timeEstimate += $minutes;
-            }
-        }
+
+                return $minutes;
+            },
+            $forms,
+        ));
 
         // All intakes for this patient (for child cards)
         $allIntakes = Intake::query()

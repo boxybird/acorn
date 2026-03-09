@@ -64,7 +64,7 @@ class Intake extends Model
 
     public function isCompleted(): bool
     {
-        return $this->status === IntakeStatus::Approved || $this->status === IntakeStatus::SyncedToMonday;
+        return in_array($this->status, [IntakeStatus::Approved, IntakeStatus::SyncedToMonday], true);
     }
 
     public function isActive(): bool

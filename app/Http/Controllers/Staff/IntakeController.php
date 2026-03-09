@@ -34,13 +34,18 @@ class IntakeController extends Controller
             $builder->whereHas('patient', fn ($q) => $q->whereBlindIndex('email', $search));
         }
 
+        /** @var array<string, int> $rawCounts */
+        $rawCounts = Intake::query()
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->all();
+
         /** @var array<string, int> $statusCounts */
         $statusCounts = [];
 
         foreach (IntakeStatus::cases() as $status) {
-            $statusCounts[$status->value] = Intake::query()
-                ->where('status', $status)
-                ->count();
+            $statusCounts[$status->value] = (int) ($rawCounts[$status->value] ?? 0);
         }
 
         return Inertia::render('staff/IntakeList', [
