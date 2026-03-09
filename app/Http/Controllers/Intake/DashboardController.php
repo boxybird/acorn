@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Intake;
 
 use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
+use App\Models\FormResponse;
 use App\Models\Intake;
+use App\Models\IntakeNote;
 use App\Services\FormSchemaService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,87 +22,82 @@ class DashboardController extends Controller
         /** @var int $patientId */
         $patientId = $request->session()->get('patient_id');
 
-        /** @var Intake $intake */
-        $intake = Intake::query()->findOrFail($intakeId);
-
         $schemas = $formSchemaService->all();
 
-        /** @var array<string, FormResponseStatus> $responseStatuses */
-        $responseStatuses = \App\Models\FormResponse::query()
-            ->where('intake_id', $intakeId)
-            ->pluck('status', 'schema_key')
-            ->all();
-
-        $forms = array_map(function (array $schema) use ($responseStatuses): array {
-            /** @var string $key */
-            $key = $schema['key'];
-
-            /** @var string $titleKey */
-            $titleKey = $schema['title'];
-
-            return [
-                'key' => $key,
-                'title' => __($titleKey),
-                'icon' => $schema['icon'] ?? null,
-                'estimated_minutes' => $schema['estimated_minutes'] ?? null,
-                'status' => $responseStatuses[$key] ?? FormResponseStatus::NotStarted,
-            ];
-        }, $schemas);
-
-        $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === FormResponseStatus::Completed));
-
-        $timeEstimate = array_sum(array_map(
-            function (array $form): int {
-                if ($form['status'] === FormResponseStatus::Completed) {
-                    return 0;
-                }
-
-                /** @var int $minutes */
-                $minutes = $form['estimated_minutes'] ?? 0;
-
-                return $minutes;
-            },
-            $forms,
-        ));
-
-        // All intakes for this patient (for child cards)
         $allIntakes = Intake::query()
             ->where('patient_id', $patientId)
-            ->withCount([
-                'formResponses as completed_forms_count' => function ($query): void {
-                    $query->where('status', FormResponseStatus::Completed);
-                },
-            ])
+            ->with(['flags' => function ($query): void {
+                $query->with('formResponse')->whereNull('resolved_at');
+            }])
             ->oldest()
-            ->get()
-            ->map(function (Intake $intake) use ($intakeId): array {
-                /** @var int $completedCount */
-                $completedCount = $intake->getAttribute('completed_forms_count');
+            ->get();
+
+        /** @var list<array<string, mixed>> $intakes */
+        $intakes = $allIntakes->map(function (Intake $intake) use ($schemas, $intakeId): array {
+            /** @var array<string, FormResponseStatus> $responseStatuses */
+            $responseStatuses = FormResponse::query()
+                ->where('intake_id', $intake->id)
+                ->pluck('status', 'schema_key')
+                ->all();
+
+            $forms = array_map(function (array $schema) use ($responseStatuses): array {
+                /** @var string $key */
+                $key = $schema['key'];
+
+                /** @var string $titleKey */
+                $titleKey = $schema['title'];
 
                 return [
-                    'id' => $intake->id,
-                    'child_name' => $intake->child_name,
-                    'status' => $intake->status,
-                    'completed_forms_count' => $completedCount,
-                    'is_current' => $intake->id === $intakeId,
+                    'key' => $key,
+                    'title' => __($titleKey),
+                    'icon' => $schema['icon'] ?? null,
+                    'estimated_minutes' => $schema['estimated_minutes'] ?? null,
+                    'status' => $responseStatuses[$key] ?? FormResponseStatus::NotStarted,
                 ];
-            })
-            ->all();
+            }, $schemas);
 
-        return Inertia::render('intake/Dashboard', [
-            'forms' => $forms,
-            'progress' => [
-                'completed' => $completed,
-                'total' => count($forms),
-            ],
-            'intake' => [
+            $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === FormResponseStatus::Completed));
+
+            $timeEstimate = array_sum(array_map(
+                function (array $form): int {
+                    if ($form['status'] === FormResponseStatus::Completed) {
+                        return 0;
+                    }
+
+                    /** @var int $minutes */
+                    $minutes = $form['estimated_minutes'] ?? 0;
+
+                    return $minutes;
+                },
+                $forms,
+            ));
+
+            return [
                 'id' => $intake->id,
                 'child_name' => $intake->child_name,
-            ],
-            'allIntakes' => array_values($allIntakes),
-            'timeEstimate' => $timeEstimate,
-            'flags' => $intake->flags()->with('formResponse')->whereNull('resolved_at')->get(),
-            'notes' => $intake->notes()->with(['user', 'patient'])->latest()->get(),
+                'status' => $intake->status,
+                'is_current' => $intake->id === $intakeId,
+                'forms' => $forms,
+                'progress' => [
+                    'completed' => $completed,
+                    'total' => count($forms),
+                ],
+                'time_estimate' => $timeEstimate,
+                'flags' => $intake->flags,
+            ];
+        })->all();
+
+        // Notes across all patient intakes
+        $intakeIds = $allIntakes->pluck('id');
+        $notes = IntakeNote::query()
+            ->whereIn('intake_id', $intakeIds)
+            ->with(['user', 'patient'])
+            ->latest()
+            ->get();
+
+        return Inertia::render('intake/Dashboard', [
+            'intakes' => $intakes,
+            'notes' => $notes,
         ]);
     }
 }

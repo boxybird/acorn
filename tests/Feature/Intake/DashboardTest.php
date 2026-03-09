@@ -7,7 +7,7 @@ use App\Models\IntakeNote;
 use App\Models\Patient;
 use App\Models\User;
 
-test('dashboard shows all form sections with status', function (): void {
+test('dashboard provides per-intake data with forms and progress', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);
 
@@ -16,29 +16,16 @@ test('dashboard shows all form sections with status', function (): void {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('intake/Dashboard')
-            ->has('forms')
-            ->has('progress')
+            ->has('intakes', 1)
+            ->has('intakes.0.forms')
+            ->has('intakes.0.progress')
+            ->has('intakes.0.time_estimate')
+            ->has('intakes.0.flags')
+            ->where('intakes.0.is_current', true)
         );
 });
 
-test('dashboard reflects completed sections', function (): void {
-    $patient = Patient::factory()->create();
-    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
-    FormResponse::factory()->completed()->create([
-        'intake_id' => $intake->id,
-        'schema_key' => 'demographics',
-    ]);
-
-    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
-        ->get(route('intake.dashboard'))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('intake/Dashboard')
-            ->where('progress.completed', 1)
-        );
-});
-
-test('dashboard provides time estimate from incomplete forms', function (): void {
+test('dashboard reflects completed sections per intake', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);
     FormResponse::factory()->completed()->create([
@@ -51,12 +38,28 @@ test('dashboard provides time estimate from incomplete forms', function (): void
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('intake/Dashboard')
-            ->has('timeEstimate')
-            ->where('timeEstimate', fn ($value): bool => $value > 0)
+            ->where('intakes.0.progress.completed', 1)
         );
 });
 
-test('dashboard provides all intakes for multi-intake patients', function (): void {
+test('dashboard provides time estimate per intake from incomplete forms', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+    FormResponse::factory()->completed()->create([
+        'intake_id' => $intake->id,
+        'schema_key' => 'demographics',
+    ]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->get(route('intake.dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('intake/Dashboard')
+            ->where('intakes.0.time_estimate', fn ($value): bool => $value > 0)
+        );
+});
+
+test('dashboard provides multiple intakes for multi-intake patients', function (): void {
     $patient = Patient::factory()->create();
     $intake1 = Intake::factory()->create(['patient_id' => $patient->id, 'child_name' => 'Liam']);
     Intake::factory()->create(['patient_id' => $patient->id, 'child_name' => 'Emma']);
@@ -66,31 +69,19 @@ test('dashboard provides all intakes for multi-intake patients', function (): vo
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('intake/Dashboard')
-            ->has('allIntakes', 2)
-            ->where('allIntakes.0.child_name', 'Liam')
-            ->where('allIntakes.0.is_current', true)
-            ->where('allIntakes.0.completed_forms_count', 0)
-            ->has('allIntakes.0.id')
-            ->has('allIntakes.0.status')
-            ->where('allIntakes.1.child_name', 'Emma')
-            ->where('allIntakes.1.is_current', false)
+            ->has('intakes', 2)
+            ->where('intakes.0.child_name', 'Liam')
+            ->where('intakes.0.is_current', true)
+            ->has('intakes.0.forms')
+            ->has('intakes.0.progress')
+            ->where('intakes.1.child_name', 'Emma')
+            ->where('intakes.1.is_current', false)
+            ->has('intakes.1.forms')
+            ->has('intakes.1.progress')
         );
 });
 
-test('dashboard provides single intake for single-intake patients', function (): void {
-    $patient = Patient::factory()->create();
-    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
-
-    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
-        ->get(route('intake.dashboard'))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('intake/Dashboard')
-            ->has('allIntakes', 1)
-        );
-});
-
-test('dashboard includes unresolved flags with form response', function (): void {
+test('dashboard includes unresolved flags per intake', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);
     $formResponse = FormResponse::factory()->create([
@@ -112,13 +103,13 @@ test('dashboard includes unresolved flags with form response', function (): void
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('intake/Dashboard')
-            ->has('flags', 1)
-            ->where('flags.0.reason', 'Missing date of birth')
-            ->has('flags.0.form_response')
+            ->has('intakes.0.flags', 1)
+            ->where('intakes.0.flags.0.reason', 'Missing date of birth')
+            ->has('intakes.0.flags.0.form_response')
         );
 });
 
-test('dashboard includes notes with user and patient relations', function (): void {
+test('dashboard includes notes at top level', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);
     $user = User::factory()->create();
