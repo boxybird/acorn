@@ -10,6 +10,7 @@ use App\Jobs\SyncIntakeToMonday;
 use App\Models\Intake;
 use App\Models\IntakeFlag;
 use App\Models\IntakeNote;
+use App\Notifications\IntakeFlaggedNotification;
 use App\Services\FormSchemaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -102,7 +103,7 @@ class IntakeController extends Controller
 
     public function flag(Intake $intake, FlagFormRequest $flagFormRequest): RedirectResponse
     {
-        IntakeFlag::query()->create([
+        $intakeFlag = IntakeFlag::query()->create([
             'intake_id' => $intake->id,
             'form_response_id' => $flagFormRequest->validated('form_response_id'),
             'user_id' => auth()->id(),
@@ -110,6 +111,9 @@ class IntakeController extends Controller
         ]);
 
         $intake->update(['status' => IntakeStatus::Flagged]);
+
+        $intake->load('patient');
+        $intake->patient?->notify(new IntakeFlaggedNotification($intake, $intakeFlag));
 
         return back();
     }
