@@ -6,3 +6,8 @@ parameters:
         - app/
 
     level: 9
+
+    ignoreErrors:
+        -
+            identifier: trait.unused
+            path: app/Concerns/HasEncryptedPhi.php
