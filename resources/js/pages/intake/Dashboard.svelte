@@ -8,6 +8,7 @@
     import IntakeHeader from '@/components/intake/IntakeHeader.svelte';
     import { show } from '@/routes/intake/form';
     import { choose, newMethod as create } from '@/routes/intake/select';
+    import { store as storeNote } from '@/routes/intake/notes';
 
     type FormItem = {
         key: string;
@@ -91,7 +92,7 @@
     const noteForm = useForm({ body: '' });
 
     function submitNote(): void {
-        $noteForm.post('/intake/notes', {
+        $noteForm.post(storeNote.url(), {
             onSuccess: () => $noteForm.reset(),
         });
     }

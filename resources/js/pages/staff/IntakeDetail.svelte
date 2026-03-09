@@ -6,6 +6,9 @@
     import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
     import { Separator } from '@/components/ui/separator';
     import AppSidebarLayout from '@/layouts/app/AppSidebarLayout.svelte';
+    import { approve, flag, pdf } from '@/routes/staff/intakes';
+    import { resolve } from '@/routes/staff/intakes/flags';
+    import { store as storeNote } from '@/routes/staff/intakes/notes';
 
     type Patient = {
         id: number;
@@ -101,11 +104,11 @@
     }
 
     function submitApprove(): void {
-        $approveForm.post(`/staff/intakes/${intake.id}/approve`);
+        $approveForm.post(approve.url(intake.id));
     }
 
     function submitNote(): void {
-        $noteForm.post(`/staff/intakes/${intake.id}/notes`, {
+        $noteForm.post(storeNote.url(intake.id), {
             onSuccess: () => $noteForm.reset(),
         });
     }
@@ -122,7 +125,7 @@
     }
 
     function submitFlag(): void {
-        $flagForm.post(`/staff/intakes/${intake.id}/flag`, {
+        $flagForm.post(flag.url(intake.id), {
             onSuccess: () => {
                 flaggingFormId = null;
                 $flagForm.reset();
@@ -131,7 +134,7 @@
     }
 
     function resolveFlag(flagId: number): void {
-        router.post(`/staff/intakes/${intake.id}/flags/${flagId}/resolve`);
+        router.post(resolve.url({ intake: intake.id, intakeFlag: flagId }));
     }
 
     function getNoteAuthor(note: NoteItem): { name: string; role: string } {
@@ -186,7 +189,7 @@
                 </Button>
                 <Button variant="outline" asChild>
                     {#snippet children(props)}
-                        <a href="/staff/intakes/{intake.id}/pdf" {...props}>Export PDF</a>
+                        <a href={pdf.url(intake.id)} {...props}>Export PDF</a>
                     {/snippet}
                 </Button>
             </div>

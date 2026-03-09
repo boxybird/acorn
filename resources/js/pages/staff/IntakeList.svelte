@@ -3,6 +3,7 @@
     import { Badge } from '@/components/ui/badge';
     import Input from '@/components/ui/input/Input.svelte';
     import AppSidebarLayout from '@/layouts/app/AppSidebarLayout.svelte';
+    import { index, show } from '@/routes/staff/intakes';
 
     type IntakeItem = {
         id: number;
@@ -63,7 +64,7 @@
             params.status = filters.status;
         }
 
-        router.get('/staff/intakes', params, { preserveState: true });
+        router.get(index.url(), params, { preserveState: true });
     }
 
     function handleSearchKeydown(event: KeyboardEvent): void {
@@ -80,7 +81,7 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <nav class="flex flex-wrap gap-2">
                 <Link
-                    href="/staff/intakes{filters.search ? `?search=${encodeURIComponent(filters.search)}` : ''}"
+                    href={index.url(filters.search ? { query: { search: filters.search } } : undefined)}
                     class="inline-flex"
                 >
                     <Badge variant={!filters.status ? 'default' : 'outline'}>
@@ -89,7 +90,7 @@
                 </Link>
                 {#each Object.entries(statusCounts) as [status, count] (status)}
                     <Link
-                        href="/staff/intakes?status={status}{filters.search ? `&search=${encodeURIComponent(filters.search)}` : ''}"
+                        href={index.url({ query: { status, ...(filters.search ? { search: filters.search } : {}) } })}
                         class="inline-flex"
                     >
                         <Badge variant={filters.status === status ? (statusConfig[status]?.variant ?? 'outline') : 'outline'}>
@@ -125,7 +126,7 @@
                     {#each intakes.data as intake (intake.id)}
                         <tr class="border-b hover:bg-muted/30">
                             <td class="px-4 py-3">
-                                <Link href="/staff/intakes/{intake.id}" class="font-medium text-primary hover:underline">
+                                <Link href={show.url(intake.id)} class="font-medium text-primary hover:underline">
                                     {intake.child_name ?? '—'}
                                 </Link>
                             </td>
