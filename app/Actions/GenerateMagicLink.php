@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Actions;
 
 use App\Models\Patient;
 use App\Notifications\MagicLinkNotification;
 use Illuminate\Support\Str;
 
-class MagicLinkService
+class GenerateMagicLink
 {
-    public function send(Patient $patient): void
+    public function handle(Patient $patient): void
     {
         $token = Str::random(64);
 
@@ -20,7 +20,7 @@ class MagicLinkService
         $patient->notify(new MagicLinkNotification($token));
     }
 
-    public function sendToEmail(string $email): void
+    public function handleForEmail(string $email): void
     {
         $patient = Patient::query()->whereBlindIndex('email', $email)->first();
 
@@ -28,6 +28,6 @@ class MagicLinkService
             $patient = Patient::query()->create(['email' => $email]);
         }
 
-        $this->send($patient);
+        $this->handle($patient);
     }
 }

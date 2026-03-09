@@ -1,17 +1,17 @@
 <?php
 
+use App\Actions\GenerateMagicLink;
 use App\Models\Patient;
 use App\Notifications\MagicLinkNotification;
-use App\Services\MagicLinkService;
 use Illuminate\Support\Facades\Notification;
 
-test('magic link service generates token and sends notification', function (): void {
+it('generates a magic link for an existing patient', function (): void {
     Notification::fake();
 
     $patient = Patient::factory()->create();
-    $magicLinkService = app(MagicLinkService::class);
 
-    $magicLinkService->send($patient);
+    $generateMagicLink = app(GenerateMagicLink::class);
+    $generateMagicLink->handle($patient);
 
     $patient->refresh();
 
@@ -23,13 +23,13 @@ test('magic link service generates token and sends notification', function (): v
     Notification::assertSentTo($patient, MagicLinkNotification::class);
 });
 
-test('magic link service creates new patient if email not found', function (): void {
+it('creates a patient and sends magic link when email does not exist', function (): void {
     Notification::fake();
 
-    $magicLinkService = app(MagicLinkService::class);
-    $magicLinkService->sendToEmail('new@example.com');
+    $generateMagicLink = app(GenerateMagicLink::class);
+    $generateMagicLink->handleForEmail('newparent@example.com');
 
-    $patient = Patient::query()->whereBlindIndex('email', 'new@example.com')->first();
+    $patient = Patient::query()->whereBlindIndex('email', 'newparent@example.com')->first();
 
     expect($patient)->not->toBeNull()
         ->and($patient->hasValidMagicLink())->toBeTrue();
@@ -37,12 +37,13 @@ test('magic link service creates new patient if email not found', function (): v
     Notification::assertSentTo($patient, MagicLinkNotification::class);
 });
 
-test('magic link service reuses existing patient', function (): void {
+it('sends magic link to existing patient when email exists', function (): void {
     Notification::fake();
 
     Patient::factory()->create(['email' => 'existing@example.com']);
-    $magicLinkService = app(MagicLinkService::class);
-    $magicLinkService->sendToEmail('existing@example.com');
+
+    $generateMagicLink = app(GenerateMagicLink::class);
+    $generateMagicLink->handleForEmail('existing@example.com');
 
     expect(Patient::query()->whereBlindIndex('email', 'existing@example.com')->count())->toBe(1);
 

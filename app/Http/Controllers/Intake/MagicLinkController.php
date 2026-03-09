@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Intake;
 
+use App\Actions\GenerateMagicLink;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Intake\RequestMagicLinkRequest;
 use App\Models\Intake;
 use App\Models\Patient;
-use App\Services\MagicLinkService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,12 +19,12 @@ class MagicLinkController extends Controller
         return Inertia::render('intake/Landing');
     }
 
-    public function requestLink(RequestMagicLinkRequest $requestMagicLinkRequest, MagicLinkService $magicLinkService): RedirectResponse
+    public function requestLink(RequestMagicLinkRequest $requestMagicLinkRequest, GenerateMagicLink $generateMagicLink): RedirectResponse
     {
         /** @var string $email */
         $email = $requestMagicLinkRequest->validated('email');
 
-        $magicLinkService->sendToEmail($email);
+        $generateMagicLink->handleForEmail($email);
 
         return back()->with('status', __('intake.magic_link_sent'));
     }
