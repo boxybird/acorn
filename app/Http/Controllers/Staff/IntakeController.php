@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Staff;
 use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\FlagFormRequest;
+use App\Http\Requests\Staff\StoreNoteRequest;
 use App\Jobs\SyncIntakeToMonday;
 use App\Models\Intake;
 use App\Models\IntakeFlag;
+use App\Models\IntakeNote;
 use App\Services\FormSchemaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -121,6 +123,17 @@ class IntakeController extends Controller
         if ($unresolvedCount === 0) {
             $intake->update(['status' => IntakeStatus::UnderReview]);
         }
+
+        return back();
+    }
+
+    public function storeNote(Intake $intake, StoreNoteRequest $storeNoteRequest): RedirectResponse
+    {
+        IntakeNote::query()->create([
+            'intake_id' => $intake->id,
+            'user_id' => auth()->id(),
+            'body' => $storeNoteRequest->validated('body'),
+        ]);
 
         return back();
     }
