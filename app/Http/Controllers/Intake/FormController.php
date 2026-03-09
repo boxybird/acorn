@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Intake;
 
+use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Jobs\SyncIntakeToMonday;
 use App\Models\FormResponse;
@@ -185,10 +186,14 @@ class FormController extends Controller
             ->where('status', 'completed')
             ->count();
 
-        if ($completedCount >= $totalSchemas && config('services.monday.api_token')) {
+        if ($completedCount >= $totalSchemas) {
             /** @var Intake $intake */
             $intake = Intake::query()->findOrFail($intakeId);
-            SyncIntakeToMonday::dispatch($intake);
+            $intake->update(['status' => IntakeStatus::Submitted]);
+
+            if (config('services.monday.api_token')) {
+                SyncIntakeToMonday::dispatch($intake);
+            }
         }
     }
 }

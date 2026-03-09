@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IntakeStatus;
 use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\Patient;
@@ -154,6 +155,64 @@ test('completing non-child form does not change intake child_name', function ():
 
     $intake->refresh();
     expect($intake->child_name)->toBe('Existing Name');
+});
+
+test('completing all forms transitions intake status to submitted', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id, 'status' => IntakeStatus::Active]);
+
+    $otherSchemaKeys = ['insurance', 'child_information', 'medical_history', 'developmental_concerns', 'consent'];
+
+    foreach ($otherSchemaKeys as $otherSchemaKey) {
+        FormResponse::factory()->completed()->create([
+            'intake_id' => $intake->id,
+            'schema_key' => $otherSchemaKey,
+        ]);
+    }
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->post(route('intake.form.complete', 'demographics'), [
+            'data' => [
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'phone' => '505-555-1234',
+                'email' => 'jane@example.com',
+                'address' => '123 Main St, Albuquerque, NM 87101',
+                'preferred_language' => 'en',
+                'referral_source' => 'pediatrician',
+            ],
+        ])
+        ->assertRedirect(route('intake.form.completed', 'demographics'));
+
+    $intake->refresh();
+    expect($intake->status)->toBe(IntakeStatus::Submitted);
+});
+
+test('completing some forms does not transition intake status', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id, 'status' => IntakeStatus::Active]);
+
+    FormResponse::factory()->completed()->create([
+        'intake_id' => $intake->id,
+        'schema_key' => 'insurance',
+    ]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->post(route('intake.form.complete', 'demographics'), [
+            'data' => [
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'phone' => '505-555-1234',
+                'email' => 'jane@example.com',
+                'address' => '123 Main St, Albuquerque, NM 87101',
+                'preferred_language' => 'en',
+                'referral_source' => 'pediatrician',
+            ],
+        ])
+        ->assertRedirect(route('intake.form.completed', 'demographics'));
+
+    $intake->refresh();
+    expect($intake->status)->toBe(IntakeStatus::Active);
 });
 
 test('completion page shows completed form with next form', function (): void {
