@@ -7,10 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SyncIntakeToMonday;
 use App\Models\FormResponse;
 use App\Models\Intake;
+use App\Models\User;
+use App\Notifications\CorrectionSubmittedNotification;
 use App\Services\FormSchemaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -152,6 +155,15 @@ class FormController extends Controller
 
         if ($schemaKey === 'child_information') {
             $this->extractChildName($intakeId, $validatedData);
+        }
+
+        $intake = Intake::query()->findOrFail($intakeId);
+
+        if ($intake->status === IntakeStatus::Flagged) {
+            $intake->update(['status' => IntakeStatus::CorrectionSubmitted]);
+
+            $staffUsers = User::all();
+            Notification::send($staffUsers, new CorrectionSubmittedNotification($intake));
         }
 
         $this->checkAndDispatchSync($intakeId, $formSchemaService);
