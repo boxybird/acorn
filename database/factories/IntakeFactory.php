@@ -44,10 +44,24 @@ class IntakeFactory extends Factory
         ]);
     }
 
+    public function underReview(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => IntakeStatus::UnderReview,
+        ]);
+    }
+
     public function correctionSubmitted(): static
     {
         return $this->state(fn (): array => [
             'status' => IntakeStatus::CorrectionSubmitted,
+        ]);
+    }
+
+    public function syncedToMonday(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => IntakeStatus::SyncedToMonday,
         ]);
     }
 

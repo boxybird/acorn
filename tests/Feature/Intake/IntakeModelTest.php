@@ -39,6 +39,13 @@ test('intake completed state works', function (): void {
         ->and($intake->isActive())->toBeFalse();
 });
 
+test('intake with synced to monday status is completed', function (): void {
+    $intake = Intake::factory()->create(['status' => IntakeStatus::SyncedToMonday]);
+
+    expect($intake->isCompleted())->toBeTrue()
+        ->and($intake->isActive())->toBeFalse();
+});
+
 test('intake without child name state works', function (): void {
     $intake = Intake::factory()->withoutChildName()->create();
 
