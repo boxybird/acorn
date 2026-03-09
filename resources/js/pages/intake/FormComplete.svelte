@@ -32,7 +32,6 @@
 
 <div class="flex min-h-screen flex-col bg-background">
     <IntakeHeader
-        {progress}
         breadcrumbs={[
             { label: t.dashboard, href: dashboard.url() },
             { label: completedForm.title },

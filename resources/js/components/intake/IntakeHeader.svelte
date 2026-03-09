@@ -9,21 +9,13 @@
     };
 
     let {
-        progress,
         breadcrumbs = [],
     }: {
-        progress: { completed: number; total: number };
         breadcrumbs?: Breadcrumb[];
     } = $props();
 
     let t = $derived($page.props.translations as Record<string, string>);
     let locale = $derived($page.props.locale as string);
-
-    const circumference = 2 * Math.PI * 8;
-    let progressPercent = $derived(
-        progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0,
-    );
-    let strokeDashoffset = $derived(circumference - (progressPercent / 100) * circumference);
 </script>
 
 <header class="sticky top-0 z-40 border-b bg-background">
@@ -54,23 +46,8 @@
             {/if}
         </div>
 
-        <!-- Right: Progress + Locale -->
+        <!-- Right: Locale -->
         <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-                <svg class="size-5 -rotate-90" viewBox="0 0 20 20">
-                    <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="2" class="text-border" />
-                    <circle
-                        cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="2"
-                        class="text-primary transition-all duration-500"
-                        stroke-dasharray={circumference}
-                        stroke-dashoffset={strokeDashoffset}
-                        stroke-linecap="round"
-                    />
-                </svg>
-                <span class="hidden text-xs text-muted-foreground sm:inline">
-                    {progress.completed} {t.of} {progress.total} {t.complete}
-                </span>
-            </div>
             <LocaleToggle {locale} />
         </div>
     </div>
