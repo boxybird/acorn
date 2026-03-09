@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Staff\IntakeController;
 use App\Http\Controllers\Staff\IntakePdfController;
-use App\Http\Controllers\Staff\PatientController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -21,8 +20,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::post('/intakes/{intake}/flags/{intakeFlag}/resolve', [IntakeController::class, 'resolveFlag'])->name('intakes.flags.resolve');
         Route::post('/intakes/{intake}/notes', [IntakeController::class, 'storeNote'])->name('intakes.notes.store');
         Route::get('/intakes/{intake}/pdf', IntakePdfController::class)->name('intakes.pdf');
-        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
-        Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
     });
 });
 
