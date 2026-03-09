@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Concerns\HasEncryptedPhi;
+use App\Enums\IntakeStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property IntakeStatus $status
  * @property \Illuminate\Support\Carbon|null $synced_at
  */
 class Intake extends Model
@@ -50,12 +52,12 @@ class Intake extends Model
 
     public function isCompleted(): bool
     {
-        return $this->status === 'completed';
+        return $this->status === IntakeStatus::Approved || $this->status === IntakeStatus::SyncedToMonday;
     }
 
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->status === IntakeStatus::Active;
     }
 
     /**
@@ -64,6 +66,7 @@ class Intake extends Model
     protected function casts(): array
     {
         return [
+            'status' => IntakeStatus::class,
             'synced_at' => 'datetime',
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IntakeStatus;
 use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\Patient;
@@ -22,11 +23,11 @@ test('patient has many intakes', function (): void {
 test('intake has child_name and status', function (): void {
     $intake = Intake::factory()->create([
         'child_name' => 'Alex',
-        'status' => 'active',
+        'status' => IntakeStatus::Active,
     ]);
 
     expect($intake->child_name)->toBe('Alex')
-        ->and($intake->status)->toBe('active')
+        ->and($intake->status)->toBe(IntakeStatus::Active)
         ->and($intake->isActive())->toBeTrue()
         ->and($intake->isCompleted())->toBeFalse();
 });
