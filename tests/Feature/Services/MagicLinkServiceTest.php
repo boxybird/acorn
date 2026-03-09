@@ -29,7 +29,7 @@ test('magic link service creates new patient if email not found', function (): v
     $magicLinkService = app(MagicLinkService::class);
     $magicLinkService->sendToEmail('new@example.com');
 
-    $patient = Patient::query()->where('email', 'new@example.com')->first();
+    $patient = Patient::query()->whereBlindIndex('email', 'new@example.com')->first();
 
     expect($patient)->not->toBeNull()
         ->and($patient->hasValidMagicLink())->toBeTrue();
@@ -44,8 +44,8 @@ test('magic link service reuses existing patient', function (): void {
     $magicLinkService = app(MagicLinkService::class);
     $magicLinkService->sendToEmail('existing@example.com');
 
-    expect(Patient::query()->where('email', 'existing@example.com')->count())->toBe(1);
+    expect(Patient::query()->whereBlindIndex('email', 'existing@example.com')->count())->toBe(1);
 
-    $existing = Patient::query()->where('email', 'existing@example.com')->first();
+    $existing = Patient::query()->whereBlindIndex('email', 'existing@example.com')->first();
     expect($existing->hasValidMagicLink())->toBeTrue();
 });

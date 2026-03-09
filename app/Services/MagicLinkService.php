@@ -22,9 +22,11 @@ class MagicLinkService
 
     public function sendToEmail(string $email): void
     {
-        $patient = Patient::query()->firstOrCreate(
-            ['email' => $email],
-        );
+        $patient = Patient::query()->whereBlindIndex('email', $email)->first();
+
+        if (! $patient instanceof Patient) {
+            $patient = Patient::query()->create(['email' => $email]);
+        }
 
         $this->send($patient);
     }

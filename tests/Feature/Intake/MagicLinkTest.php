@@ -13,7 +13,7 @@ test('magic link can be requested with valid email', function (): void {
         ->assertRedirect()
         ->assertSessionHas('status');
 
-    $this->assertDatabaseHas('patients', ['email' => 'parent@example.com']);
+    expect(Patient::query()->whereBlindIndex('email', 'parent@example.com')->exists())->toBeTrue();
 });
 
 test('magic link request validates email', function (): void {

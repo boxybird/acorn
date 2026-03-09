@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEncryptedPhi;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +13,8 @@ use Illuminate\Notifications\Notifiable;
  */
 class Patient extends Model
 {
+    use HasEncryptedPhi;
+
     /** @use HasFactory<\Database\Factories\PatientFactory> */
     use HasFactory;
 
@@ -27,6 +30,12 @@ class Patient extends Model
         'magic_link_token',
         'magic_link_expires_at',
     ];
+
+    /** @var list<string> */
+    protected array $encryptedPhi = ['email', 'name'];
+
+    /** @var list<string> */
+    protected array $blindIndexed = ['email'];
 
     /**
      * @return array<string, string>

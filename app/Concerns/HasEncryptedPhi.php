@@ -23,6 +23,7 @@ trait HasEncryptedPhi
     public static function bootHasEncryptedPhi(): void
     {
         static::saving(function (Model $model): void {
+            /** @var Model&HasEncryptedPhi $model */
             /** @var list<string> $blindIndexed */
             $blindIndexed = $model->blindIndexed ?? [];
 
