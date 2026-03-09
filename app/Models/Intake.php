@@ -56,6 +56,12 @@ class Intake extends Model
         return $this->hasMany(IntakeNote::class);
     }
 
+    /** @return HasMany<IntakeFlag, $this> */
+    public function flags(): HasMany
+    {
+        return $this->hasMany(IntakeFlag::class);
+    }
+
     public function isCompleted(): bool
     {
         return $this->status === IntakeStatus::Approved || $this->status === IntakeStatus::SyncedToMonday;

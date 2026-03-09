@@ -43,6 +43,12 @@ class FormResponse extends Model
         return $this->hasMany(Signature::class);
     }
 
+    /** @return HasMany<IntakeFlag, $this> */
+    public function flags(): HasMany
+    {
+        return $this->hasMany(IntakeFlag::class);
+    }
+
     public function isCompleted(): bool
     {
         return $this->status === 'completed';
