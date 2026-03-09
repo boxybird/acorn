@@ -167,7 +167,9 @@ class FormController extends Controller
         $childName = trim(($firstName ?? '').' '.($lastName ?? ''));
 
         if ($childName !== '') {
-            Intake::query()->where('id', $intakeId)->update(['child_name' => $childName]);
+            /** @var Intake $intake */
+            $intake = Intake::query()->findOrFail($intakeId);
+            $intake->update(['child_name' => $childName]);
         }
     }
 

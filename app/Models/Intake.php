@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasEncryptedPhi;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,11 +13,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Intake extends Model
 {
+    use HasEncryptedPhi;
+
     /** @use HasFactory<\Database\Factories\IntakeFactory> */
     use HasFactory;
 
     /** @var list<string> */
     protected $fillable = ['patient_id', 'child_name', 'status', 'sync_status', 'synced_at'];
+
+    /** @var list<string> */
+    protected array $encryptedPhi = ['child_name'];
 
     /** @return BelongsTo<Patient, $this> */
     public function patient(): BelongsTo
