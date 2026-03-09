@@ -13,7 +13,7 @@ class DemoMode
      */
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless(config('demo.enabled'), 403);
+        abort_unless((bool) config('demo.enabled'), 403);
 
         return $next($request);
     }
