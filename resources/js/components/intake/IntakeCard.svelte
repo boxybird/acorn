@@ -78,17 +78,13 @@
         }
     }
 
-    function statusIcon(status: string): string {
-        if (status === 'completed') return 'check';
-        if (status === 'in_progress') return 'progress';
-        return 'empty';
-    }
 </script>
 
 <Card class="overflow-hidden transition-all duration-200">
     <!-- Collapsed Header (always visible) -->
     <button
         class="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50"
+        aria-expanded={isExpanded}
         onclick={() => isExpanded = !isExpanded}
     >
         <div class="flex items-center gap-3">
@@ -167,11 +163,11 @@
                         class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50"
                         onclick={() => navigateToForm(form.key)}
                     >
-                        {#if statusIcon(form.status) === 'check'}
+                        {#if form.status === 'completed'}
                             <svg class="size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
                             </svg>
-                        {:else if statusIcon(form.status) === 'progress'}
+                        {:else if form.status === 'in_progress'}
                             <svg class="size-4 shrink-0 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                             </svg>
