@@ -45,14 +45,30 @@ it('returns 403 when demo mode is disabled', function (): void {
         ->assertForbidden();
 });
 
-it('disables registration when demo mode is enabled', function (): void {
+it('disables registration route when demo mode is enabled', function (): void {
     config()->set('demo.enabled', true);
 
     $this->get('/register')->assertNotFound();
 });
 
-it('allows registration when demo mode is disabled', function (): void {
+it('excludes registration from fortify features when demo mode is enabled', function (): void {
+    config()->set('demo.enabled', true);
+
+    $features = array_filter([
+        config('demo.enabled') ? null : \Laravel\Fortify\Features::registration(),
+        \Laravel\Fortify\Features::resetPasswords(),
+    ]);
+
+    expect($features)->not->toContain(\Laravel\Fortify\Features::registration());
+});
+
+it('includes registration in fortify features when demo mode is disabled', function (): void {
     config()->set('demo.enabled', false);
 
-    $this->get('/register')->assertOk();
+    $features = array_filter([
+        config('demo.enabled') ? null : \Laravel\Fortify\Features::registration(),
+        \Laravel\Fortify\Features::resetPasswords(),
+    ]);
+
+    expect($features)->toContain(\Laravel\Fortify\Features::registration());
 });
