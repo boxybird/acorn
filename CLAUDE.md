@@ -304,3 +304,32 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 - You MUST run `composer check` after making any code changes and before committing or pushing. This runs Rector, Pint, PHPStan, and tests in sequence.
 - Do not commit or push code that does not pass `composer check`.
 - If any step in `composer check` fails, fix the issues before proceeding.
+
+## Architecture Conventions
+
+### Actions (`app/Actions/`)
+- One class per business operation, named as `VerbNoun` (e.g., `ApproveIntake`, `FlagFormResponse`)
+- Constructor receives dependencies via injection; single public `handle()` method receives runtime data
+- Create an Action when: business logic beyond CRUD, multiple entry points possible, or has side effects
+- Do NOT create an Action for: simple persistence (controller + Form Request), pure queries, async work (use a Job)
+- A Job can call an Action internally if the Job needs the same business logic
+
+### Enums (`app/Enums/`)
+- Always string-backed with TitleCase keys
+- `label(): string` method for human-readable display
+- Group-query helpers live on the enum (e.g., `staffActionable()`)
+- If you write `=== 'some_status'` anywhere, it should be an enum case
+
+### Traits (`app/Concerns/`)
+- Reusable capabilities for unrelated classes; named `HasX` or `VerbsNoun`
+- Must be used by 2+ unrelated classes — inline if only one consumer
+- Traits must not depend on other traits
+- If classes share a parent, use a base class instead
+
+### Value Objects (`app/ValueObjects/`)
+- Immutable (`readonly` properties), no identity, named as nouns
+- Use when a concept has structure + validation but no database table
+- Convention only — introduce when a clear need arises, not preemptively
+
+### Skills Activation (Architecture)
+- `architecture-review` — Audits code against architecture conventions. Use after completing a feature or before committing to verify patterns are followed.
