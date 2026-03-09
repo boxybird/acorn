@@ -143,8 +143,8 @@ return [
     |
     */
 
-    'features' => array_filter([
-        config('demo.enabled') ? null : Features::registration(),
+    'features' => [
+        Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
@@ -152,6 +152,6 @@ return [
             'confirmPassword' => true,
             // 'window' => 0
         ]),
-    ]),
+    ],
 
 ];

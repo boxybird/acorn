@@ -5,9 +5,9 @@ use App\Http\Controllers\Staff\IntakePdfController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::inertia('/', 'Welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
+Route::get('/', fn () => \Inertia\Inertia::render('Welcome', [
+    'canRegister' => ! config('demo.enabled') && Features::enabled(Features::registration()),
+]))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
