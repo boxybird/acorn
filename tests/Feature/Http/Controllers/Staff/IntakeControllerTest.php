@@ -2,6 +2,7 @@
 
 use App\Enums\IntakeStatus;
 use App\Models\Intake;
+use App\Models\IntakeFlag;
 use App\Models\User;
 
 beforeEach(function (): void {
@@ -91,6 +92,62 @@ it('does not transition non-submitted intakes to under review', function (): voi
     $intake = Intake::factory()->flagged()->create();
 
     $this->get('/staff/intakes/'.$intake->id);
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::Flagged);
+});
+
+it('allows staff to approve an intake', function (): void {
+    $intake = Intake::factory()->underReview()->create();
+
+    $this->post(sprintf('/staff/intakes/%s/approve', $intake->id))
+        ->assertRedirect();
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::Approved);
+});
+
+it('allows staff to flag a form on an intake', function (): void {
+    $intake = Intake::factory()->underReview()->create();
+    $formResponse = $intake->formResponses()->create([
+        'schema_key' => 'demographics',
+        'data' => ['first_name' => 'Jane'],
+        'status' => 'completed',
+    ]);
+
+    $this->post(sprintf('/staff/intakes/%s/flag', $intake->id), [
+        'form_response_id' => $formResponse->id,
+        'reason' => 'Missing last name',
+    ])->assertRedirect();
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::Flagged);
+    expect($intake->flags)->toHaveCount(1);
+    expect($intake->flags->first()->reason)->toBe('Missing last name');
+});
+
+it('allows staff to resolve a flag', function (): void {
+    $intake = Intake::factory()->flagged()->create();
+    $flag = IntakeFlag::factory()->for($intake)->create();
+
+    $this->post(sprintf('/staff/intakes/%s/flags/%s/resolve', $intake->id, $flag->id))
+        ->assertRedirect();
+
+    expect($flag->fresh()->resolved_at)->not->toBeNull();
+});
+
+it('transitions back to under review when all flags resolved', function (): void {
+    $intake = Intake::factory()->flagged()->create();
+    $flag = IntakeFlag::factory()->for($intake)->create();
+
+    $this->post(sprintf('/staff/intakes/%s/flags/%s/resolve', $intake->id, $flag->id));
+
+    expect($intake->fresh()->status)->toBe(IntakeStatus::UnderReview);
+});
+
+it('stays flagged when some flags remain unresolved', function (): void {
+    $intake = Intake::factory()->flagged()->create();
+    $flag1 = IntakeFlag::factory()->for($intake)->create();
+    $flag2 = IntakeFlag::factory()->for($intake)->create();
+
+    $this->post(sprintf('/staff/intakes/%s/flags/%s/resolve', $intake->id, $flag1->id));
 
     expect($intake->fresh()->status)->toBe(IntakeStatus::Flagged);
 });
