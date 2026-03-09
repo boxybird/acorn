@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Enums\FormResponseStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property FormResponseStatus $status
+ */
 class FormResponse extends Model
 {
     /** @use HasFactory<\Database\Factories\FormResponseFactory> */
@@ -22,6 +26,7 @@ class FormResponse extends Model
     {
         return [
             'data' => 'encrypted:array',
+            'status' => FormResponseStatus::class,
         ];
     }
 
@@ -51,6 +56,6 @@ class FormResponse extends Model
 
     public function isCompleted(): bool
     {
-        return $this->status === 'completed';
+        return $this->status === FormResponseStatus::Completed;
     }
 }

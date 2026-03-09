@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\CompleteForm;
+use App\Enums\FormResponseStatus;
 use App\Enums\IntakeStatus;
 use App\Jobs\SyncIntakeToMonday;
 use App\Models\FormResponse;
@@ -26,7 +27,7 @@ it('completes a form response and extracts child name', function (): void {
         ->where('schema_key', 'child_information')
         ->first();
 
-    expect($formResponse->status)->toBe('completed');
+    expect($formResponse->status)->toBe(FormResponseStatus::Completed);
     expect($formResponse->data)->toBe(['child_first_name' => 'Jane', 'child_last_name' => 'Doe']);
     expect($intake->fresh()->child_name)->toBe('Jane Doe');
 });

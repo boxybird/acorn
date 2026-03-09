@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\FormResponseStatus;
 use App\Models\Intake;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,12 +20,12 @@ class FormResponseFactory extends Factory
             'intake_id' => Intake::factory(),
             'schema_key' => 'demographics',
             'data' => ['first_name' => fake()->firstName()],
-            'status' => 'in_progress',
+            'status' => FormResponseStatus::InProgress,
         ];
     }
 
     public function completed(): static
     {
-        return $this->state(fn (): array => ['status' => 'completed']);
+        return $this->state(fn (): array => ['status' => FormResponseStatus::Completed]);
     }
 }

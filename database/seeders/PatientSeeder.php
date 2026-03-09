@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\FormResponseStatus;
 use App\Enums\IntakeStatus;
 use App\Models\FormResponse;
 use App\Models\Intake;
@@ -272,7 +273,7 @@ class PatientSeeder extends Seeder
         FormResponse::factory()->create([
             'intake_id' => $intake->id,
             'schema_key' => 'child_information',
-            'status' => 'in_progress',
+            'status' => FormResponseStatus::InProgress,
             'data' => [
                 'child_first_name' => 'Ethan',
                 'child_last_name' => 'Thompson',

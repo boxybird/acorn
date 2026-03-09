@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Intake;
 
+use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Intake;
 use App\Services\FormSchemaService;
@@ -24,7 +25,7 @@ class DashboardController extends Controller
 
         $schemas = $formSchemaService->all();
 
-        /** @var array<string, string> $responseStatuses */
+        /** @var array<string, FormResponseStatus> $responseStatuses */
         $responseStatuses = \App\Models\FormResponse::query()
             ->where('intake_id', $intakeId)
             ->pluck('status', 'schema_key')
@@ -42,15 +43,15 @@ class DashboardController extends Controller
                 'title' => __($titleKey),
                 'icon' => $schema['icon'] ?? null,
                 'estimated_minutes' => $schema['estimated_minutes'] ?? null,
-                'status' => $responseStatuses[$key] ?? 'not_started',
+                'status' => $responseStatuses[$key] ?? FormResponseStatus::NotStarted,
             ];
         }, $schemas);
 
-        $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === 'completed'));
+        $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === FormResponseStatus::Completed));
 
         $timeEstimate = array_sum(array_map(
             function (array $form): int {
-                if ($form['status'] === 'completed') {
+                if ($form['status'] === FormResponseStatus::Completed) {
                     return 0;
                 }
 
@@ -67,7 +68,7 @@ class DashboardController extends Controller
             ->where('patient_id', $patientId)
             ->withCount([
                 'formResponses as completed_forms_count' => function ($query): void {
-                    $query->where('status', 'completed');
+                    $query->where('status', FormResponseStatus::Completed);
                 },
             ])
             ->oldest()

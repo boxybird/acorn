@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Intake;
 
+use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
 use App\Models\FormResponse;
 use App\Models\Intake;
@@ -51,7 +52,7 @@ class IntakeSelectorController extends Controller
                     'intake_id' => $newIntake->id,
                     'schema_key' => $parentFormResponse->schema_key,
                     'data' => $parentFormResponse->data,
-                    'status' => 'in_progress',
+                    'status' => FormResponseStatus::InProgress,
                 ]);
             }
         }

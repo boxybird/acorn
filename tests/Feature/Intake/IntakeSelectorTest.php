@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\FormResponseStatus;
 use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\Patient;
@@ -56,12 +57,12 @@ test('creating new intake copies demographics and insurance data', function (): 
     $demographics = $newIntake->formResponses()->where('schema_key', 'demographics')->first();
     expect($demographics)->not->toBeNull()
         ->and($demographics->data['first_name'])->toBe('Jane')
-        ->and($demographics->status)->toBe('in_progress');
+        ->and($demographics->status)->toBe(FormResponseStatus::InProgress);
 
     $insurance = $newIntake->formResponses()->where('schema_key', 'insurance')->first();
     expect($insurance)->not->toBeNull()
         ->and($insurance->data['provider'])->toBe('BlueCross')
-        ->and($insurance->status)->toBe('in_progress');
+        ->and($insurance->status)->toBe(FormResponseStatus::InProgress);
 
     // Child-specific forms are NOT copied
     $childInfo = $newIntake->formResponses()->where('schema_key', 'child_information')->first();

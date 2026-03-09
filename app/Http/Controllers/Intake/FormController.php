@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Intake;
 
 use App\Actions\CompleteForm;
+use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
 use App\Models\FormResponse;
 use App\Models\Intake;
@@ -32,7 +33,7 @@ class FormController extends Controller
             ->where('schema_key', $schemaKey)
             ->first();
 
-        /** @var array<string, string> $responseStatuses */
+        /** @var array<string, FormResponseStatus> $responseStatuses */
         $responseStatuses = FormResponse::query()
             ->where('intake_id', $intakeId)
             ->pluck('status', 'schema_key')
@@ -62,11 +63,11 @@ class FormController extends Controller
                         'title' => __($sectionTitleKey),
                     ];
                 }, $sections),
-                'status' => $responseStatuses[$key] ?? 'not_started',
+                'status' => $responseStatuses[$key] ?? FormResponseStatus::NotStarted,
             ];
         }, $allSchemas);
 
-        $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === 'completed'));
+        $completed = count(array_filter($forms, fn (array $form): bool => $form['status'] === FormResponseStatus::Completed));
 
         return Inertia::render('intake/Form', [
             'schema' => $schema,

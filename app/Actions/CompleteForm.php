@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Enums\FormResponseStatus;
 use App\Enums\IntakeStatus;
 use App\Jobs\SyncIntakeToMonday;
 use App\Models\FormResponse;
@@ -24,7 +25,7 @@ class CompleteForm
     {
         $formResponse = FormResponse::query()->updateOrCreate(
             ['intake_id' => $intakeId, 'schema_key' => $schemaKey],
-            ['data' => $data, 'status' => 'completed'],
+            ['data' => $data, 'status' => FormResponseStatus::Completed],
         );
 
         if ($schemaKey === 'child_information') {
@@ -69,7 +70,7 @@ class CompleteForm
         $totalSchemas = count($this->formSchemaService->all());
         $completedCount = FormResponse::query()
             ->where('intake_id', $intakeId)
-            ->where('status', 'completed')
+            ->where('status', FormResponseStatus::Completed)
             ->count();
 
         if ($completedCount >= $totalSchemas) {

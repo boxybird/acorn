@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Intake;
 
+use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
 use App\Models\FormResponse;
 use App\Services\FormSchemaService;
@@ -23,7 +24,7 @@ class FormCompleteController extends Controller
         /** @var int $intakeId */
         $intakeId = $request->session()->get('intake_id');
 
-        /** @var array<string, string> $responseStatuses */
+        /** @var array<string, FormResponseStatus> $responseStatuses */
         $responseStatuses = FormResponse::query()
             ->where('intake_id', $intakeId)
             ->pluck('status', 'schema_key')
@@ -37,7 +38,7 @@ class FormCompleteController extends Controller
         foreach ($allSchemas as $allSchema) {
             /** @var string $key */
             $key = $allSchema['key'];
-            $isCompleted = ($responseStatuses[$key] ?? null) === 'completed';
+            $isCompleted = ($responseStatuses[$key] ?? null) === FormResponseStatus::Completed;
 
             if ($isCompleted) {
                 $completed++;
