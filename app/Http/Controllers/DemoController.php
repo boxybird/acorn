@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Intake;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +19,13 @@ class DemoController extends Controller
         $request->session()->regenerateToken();
 
         $request->session()->put('patient_id', $patient->id);
+
+        $intake = Intake::query()
+            ->where('patient_id', $patient->id)
+            ->oldest()
+            ->firstOrCreate(['patient_id' => $patient->id]);
+
+        $request->session()->put('intake_id', $intake->id);
 
         return redirect()->route('intake.dashboard');
     }

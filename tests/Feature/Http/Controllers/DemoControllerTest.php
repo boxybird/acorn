@@ -14,7 +14,8 @@ it('logs in as a patient and redirects to intake dashboard', function (): void {
 
     $response->assertRedirect(route('intake.dashboard'));
 
-    expect(session('patient_id'))->toBe($patient->id);
+    expect(session('patient_id'))->toBe($patient->id)
+        ->and(session('intake_id'))->not->toBeNull();
 });
 
 it('logs in as a staff user and redirects to dashboard', function (): void {
