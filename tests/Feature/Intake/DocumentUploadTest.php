@@ -77,6 +77,25 @@ test('document upload prevents access to other intake form responses', function 
     expect(Document::query()->count())->toBe(0);
 });
 
+test('deleting a document from another intake returns 403', function (): void {
+    Storage::fake('local');
+
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+    $otherIntake = Intake::factory()->create();
+    $otherFormResponse = FormResponse::factory()->create(['intake_id' => $otherIntake->id]);
+    $document = Document::factory()->create([
+        'intake_id' => $otherIntake->id,
+        'form_response_id' => $otherFormResponse->id,
+    ]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->delete(route('intake.documents.destroy', $document))
+        ->assertForbidden();
+
+    expect(Document::query()->count())->toBe(1);
+});
+
 test('document can be deleted by owner', function (): void {
     Storage::fake('local');
 

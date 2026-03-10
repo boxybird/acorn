@@ -44,6 +44,36 @@ test('form schema service extracts conditional validation rules', function (): v
     expect($rules)->toHaveKey('secondary_guardian_name');
 });
 
+test('validationRules returns empty array for unknown schema key', function (): void {
+    $formSchemaService = app(FormSchemaService::class);
+
+    expect($formSchemaService->validationRules('nonexistent'))->toBe([]);
+});
+
+test('getResolved returns resolved translations', function (): void {
+    $formSchemaService = app(FormSchemaService::class);
+    $resolved = $formSchemaService->getResolved('demographics');
+
+    expect($resolved)->not->toBeNull()
+        ->and($resolved['key'])->toBe('demographics')
+        ->and($resolved['title'])->toBeString()
+        ->and($resolved['title'])->not->toStartWith('forms/');
+});
+
+test('getResolved returns null for unknown key', function (): void {
+    $formSchemaService = app(FormSchemaService::class);
+
+    expect($formSchemaService->getResolved('nonexistent'))->toBeNull();
+});
+
+test('loadSchemas returns empty when forms directory does not exist', function (): void {
+    app()->useConfigPath('/nonexistent/path');
+
+    $formSchemaService = new FormSchemaService;
+
+    expect($formSchemaService->all())->toBe([]);
+});
+
 test('schemas are returned ordered', function (): void {
     $formSchemaService = app(FormSchemaService::class);
     $schemas = $formSchemaService->all();

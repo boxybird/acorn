@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\Document;
 use App\Models\FormResponse;
 use App\Models\Intake;
+use App\Models\IntakeFlag;
+use App\Models\Signature;
 use Illuminate\Support\Facades\DB;
 
 test('form response belongs to an intake', function (): void {
@@ -37,4 +40,37 @@ test('form response can be marked completed', function (): void {
     $formResponse = FormResponse::factory()->completed()->create();
 
     expect($formResponse->isCompleted())->toBeTrue();
+});
+
+test('form response has many documents', function (): void {
+    $formResponse = FormResponse::factory()->create();
+    Document::factory()->count(2)->create([
+        'intake_id' => $formResponse->intake_id,
+        'form_response_id' => $formResponse->id,
+    ]);
+
+    expect($formResponse->documents)->toHaveCount(2)
+        ->each->toBeInstanceOf(Document::class);
+});
+
+test('form response has many signatures', function (): void {
+    $formResponse = FormResponse::factory()->create();
+    Signature::factory()->count(2)->create([
+        'intake_id' => $formResponse->intake_id,
+        'form_response_id' => $formResponse->id,
+    ]);
+
+    expect($formResponse->signatures)->toHaveCount(2)
+        ->each->toBeInstanceOf(Signature::class);
+});
+
+test('form response has many flags', function (): void {
+    $formResponse = FormResponse::factory()->create();
+    IntakeFlag::factory()->count(2)->create([
+        'intake_id' => $formResponse->intake_id,
+        'form_response_id' => $formResponse->id,
+    ]);
+
+    expect($formResponse->flags)->toHaveCount(2)
+        ->each->toBeInstanceOf(IntakeFlag::class);
 });

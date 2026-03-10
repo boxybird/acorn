@@ -215,6 +215,33 @@ test('completing some forms does not transition intake status', function (): voi
     expect($intake->status)->toBe(IntakeStatus::Active);
 });
 
+test('save returns 404 for unknown schema', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->put(route('intake.form.save', 'nonexistent'), ['data' => ['foo' => 'bar']])
+        ->assertNotFound();
+});
+
+test('complete returns 404 for unknown schema', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->post(route('intake.form.complete', 'nonexistent'), ['data' => []])
+        ->assertNotFound();
+});
+
+test('completion page returns 404 for unknown schema', function (): void {
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->get(route('intake.form.completed', 'nonexistent'))
+        ->assertNotFound();
+});
+
 test('completion page shows completed form with next form', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);

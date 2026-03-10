@@ -31,6 +31,38 @@ it('notifies staff and transitions status when parent completes a form on a flag
     Notification::assertSentTo($staffUser, CorrectionSubmittedNotification::class);
 });
 
+it('renders toMail with child name', function (): void {
+    $intake = Intake::factory()->create(['child_name' => 'Liam Chen']);
+    $notification = new CorrectionSubmittedNotification($intake);
+    $staffUser = User::factory()->create();
+
+    $mailMessage = $notification->toMail($staffUser);
+
+    expect($mailMessage->subject)->toBe('Intake Updated: Liam Chen')
+        ->and($mailMessage->greeting)->toBe('Hello!')
+        ->and($mailMessage->introLines[0])->toContain("Liam Chen's intake has been updated with corrections.")
+        ->and($mailMessage->actionText)->toBe('Review Intake')
+        ->and($mailMessage->actionUrl)->toContain('/staff/intakes/'.$intake->id);
+});
+
+it('renders toMail with Unknown when child_name is null', function (): void {
+    $intake = Intake::factory()->withoutChildName()->create();
+    $notification = new CorrectionSubmittedNotification($intake);
+    $staffUser = User::factory()->create();
+
+    $mailMessage = $notification->toMail($staffUser);
+
+    expect($mailMessage->subject)->toBe('Intake Updated: Unknown')
+        ->and($mailMessage->introLines[0])->toContain("Unknown's intake has been updated with corrections.");
+});
+
+it('returns mail via channel', function (): void {
+    $intake = Intake::factory()->create();
+    $notification = new CorrectionSubmittedNotification($intake);
+
+    expect($notification->via(new User))->toBe(['mail']);
+});
+
 it('does not transition or notify when completing a form on an active intake', function (): void {
     Notification::fake();
 

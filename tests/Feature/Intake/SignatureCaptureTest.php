@@ -42,6 +42,24 @@ test('signature capture validates required fields', function (): void {
         ->assertUnprocessable();
 });
 
+test('signature capture rejects invalid base64 data', function (): void {
+    Storage::fake('local');
+
+    $patient = Patient::factory()->create();
+    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
+    $formResponse = FormResponse::factory()->create(['intake_id' => $intake->id]);
+
+    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
+        ->postJson(route('intake.signatures.store'), [
+            'form_response_id' => $formResponse->id,
+            'field_key' => 'consent_signature',
+            'signature' => 'not-valid-base64-!!!',
+        ])
+        ->assertUnprocessable();
+
+    expect(Signature::query()->count())->toBe(0);
+});
+
 test('signature capture prevents access to other intake form responses', function (): void {
     $patient = Patient::factory()->create();
     $intake = Intake::factory()->create(['patient_id' => $patient->id]);

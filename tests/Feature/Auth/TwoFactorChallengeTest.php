@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 
@@ -42,4 +44,17 @@ test('two factor challenge can be rendered', function (): void {
         ->assertInertia(fn (Assert $assert): \Inertia\Testing\AssertableInertia => $assert
             ->component('auth/TwoFactorChallenge'),
         );
+});
+
+test('two factor rate limiter is registered and returns a limit', function (): void {
+    $limiter = RateLimiter::limiter('two-factor');
+    expect($limiter)->not->toBeNull();
+
+    $request = Request::create('/two-factor-challenge', 'POST');
+    $request->setLaravelSession(app('session.store'));
+    $request->session()->put('login.id', 1);
+
+    $limit = $limiter($request);
+
+    expect($limit)->toBeInstanceOf(\Illuminate\Cache\RateLimiting\Limit::class);
 });

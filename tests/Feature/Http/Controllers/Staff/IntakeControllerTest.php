@@ -103,6 +103,18 @@ it('filters intakes by active status', function (): void {
         );
 });
 
+it('filters intakes by patient email search', function (): void {
+    $patient = \App\Models\Patient::factory()->create(['email' => 'searchme@example.com']);
+    Intake::factory()->submitted()->create(['patient_id' => $patient->id]);
+    Intake::factory()->submitted()->create();
+
+    $this->get('/staff/intakes?search=searchme@example.com')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('intakes.data', 1)
+        );
+});
+
 it('requires authentication', function (): void {
     auth()->logout();
     $this->get('/staff/intakes')->assertRedirect('/login');

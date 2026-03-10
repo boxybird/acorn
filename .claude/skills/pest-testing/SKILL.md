@@ -17,10 +17,55 @@ Activate this skill when:
 - Debugging test failures
 - Working with browser testing or smoke testing
 - Writing architecture tests or visual regression tests
+- **Invoked standalone** — run the audit workflow (see below)
+
+## Audit Mode (Standalone Invocation)
+
+When this skill is invoked without a specific test task (e.g., user runs `/pest-testing`), perform a **test coverage audit**:
+
+1. **Run coverage:** `php artisan test --compact --coverage --min=100`
+2. **If coverage is below 100%**, identify every uncovered file and line range from the output
+3. **For each gap**, determine what tests are needed:
+   - Read the uncovered source file to understand the logic
+   - Check if a test file already exists for that class — update it rather than creating a new one
+   - Write tests that cover the missing lines
+4. **Re-run coverage** after writing tests to confirm gaps are closed
+5. **Repeat** until 100% coverage is achieved
+6. **Run `composer check`** to verify everything passes (Rector → Pint → PHPStan → Tests + Coverage)
+
+### Audit Checklist
+
+- [ ] Run `php artisan test --compact --coverage --min=100`
+- [ ] Identify all files below 100% coverage
+- [ ] Write/update tests for each gap
+- [ ] Re-run coverage to verify 100%
+- [ ] Run `composer check` to confirm full pipeline passes
 
 ## Documentation
 
 Use `search-docs` for detailed Pest 4 patterns and documentation.
+
+## Coverage Enforcement
+
+This project enforces **100% test coverage** via PCOV.
+
+- `composer check` runs `php artisan test --compact --coverage --min=100` — it will fail if coverage drops below 100%
+- Every new class, method, or branch must have corresponding tests
+- When writing new production code, always write tests in the same change
+- Use `@codeCoverageIgnoreStart` / `@codeCoverageIgnoreEnd` sparingly and only for truly untestable code (e.g., framework boilerplate)
+
+### Running Coverage
+
+```bash
+# Coverage with minimum enforcement (used by composer check)
+php artisan test --compact --coverage --min=100
+
+# Coverage report only (no minimum)
+php artisan test --compact --coverage
+
+# HTML report for detailed analysis
+php artisan test --coverage-html coverage-report
+```
 
 ## Basic Usage
 
@@ -192,3 +237,4 @@ The codebase changes quickly. When modifying or removing production code, always
 - Leaving obsolete tests behind after removing production code
 - Deleting tests without getting approval first
 - Forgetting `assertNoJavaScriptErrors()` in browser tests
+- Not writing tests for new code — `composer check` enforces 100% coverage

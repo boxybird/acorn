@@ -71,7 +71,7 @@
             "vendor/bin/rector process",
             "vendor/bin/pint --dirty",
             "vendor/bin/phpstan analyse",
-            "@php artisan test --compact"
+            "@php artisan test --compact --coverage --min=100"
         ],
         "ci:check": [
             "Composer\\Config::disableProcessTimeout",
