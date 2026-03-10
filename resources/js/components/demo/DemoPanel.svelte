@@ -1,6 +1,7 @@
 <script lang="ts">
     import DemoAbout from './DemoAbout.svelte';
     import DemoAccountSwitcher from './DemoAccountSwitcher.svelte';
+    import DemoFeatures from './DemoFeatures.svelte';
 
     type Intake = {
         child_name: string;
@@ -91,14 +92,19 @@
             </div>
 
             <!-- Body -->
-            <div class="flex flex-1 overflow-hidden">
-                <!-- Left: About -->
-                <div class="flex-1 overflow-y-auto border-r p-6">
+            <div class="grid flex-1 grid-cols-1 overflow-hidden md:grid-cols-3">
+                <!-- Left: The Pitch -->
+                <div class="overflow-y-auto border-r p-6">
                     <DemoAbout />
                 </div>
 
+                <!-- Middle: Features & Integrations -->
+                <div class="overflow-y-auto border-r p-6">
+                    <DemoFeatures />
+                </div>
+
                 <!-- Right: Account Switcher -->
-                <div class="w-full max-w-sm overflow-y-auto p-6 lg:max-w-md">
+                <div class="overflow-y-auto p-6">
                     <DemoAccountSwitcher {patients} {users} />
                 </div>
             </div>
