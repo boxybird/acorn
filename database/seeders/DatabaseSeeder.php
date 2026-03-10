@@ -10,13 +10,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name' => 'Dr. Laura Chen',
-            'email' => 'laura.chen@jumpstartaba.com',
+            'name' => 'Sandi Keeton',
+            'email' => 'sandi.keeton@jumpstartaba.com',
         ]);
 
         User::factory()->create([
-            'name' => 'Marcus Rivera',
-            'email' => 'marcus.rivera@jumpstartaba.com',
+            'name' => 'Andrea Perea',
+            'email' => 'andrea.perea@jumpstartaba.com',
         ]);
 
         $this->call(PatientSeeder::class);
