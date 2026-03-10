@@ -20,10 +20,10 @@ class DocumentFactory extends Factory
             'intake_id' => Intake::factory(),
             'form_response_id' => FormResponse::factory(),
             'field_key' => 'insurance_card',
-            'file_path' => 'documents/'.fake()->uuid().'.pdf',
-            'original_filename' => fake()->word().'.pdf',
+            'file_path' => 'documents/'.$this->faker->uuid().'.pdf',
+            'original_filename' => $this->faker->word().'.pdf',
             'mime_type' => 'application/pdf',
-            'file_size' => fake()->numberBetween(1024, 5242880),
+            'file_size' => $this->faker->numberBetween(1024, 5242880),
         ];
     }
 }

@@ -20,7 +20,7 @@ class SignatureFactory extends Factory
             'intake_id' => Intake::factory(),
             'form_response_id' => FormResponse::factory(),
             'field_key' => 'consent_signature',
-            'image_path' => 'signatures/'.fake()->uuid().'.png',
+            'image_path' => 'signatures/'.$this->faker->uuid().'.png',
         ];
     }
 }

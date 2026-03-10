@@ -19,7 +19,7 @@ class FormResponseFactory extends Factory
         return [
             'intake_id' => Intake::factory(),
             'schema_key' => 'demographics',
-            'data' => ['first_name' => fake()->firstName()],
+            'data' => ['first_name' => $this->faker->firstName()],
             'status' => FormResponseStatus::InProgress,
         ];
     }

@@ -21,7 +21,7 @@ class IntakeFlagFactory extends Factory
             'intake_id' => Intake::factory(),
             'form_response_id' => FormResponse::factory(),
             'user_id' => User::factory(),
-            'reason' => fake()->sentence(),
+            'reason' => $this->faker->sentence(),
             'resolved_at' => null,
         ];
     }

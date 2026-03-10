@@ -18,7 +18,7 @@ class IntakeFactory extends Factory
     {
         return [
             'patient_id' => Patient::factory(),
-            'child_name' => fake()->firstName(),
+            'child_name' => $this->faker->firstName(),
             'status' => IntakeStatus::Active,
         ];
     }
