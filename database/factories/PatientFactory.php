@@ -16,8 +16,8 @@ class PatientFactory extends Factory
     public function definition(): array
     {
         return [
-            'email' => $this->faker->unique()->safeEmail(),
-            'name' => $this->faker->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'name' => fake()->name(),
             'preferred_locale' => null,
             'magic_link_token' => null,
             'magic_link_expires_at' => null,

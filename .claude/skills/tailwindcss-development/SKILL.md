@@ -28,64 +28,6 @@ Use `search-docs` for detailed Tailwind CSS v4 patterns and documentation.
 - Offer to extract repeated patterns into components that match the project's conventions (e.g., Blade, JSX, Vue).
 - Consider class placement, order, priority, and defaults. Remove redundant classes, add classes to parent or child elements carefully to reduce repetition, and group elements logically.
 
-## shadcn/ui Design Token System (CRITICAL)
-
-This project uses shadcn/ui which defines semantic color tokens in `resources/css/app.css`. **Always use semantic tokens — never use raw Tailwind palette colors or opacity tints of semantic colors as surface backgrounds.**
-
-### Token Reference
-
-| Purpose | Use | NEVER use |
-|---------|-----|-----------|
-| Page backgrounds | `bg-background` | `bg-primary/5`, `bg-white` |
-| Card/panel surfaces | `bg-card` / `text-card-foreground` | `bg-white`, `bg-neutral-50` |
-| Sidebar surfaces | `bg-sidebar` / `text-sidebar-foreground` | `bg-primary/5`, `bg-gray-50` |
-| Muted/subdued surfaces | `bg-muted` / `text-muted-foreground` | `bg-neutral-100`, `bg-gray-100` |
-| Secondary surfaces | `bg-secondary` / `text-secondary-foreground` | `bg-neutral-200`, `bg-gray-200` |
-| Accent highlights | `bg-accent` / `text-accent-foreground` | `bg-primary/10`, `bg-primary/20` |
-| Primary actions/brand | `bg-primary` / `text-primary-foreground` | Direct — this one is correct |
-| Destructive/error | `bg-destructive` / `text-destructive-foreground` | `bg-red-*`, `text-red-*` |
-| Popover surfaces | `bg-popover` / `text-popover-foreground` | `bg-white` |
-| Page text | `text-foreground` | `text-black`, `text-neutral-900` |
-| Subdued text | `text-muted-foreground` | `text-neutral-500`, `text-neutral-600`, `text-gray-500` |
-| Borders | `border-border` | `border-neutral-200`, `border-gray-200` |
-| Input borders | `border-input` | `border-neutral-300`, `border-gray-300` |
-| Focus rings | `ring-ring` | `ring-primary`, `ring-blue-*` |
-
-### Rules
-
-1. **NEVER use Tailwind default palette colors** (`neutral-*`, `gray-*`, `zinc-*`, `slate-*`, `red-*`, `blue-*`, etc.) for colors that have semantic tokens. These bypass theming and won't adapt to theme variants (e.g., the `.staff` class).
-2. **NEVER use `bg-primary/[opacity]` as a surface color.** `bg-primary/5` or `bg-primary/10` creates an opacity tint of the brand color. Use `bg-background`, `bg-muted`, `bg-secondary`, `bg-sidebar`, or `bg-accent` instead — these are purpose-built surface colors.
-3. **NEVER use `text-white` or `text-black`.** Use `text-foreground`, `text-primary-foreground`, `text-destructive-foreground`, etc. These semantic tokens ensure correct contrast in all theme contexts.
-4. **Opacity tints of semantic colors ARE acceptable for:**
-   - Decorative elements (background blobs, gradients) where theming isn't critical
-   - Borders on alerts/badges: `border-destructive/20`, `border-primary/20`
-   - Very specific micro-interactions, not surfaces
-5. **Hover states** should use semantic tokens: `hover:bg-muted` (subtle), `hover:bg-accent` (stronger), not `hover:bg-primary/5`.
-6. **Before writing any color class**, check `resources/css/app.css` for the available tokens. If a semantic token exists for your use case, you must use it.
-
-### Quick Decision Tree
-
-```
-Need a background color?
-├── Full page/layout → bg-background
-├── Card or elevated surface → bg-card
-├── Sidebar or navigation panel → bg-sidebar
-├── Muted/disabled/placeholder → bg-muted
-├── Secondary container → bg-secondary
-├── Highlighted/active element → bg-accent
-├── Primary button/badge → bg-primary
-├── Error/danger surface → bg-destructive
-└── Popover/dropdown → bg-popover
-
-Need a text color?
-├── Primary body text → text-foreground
-├── Subdued/helper text → text-muted-foreground
-├── Text on primary bg → text-primary-foreground
-├── Brand-colored text → text-primary
-├── Error text → text-destructive
-└── Text on card → text-card-foreground
-```
-
 ## Tailwind CSS v4 Specifics
 
 - Always use Tailwind CSS v4 and avoid deprecated utilities.
@@ -146,18 +88,12 @@ Use `gap` utilities instead of margins for spacing between siblings:
 
 ## Dark Mode
 
-If existing pages and components support dark mode, new pages and components must support it the same way, typically using the `dark:` variant. **Always use semantic tokens for dark mode — they adapt automatically.**
+If existing pages and components support dark mode, new pages and components must support it the same way, typically using the `dark:` variant:
 
 <!-- Dark Mode -->
 ```html
-<!-- CORRECT: semantic tokens adapt to themes -->
-<div class="bg-card text-card-foreground">
-    Content adapts to color scheme
-</div>
-
-<!-- WRONG: hardcoded colors require manual dark: overrides -->
 <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-    Fragile — breaks with theme changes
+    Content adapts to color scheme
 </div>
 ```
 
@@ -186,12 +122,8 @@ If existing pages and components support dark mode, new pages and components mus
 
 ## Common Pitfalls
 
-- **Using `bg-primary/5` or `bg-primary/10` as surface colors** — use `bg-background`, `bg-muted`, `bg-sidebar`, or `bg-accent` instead
-- **Using `text-white`, `text-black`, `text-neutral-*`** — use semantic foreground tokens
-- **Using Tailwind default palette** (`neutral-*`, `gray-*`, `zinc-*`) — use design tokens from `app.css`
 - Using deprecated v3 utilities (bg-opacity-*, flex-shrink-*, etc.)
 - Using `@tailwind` directives instead of `@import "tailwindcss"`
 - Trying to use `tailwind.config.js` instead of CSS `@theme` directive
 - Using margins for spacing between siblings instead of gap utilities
 - Forgetting to add dark mode variants when the project uses dark mode
-- **Using `ring-primary` for focus** — use `ring-ring` which is the dedicated focus token
