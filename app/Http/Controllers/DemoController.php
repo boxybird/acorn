@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class DemoController extends Controller
 {
@@ -36,6 +37,26 @@ class DemoController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        return redirect()->route('home');
+    }
+
+    public function resetData(Request $request): RedirectResponse
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        Schema::withoutForeignKeyConstraints(function (): void {
+            foreach (['intake_flags', 'intake_notes', 'signatures', 'documents', 'form_responses', 'intakes', 'patients', 'users', 'sessions'] as $table) {
+                if (Schema::hasTable($table)) {
+                    \Illuminate\Support\Facades\DB::table($table)->truncate();
+                }
+            }
+        });
+
+        $databaseSeeder = new \Database\Seeders\DatabaseSeeder;
+        $databaseSeeder->run();
 
         return redirect()->route('home');
     }

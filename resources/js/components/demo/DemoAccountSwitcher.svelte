@@ -57,7 +57,7 @@
                     <div class="font-medium">{patient.name}</div>
                     {#each patient.intakes as intake}
                         <div class="mt-1 text-xs text-muted-foreground">
-                            {intake.child_name} — {intake.status} ({intake.completed_count}/{intake.form_count} forms)
+                            {intake.child_name} · {intake.status} ({intake.completed_count}/{intake.form_count} forms)
                         </div>
                     {/each}
                     {#if patient.intakes.length === 0}
@@ -86,8 +86,8 @@
         </div>
     </div>
 
-    <!-- Logout -->
-    <div class="border-t pt-4">
+    <!-- Actions -->
+    <div class="space-y-2 border-t pt-4">
         <button
             type="button"
             class="w-full rounded-lg border border-destructive/30 p-3 text-center text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
@@ -95,6 +95,14 @@
             disabled={loading !== null}
         >
             Log Out &amp; Return Home
+        </button>
+        <button
+            type="button"
+            class="w-full rounded-lg border p-3 text-center text-sm font-medium text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50"
+            onclick={() => { if (confirm('This will reset all data to its original state. Continue?')) submitForm('/demo/reset', -2); }}
+            disabled={loading !== null}
+        >
+            Reset All Data
         </button>
     </div>
 </div>

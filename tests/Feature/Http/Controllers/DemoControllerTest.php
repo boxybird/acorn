@@ -63,3 +63,13 @@ it('shows registration link on welcome page when demo mode is disabled', functio
             ->where('canRegister', true)
         );
 });
+
+it('resets data and redirects home', function (): void {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post('/demo/reset')
+        ->assertRedirect(route('home'));
+
+    $this->assertGuest();
+});

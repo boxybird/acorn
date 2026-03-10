@@ -3,7 +3,7 @@
         {
             title: 'What is Acorn?',
             content:
-                'Acorn is a parent intake portal for JumpStart Autism Collective. It replaces the long, paper-based intake process with a guided digital experience that parents can complete at their own pace — from any device, in English or Spanish.',
+                'Acorn is a parent intake portal for JumpStart Autism Collective. It replaces the long, paper-based intake process with a guided digital experience that parents can complete at their own pace, from any device, in English or Spanish.',
         },
         {
             title: 'The Problem',
@@ -13,17 +13,17 @@
         {
             title: 'How It Works',
             content:
-                'Parents receive a magic link via email — no passwords needed. They land on a dashboard showing all required forms as a checklist. Each form saves progress automatically. When everything is complete, the intake is submitted for staff review.',
+                'Parents receive a magic link via email (no passwords needed). They land on a dashboard showing all required forms as a checklist. Each form saves progress automatically. When everything is complete, the intake is submitted for staff review.',
         },
         {
             title: 'Staff Experience',
             content:
-                'Staff see submitted intakes in their dashboard. They can review each form, flag items that need correction, add notes, and approve completed intakes. Approved intakes will eventually sync to Monday.com.',
+                'Staff see submitted intakes in their dashboard. They can review each form, flag items that need correction, add notes, and approve completed intakes. Once approved, intake data will sync to Monday.com boards so staff can continue managing the family in their existing workflow.',
         },
         {
             title: 'Current Status',
             content:
-                'This is a working prototype with test data. Magic link emails are not yet configured — use the account switcher on the right to explore as different users. All data is test data and can be freely modified.',
+                'This is a working prototype with test data. Magic link emails are not yet configured. Use the account switcher on the right to explore as different users. All data is test data and can be freely modified.',
         },
     ];
 </script>

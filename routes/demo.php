@@ -8,4 +8,5 @@ Route::prefix('demo')->middleware(['web', DemoMode::class])->group(function (): 
     Route::post('/login/patient/{patient}', [DemoController::class, 'loginAsPatient'])->name('demo.login.patient');
     Route::post('/login/user/{user}', [DemoController::class, 'loginAsUser'])->name('demo.login.user');
     Route::post('/logout', [DemoController::class, 'logout'])->name('demo.logout');
+    Route::post('/reset', [DemoController::class, 'resetData'])->name('demo.reset');
 });
