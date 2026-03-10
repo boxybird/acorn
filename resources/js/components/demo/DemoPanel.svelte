@@ -92,7 +92,7 @@
             </div>
 
             <!-- Body -->
-            <div class="grid flex-1 grid-cols-1 overflow-hidden md:grid-cols-3">
+            <div class="grid flex-1 grid-cols-1 overflow-hidden lg:grid-cols-3">
                 <!-- Left: The Pitch -->
                 <div class="overflow-y-auto border-r p-6">
                     <DemoAbout />

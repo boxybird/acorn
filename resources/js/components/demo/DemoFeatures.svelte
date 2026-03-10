@@ -30,7 +30,7 @@
         },
         {
             title: 'Monday.com Sync',
-            description: 'Completed intakes flow into your workflow',
+            description: 'Intakes flow directly into JumpStart\'s Monday.com boards',
             icon: 'refresh-sync',
         },
     ];
@@ -48,7 +48,7 @@
         },
         {
             title: 'Software Integrations',
-            description: 'Connect with existing JumpStart tools',
+            description: 'Connect with JumpStart\'s existing tools',
             icon: 'puzzle',
         },
         {

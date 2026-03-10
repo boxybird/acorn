@@ -10,7 +10,7 @@
         </div>
         <div>
             <h3 class="font-semibold">Acorn</h3>
-            <p class="text-xs text-muted-foreground">Parent Intake Portal</p>
+            <p class="text-xs text-muted-foreground">Built for JumpStart Autism Collective</p>
         </div>
     </div>
 
@@ -21,11 +21,11 @@
 
     <div>
         <h4 class="mb-2 text-sm font-bold uppercase tracking-wide text-primary">The Solution</h4>
-        <p class="text-sm leading-relaxed text-muted-foreground">Acorn is a digital intake portal that meets parents where they are &mdash; on their phone, in their language, on their schedule. No accounts, no passwords. Just a link in their email.</p>
+        <p class="text-sm leading-relaxed text-muted-foreground">Acorn is a digital intake portal built for JumpStart that meets parents where they are. On their phone, in their language, on their schedule. No accounts, no passwords. Just a link in their email.</p>
     </div>
 
     <div>
         <h4 class="mb-2 text-sm font-bold uppercase tracking-wide text-green-600 dark:text-green-400">The Result</h4>
-        <p class="text-sm leading-relaxed text-muted-foreground">Completed intake packages land directly in your workflow. Staff reviews, flags corrections, and approves &mdash; all from one dashboard.</p>
+        <p class="text-sm leading-relaxed text-muted-foreground">Completed intake packages land directly in JumpStart's workflow. Staff reviews, flags corrections, and approves. All from one dashboard.</p>
     </div>
 </div>

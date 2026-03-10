@@ -43,6 +43,12 @@
 </script>
 
 <div class="space-y-6">
+    <!-- Callout -->
+    <div class="rounded-lg bg-primary/10 p-3">
+        <p class="text-sm font-medium text-primary">Try it yourself</p>
+        <p class="text-xs text-muted-foreground">Click any account below to explore Acorn as a JumpStart parent or staff member.</p>
+    </div>
+
     <!-- Parent Accounts -->
     <div>
         <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Parent Accounts</h3>
