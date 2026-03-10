@@ -137,7 +137,7 @@
     </div>
 
     <!-- Right Panel: Design / Messaging -->
-    <div class="relative hidden flex-1 flex-col items-center justify-center overflow-hidden bg-primary/5 lg:flex">
+    <div class="relative hidden flex-1 flex-col items-center justify-center overflow-hidden bg-primary/5 lg:flex" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
         <div class="absolute -top-24 -right-24 size-96 rounded-full bg-accent/20"></div>
         <div class="absolute -bottom-32 -left-32 size-[28rem] rounded-full bg-primary/10"></div>
 

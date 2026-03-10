@@ -32,7 +32,7 @@ All tests must be written using Pest. Use `php artisan make:test --pest {name}`.
 
 - Unit/Feature tests: `tests/Feature` and `tests/Unit` directories.
 - Browser tests: `tests/Browser/` directory.
-- Do NOT remove tests without approval - these are core application code.
+- Do NOT remove tests without approval — but proactively identify obsolete tests (see Test Hygiene below).
 
 ### Basic Test Structure
 
@@ -158,10 +158,37 @@ arch('controllers')
     ->toHaveSuffix('Controller');
 ```
 
+## Test Hygiene — Cleaning Up Obsolete Tests
+
+The codebase changes quickly. When modifying or removing production code, always check for tests that have become obsolete.
+
+### When to Check
+
+- **Removing a feature, route, controller, or model** — find and remove tests that cover the deleted code
+- **Renaming or restructuring** — update tests to match new names/paths, or remove if the old behavior no longer exists
+- **Changing business logic** — check if existing tests assert outdated behavior that no longer applies
+- **Deleting an Action, Form Request, or Job** — search for tests that reference the deleted class
+
+### How to Check
+
+1. When you delete or significantly change production code, search for related tests:
+   - `grep -r 'DeletedClassName' tests/`
+   - Check test files that mirror the deleted file's path (e.g., `app/Actions/Foo.php` → `tests/Feature/Actions/FooTest.php`)
+2. Run the full test suite (`php artisan test --compact`) — tests referencing deleted classes will fail with class-not-found or similar errors
+3. Review failing tests: if the test is for removed functionality, delete it. If it tests something that still exists but changed, update it.
+
+### Rules
+
+- **Always get approval before deleting tests** — flag obsolete tests to the user and confirm before removing
+- **When deleting a test, explain why** — state what was removed/changed that makes the test obsolete
+- **Prefer updating over deleting** — if the feature still exists but changed shape, update the test rather than removing it
+- **Never leave broken tests behind** — if code changes cause test failures, fix or remove them in the same change
+
 ## Common Pitfalls
 
 - Not importing `use function Pest\Laravel\mock;` before using mock
 - Using `assertStatus(200)` instead of `assertSuccessful()`
 - Forgetting datasets for repetitive validation tests
-- Deleting tests without approval
+- Leaving obsolete tests behind after removing production code
+- Deleting tests without getting approval first
 - Forgetting `assertNoJavaScriptErrors()` in browser tests

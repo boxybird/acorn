@@ -76,7 +76,7 @@
     onMount(() => { mounted = true; });
 </script>
 
-<div class="flex min-h-screen flex-col bg-primary/5">
+<div class="flex min-h-screen flex-col bg-primary/5" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
     <IntakeHeader
         breadcrumbs={[
             { label: t.dashboard },

@@ -70,7 +70,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex min-h-0 flex-1 flex-col">
+        <div class="flex min-h-0 flex-1 flex-col bg-primary/5" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
             <!-- Form Content -->
             <main class="float-up mx-auto w-full max-w-2xl flex-1 px-4 py-8 pb-24 sm:px-6 lg:px-8 lg:pb-8" class:visible={mounted}>
                 <FormRenderer
