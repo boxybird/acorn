@@ -10,7 +10,7 @@ Route::get('/', fn () => \Inertia\Inertia::render('Welcome', [
 ]))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::redirect('dashboard', '/staff/intakes')->name('dashboard');
 
     Route::prefix('staff')->name('staff.')->group(function (): void {
         Route::get('/intakes', [IntakeController::class, 'index'])->name('intakes.index');
@@ -18,7 +18,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::post('/intakes/{intake}/approve', [IntakeController::class, 'approve'])->name('intakes.approve');
         Route::post('/intakes/{intake}/flag', [IntakeController::class, 'flag'])->name('intakes.flag');
         Route::post('/intakes/{intake}/flags/{intakeFlag}/resolve', [IntakeController::class, 'resolveFlag'])->name('intakes.flags.resolve');
-        Route::post('/intakes/{intake}/notes', [IntakeController::class, 'storeNote'])->name('intakes.notes.store');
         Route::get('/intakes/{intake}/pdf', IntakePdfController::class)->name('intakes.pdf');
     });
 });

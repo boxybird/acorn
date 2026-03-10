@@ -32,7 +32,7 @@
         >
             <div class="flex h-9 w-9 items-center justify-center">
                 <AppLogoIcon
-                    class="size-9 fill-current text-black"
+                    class="size-9 fill-current text-foreground"
                 />
             </div>
         </Link>

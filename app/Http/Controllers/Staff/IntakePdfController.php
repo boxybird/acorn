@@ -12,7 +12,7 @@ class IntakePdfController extends Controller
 {
     public function __invoke(Intake $intake, FormSchemaService $formSchemaService): Response
     {
-        $intake->load(['patient', 'formResponses', 'notes.user', 'notes.patient', 'signatures']);
+        $intake->load(['patient', 'formResponses', 'signatures']);
 
         $schemas = collect($formSchemaService->all())
             ->sortBy('order')

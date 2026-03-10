@@ -3,9 +3,7 @@
 use App\Models\FormResponse;
 use App\Models\Intake;
 use App\Models\IntakeFlag;
-use App\Models\IntakeNote;
 use App\Models\Patient;
-use App\Models\User;
 
 test('dashboard provides per-intake data with forms and progress', function (): void {
     $patient = Patient::factory()->create();
@@ -106,29 +104,5 @@ test('dashboard includes unresolved flags per intake', function (): void {
             ->has('intakes.0.flags', 1)
             ->where('intakes.0.flags.0.reason', 'Missing date of birth')
             ->has('intakes.0.flags.0.form_response')
-        );
-});
-
-test('dashboard includes notes at top level', function (): void {
-    $patient = Patient::factory()->create();
-    $intake = Intake::factory()->create(['patient_id' => $patient->id]);
-    $user = User::factory()->create();
-    IntakeNote::factory()->create([
-        'intake_id' => $intake->id,
-        'user_id' => $user->id,
-        'body' => 'Staff note',
-    ]);
-    IntakeNote::factory()->fromPatient()->create([
-        'intake_id' => $intake->id,
-        'patient_id' => $patient->id,
-        'body' => 'Parent note',
-    ]);
-
-    $this->withSession(['patient_id' => $patient->id, 'intake_id' => $intake->id])
-        ->get(route('intake.dashboard'))
-        ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('intake/Dashboard')
-            ->has('notes', 2)
         );
 });

@@ -8,10 +8,8 @@ use App\Actions\ResolveIntakeFlag;
 use App\Enums\IntakeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Staff\FlagFormRequest;
-use App\Http\Requests\Staff\StoreNoteRequest;
 use App\Models\Intake;
 use App\Models\IntakeFlag;
-use App\Models\IntakeNote;
 use App\Services\FormSchemaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,7 +63,7 @@ class IntakeController extends Controller
             $intake->update(['status' => IntakeStatus::UnderReview]);
         }
 
-        $intake->load(['patient', 'formResponses', 'notes.user', 'notes.patient', 'flags.formResponse', 'flags.user']);
+        $intake->load(['patient', 'formResponses', 'flags.formResponse', 'flags.user']);
 
         $schemas = collect($formSchemaService->all())
             ->map(function (array $schema): array {
@@ -85,7 +83,6 @@ class IntakeController extends Controller
         return Inertia::render('staff/IntakeDetail', [
             'intake' => $intake,
             'formResponses' => $intake->formResponses,
-            'notes' => $intake->notes->sortBy('created_at')->values(),
             'flags' => $intake->flags,
             'schemas' => $schemas,
         ]);
@@ -120,17 +117,6 @@ class IntakeController extends Controller
     public function resolveFlag(Intake $intake, IntakeFlag $intakeFlag, ResolveIntakeFlag $resolveIntakeFlag): RedirectResponse
     {
         $resolveIntakeFlag->handle($intake, $intakeFlag);
-
-        return back();
-    }
-
-    public function storeNote(Intake $intake, StoreNoteRequest $storeNoteRequest): RedirectResponse
-    {
-        IntakeNote::query()->create([
-            'intake_id' => $intake->id,
-            'user_id' => auth()->id(),
-            'body' => $storeNoteRequest->validated('body'),
-        ]);
 
         return back();
     }

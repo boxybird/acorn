@@ -3,10 +3,12 @@
     import { Link, page } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import AppLogoAnimated from '@/components/AppLogoAnimated.svelte';
+    import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import { Button } from '@/components/ui/button';
     import { Separator } from '@/components/ui/separator';
     import { toUrl } from '@/lib/utils';
-    import { dashboard, login } from '@/routes';
+    import { index as staffIntakesIndex } from '@/actions/App/Http/Controllers/Staff/IntakeController';
+    import { login } from '@/routes';
     import { landing } from '@/routes/intake';
 
     const auth = $derived($page.props.auth);
@@ -24,7 +26,7 @@
 
 <div class="flex min-h-screen flex-col lg:flex-row">
     <!-- Left Panel: Branding & CTA -->
-    <div class="flex min-h-screen w-full flex-col justify-center px-6 py-12 sm:px-12 lg:min-h-0 lg:w-[40%] lg:px-16 xl:px-24">
+    <div class="flex min-h-screen w-full flex-col justify-center bg-card px-6 py-12 shadow-lg sm:px-12 lg:min-h-0 lg:w-[40%] lg:px-16 xl:px-24">
         <div class="mx-auto w-full max-w-md space-y-8">
             <!-- Logo visible on mobile -->
             <div class="flex justify-center lg:hidden">
@@ -35,21 +37,18 @@
 
             <!-- Branding - stagger index 0 -->
             <div
-                class="stagger-item space-y-3"
+                class="stagger-item space-y-2"
                 style="transition-delay: 0ms;"
                 class:visible={contentVisible}
             >
-                <h1 class="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Acorn</h1>
+                <div class="flex items-center gap-3">
+                    <AppLogoIcon class="size-10" />
+                    <h1 class="text-2xl leading-none font-bold tracking-tight text-foreground">Acorn</h1>
+                </div>
+                <p class="text-sm text-muted-foreground">
+                    JumpStart Autism Collective
+                </p>
             </div>
-
-            <!-- Subtitle - stagger index 1 -->
-            <p
-                class="stagger-item text-lg text-muted-foreground"
-                style="transition-delay: 100ms;"
-                class:visible={contentVisible}
-            >
-                JumpStart Autism Collective
-            </p>
 
             <!-- Separator - stagger index 2 -->
             <div
@@ -97,10 +96,10 @@
                 <div class="flex justify-center">
                     {#if auth.user}
                         <Link
-                            href={toUrl(dashboard())}
+                            href={toUrl(staffIntakesIndex())}
                             class="text-sm text-muted-foreground transition-colors hover:text-foreground"
                         >
-                            Go to Dashboard
+                            Go to Intakes
                         </Link>
                     {:else}
                         <Link
@@ -116,25 +115,22 @@
     </div>
 
     <!-- Right Panel: Animated Logo & Design -->
-    <div class="relative hidden flex-1 flex-col items-center justify-center overflow-hidden bg-primary/5 lg:flex" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
-        <div class="absolute -top-24 -right-24 size-96 rounded-full bg-accent/20"></div>
-        <div class="absolute -bottom-32 -left-32 size-[28rem] rounded-full bg-primary/10"></div>
-
-        <div class="relative z-10 flex flex-col items-center gap-8 px-12">
-            <div class="size-56 xl:size-64 drop-shadow-2xl">
+    <div class="relative hidden flex-1 flex-col items-center justify-center overflow-hidden bg-background lg:flex" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
+        <div class="flex flex-col items-center gap-10 px-12">
+            <div class="size-48 xl:size-56 drop-shadow-2xl">
                 <AppLogoAnimated class="size-full" />
             </div>
 
-            <div class="flex max-w-xs flex-col items-center gap-3 text-center">
-                <p
-                    class="stagger-item text-lg font-medium text-foreground"
+            <div class="flex max-w-sm flex-col items-center gap-6 text-center">
+                <h2
+                    class="stagger-item text-2xl text-balance font-bold tracking-tight text-foreground xl:text-3xl"
                     style="transition-delay: 0ms;"
                     class:visible={desktopTextVisible}
                 >
                     Personalized care starts here.
-                </p>
+                </h2>
                 <p
-                    class="stagger-item text-sm text-muted-foreground"
+                    class="stagger-item text-sm text-balance leading-relaxed text-muted-foreground"
                     style="transition-delay: 100ms;"
                     class:visible={desktopTextVisible}
                 >

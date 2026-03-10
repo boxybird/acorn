@@ -6,7 +6,6 @@ use App\Http\Controllers\Intake\FormCompleteController;
 use App\Http\Controllers\Intake\FormController;
 use App\Http\Controllers\Intake\IntakeSelectorController;
 use App\Http\Controllers\Intake\MagicLinkController;
-use App\Http\Controllers\Intake\NoteController;
 use App\Http\Controllers\Intake\SignatureController;
 use App\Http\Middleware\AuthenticatePatient;
 use App\Http\Middleware\SetPatientLocale;
@@ -55,6 +54,5 @@ Route::prefix('intake')->name('intake.')->group(function (): void {
         Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
         Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
         Route::post('/signatures', [SignatureController::class, 'store'])->name('signatures.store');
-        Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
     });
 });

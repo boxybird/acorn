@@ -50,12 +50,6 @@ class Intake extends Model
         return $this->hasMany(Signature::class);
     }
 
-    /** @return HasMany<IntakeNote, $this> */
-    public function notes(): HasMany
-    {
-        return $this->hasMany(IntakeNote::class);
-    }
-
     /** @return HasMany<IntakeFlag, $this> */
     public function flags(): HasMany
     {

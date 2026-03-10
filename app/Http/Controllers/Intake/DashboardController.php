@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Intake;
 use App\Enums\FormResponseStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Intake;
-use App\Models\IntakeNote;
 use App\Services\FormSchemaService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -86,17 +85,8 @@ class DashboardController extends Controller
             ];
         })->all();
 
-        // Notes across all patient intakes
-        $intakeIds = $allIntakes->pluck('id');
-        $notes = IntakeNote::query()
-            ->whereIn('intake_id', $intakeIds)
-            ->with(['user', 'patient'])
-            ->latest()
-            ->get();
-
         return Inertia::render('intake/Dashboard', [
             'intakes' => $intakes,
-            'notes' => $notes,
         ]);
     }
 }

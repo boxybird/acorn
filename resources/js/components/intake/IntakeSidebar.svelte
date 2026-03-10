@@ -40,7 +40,7 @@
     let strokeDashoffset = $derived(circumference - (progressPercent / 100) * circumference);
 </script>
 
-<aside class="sticky top-14 flex h-[calc(100vh-3.5rem)] w-[280px] shrink-0 flex-col border-r bg-primary/5">
+<aside class="sticky top-14 flex h-[calc(100vh-3.5rem)] w-[280px] shrink-0 flex-col border-r bg-sidebar">
     <!-- Progress Ring -->
     <div class="flex items-center gap-3 px-5 py-4">
         <svg class="size-10 -rotate-90" viewBox="0 0 40 40">
@@ -71,7 +71,7 @@
                     <Link
                         href={show.url(form.key)}
                         class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors
-                            {isActive ? 'bg-primary/10 font-medium text-foreground' : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground'}"
+                            {isActive ? 'bg-primary/10 font-medium text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
                     >
                         <!-- Status indicator -->
                         {#if isCompleted}

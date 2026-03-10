@@ -1,12 +1,8 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import BookOpen from 'lucide-svelte/icons/book-open';
     import ClipboardList from 'lucide-svelte/icons/clipboard-list';
-    import FolderGit2 from 'lucide-svelte/icons/folder-git-2';
-    import LayoutGrid from 'lucide-svelte/icons/layout-grid';
     import type { Snippet } from 'svelte';
     import AppLogo from '@/components/AppLogo.svelte';
-    import NavFooter from '@/components/NavFooter.svelte';
     import NavMain from '@/components/NavMain.svelte';
     import NavUser from '@/components/NavUser.svelte';
     import {
@@ -20,7 +16,6 @@
     } from '@/components/ui/sidebar';
     import { toUrl } from '@/lib/utils';
     import { index as staffIntakesIndex } from '@/actions/App/Http/Controllers/Staff/IntakeController';
-    import { dashboard } from '@/routes';
     import type { NavItem } from '@/types';
 
     let {
@@ -31,27 +26,9 @@
 
     const mainNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
-        },
-        {
             title: 'Intakes',
             href: staffIntakesIndex(),
             icon: ClipboardList,
-        },
-    ];
-
-    const footerNavItems: NavItem[] = [
-        {
-            title: 'Repository',
-            href: 'https://github.com/laravel/svelte-starter-kit',
-            icon: FolderGit2,
-        },
-        {
-            title: 'Documentation',
-            href: 'https://laravel.com/docs/starter-kits#svelte',
-            icon: BookOpen,
         },
     ];
 </script>
@@ -64,7 +41,7 @@
                     {#snippet children(props)}
                         <Link
                             {...props}
-                            href={toUrl(dashboard())}
+                            href={toUrl(staffIntakesIndex())}
                             class={props.class}
                         >
                             <AppLogo />
@@ -80,7 +57,6 @@
     </SidebarContent>
 
     <SidebarFooter>
-        <NavFooter items={footerNavItems} />
         <NavUser />
     </SidebarFooter>
 </Sidebar>

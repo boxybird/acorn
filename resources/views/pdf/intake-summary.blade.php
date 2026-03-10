@@ -11,8 +11,6 @@
         .meta { color: #666; font-size: 11px; }
         .field { margin-bottom: 8px; }
         .field-label { font-weight: bold; color: #555; }
-        .note { border-left: 3px solid #ddd; padding-left: 8px; margin-bottom: 8px; }
-        .note-meta { font-size: 10px; color: #888; }
     </style>
 </head>
 <body>
@@ -45,19 +43,5 @@
             <p class="meta">Not completed</p>
         @endif
     @endforeach
-
-    @if ($intake->notes->isNotEmpty())
-        <h2>Notes</h2>
-        @foreach ($intake->notes->sortBy('created_at') as $note)
-            <div class="note">
-                <p class="note-meta">
-                    {{ $note->user?->name ?? $note->patient?->name ?? 'Unknown' }}
-                    ({{ $note->isFromStaff() ? 'Staff' : 'Parent' }})
-                    — {{ $note->created_at->format('M j, Y g:i A') }}
-                </p>
-                <p>{{ $note->body }}</p>
-            </div>
-        @endforeach
-    @endif
 </body>
 </html>

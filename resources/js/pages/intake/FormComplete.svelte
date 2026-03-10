@@ -43,7 +43,7 @@
             <!-- Animated checkmark -->
             <div class="flex justify-center">
                 <div
-                    class="flex size-20 items-center justify-center rounded-full bg-primary/10 transition-all duration-500"
+                    class="flex size-20 items-center justify-center rounded-full bg-accent transition-all duration-500"
                     class:scale-100={checkVisible}
                     class:scale-0={!checkVisible}
                 >

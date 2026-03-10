@@ -8,7 +8,6 @@
     import AppSidebarLayout from '@/layouts/app/AppSidebarLayout.svelte';
     import { approve, flag, pdf } from '@/routes/staff/intakes';
     import { resolve } from '@/routes/staff/intakes/flags';
-    import { store as storeNote } from '@/routes/staff/intakes/notes';
 
     type Patient = {
         id: number;
@@ -23,16 +22,6 @@
         status: string;
         created_at: string;
         updated_at: string;
-    };
-
-    type NoteItem = {
-        id: number;
-        user_id: number | null;
-        patient_id: number | null;
-        body: string;
-        created_at: string;
-        user?: { id: number; name: string };
-        patient?: { id: number; name: string | null; email: string };
     };
 
     type FlagItem = {
@@ -59,13 +48,11 @@
     let {
         intake,
         formResponses,
-        notes,
         flags,
         schemas,
     }: {
         intake: IntakeDetail;
         formResponses: FormResponseItem[];
-        notes: NoteItem[];
         flags: FlagItem[];
         schemas: Schema[];
     } = $props();
@@ -88,7 +75,6 @@
     let flaggingFormId = $state<number | null>(null);
 
     const approveForm = useForm({});
-    const noteForm = useForm({ body: '' });
     const flagForm = useForm({ form_response_id: 0, reason: '' });
 
     function getSchemaTitle(schemaKey: string): string {
@@ -110,12 +96,6 @@
 
     function submitApprove(): void {
         $approveForm.post(approve.url(intake.id));
-    }
-
-    function submitNote(): void {
-        $noteForm.post(storeNote.url(intake.id), {
-            onSuccess: () => $noteForm.reset(),
-        });
     }
 
     function startFlagging(responseId: number): void {
@@ -140,16 +120,6 @@
 
     function resolveFlag(flagId: number): void {
         router.post(resolve.url({ intake: intake.id, intakeFlag: flagId }));
-    }
-
-    function getNoteAuthor(note: NoteItem): { name: string; role: string } {
-        if (note.user) {
-            return { name: note.user.name, role: 'Staff' };
-        }
-        if (note.patient) {
-            return { name: note.patient.name ?? note.patient.email, role: 'Parent' };
-        }
-        return { name: 'Unknown', role: 'Staff' };
     }
 
     function formatValue(value: any): string {
@@ -325,55 +295,5 @@
             {/if}
         </div>
 
-        <Separator />
-
-        <div>
-            <h2 class="mb-4 text-xl font-bold text-foreground">Notes</h2>
-
-            <div class="space-y-3">
-                {#each notes as note (note.id)}
-                    {@const author = getNoteAuthor(note)}
-                    <Card>
-                        <CardContent class="pt-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-medium">{author.name}</span>
-                                <Badge variant={author.role === 'Staff' ? 'secondary' : 'outline'}>
-                                    {author.role}
-                                </Badge>
-                                <span class="text-xs text-muted-foreground">
-                                    {new Date(note.created_at).toLocaleString()}
-                                </span>
-                            </div>
-                            <p class="mt-2 text-sm text-foreground">{note.body}</p>
-                        </CardContent>
-                    </Card>
-                {:else}
-                    <p class="text-muted-foreground">No notes yet.</p>
-                {/each}
-            </div>
-
-            <Card class="mt-4">
-                <CardContent class="pt-4">
-                    <form onsubmit={(e) => { e.preventDefault(); submitNote(); }}>
-                        <label for="note-body" class="mb-1 block text-sm font-medium">Add a Note</label>
-                        <textarea
-                            id="note-body"
-                            bind:value={$noteForm.body}
-                            class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            rows="3"
-                            placeholder="Write a note..."
-                        ></textarea>
-                        {#if $noteForm.errors.body}
-                            <p class="mt-1 text-sm text-destructive">{$noteForm.errors.body}</p>
-                        {/if}
-                        <div class="mt-2">
-                            <Button type="submit" disabled={$noteForm.processing}>
-                                {$noteForm.processing ? 'Adding...' : 'Add Note'}
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
     </div>
 </AppSidebarLayout>

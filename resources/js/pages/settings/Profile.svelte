@@ -109,7 +109,7 @@
                         >
 
                         {#if recentlySuccessful}
-                            <p class="text-sm text-neutral-600">Saved.</p>
+                            <p class="text-sm text-muted-foreground">Saved.</p>
                         {/if}
                     </div>
                 {/snippet}

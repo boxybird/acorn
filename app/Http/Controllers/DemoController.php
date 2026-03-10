@@ -56,7 +56,7 @@ class DemoController extends Controller
         $request->session()->regenerateToken();
 
         Schema::withoutForeignKeyConstraints(function (): void {
-            foreach (['intake_flags', 'intake_notes', 'signatures', 'documents', 'form_responses', 'intakes', 'patients', 'users', 'sessions'] as $table) {
+            foreach (['intake_flags', 'signatures', 'documents', 'form_responses', 'intakes', 'patients', 'users', 'sessions'] as $table) {
                 if (Schema::hasTable($table)) {
                     \Illuminate\Support\Facades\DB::table($table)->truncate();
                 }

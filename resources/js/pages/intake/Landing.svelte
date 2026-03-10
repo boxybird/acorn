@@ -29,7 +29,7 @@
     </div>
 
     <!-- Left Panel: Form -->
-    <div class="flex min-h-screen w-full flex-col justify-center px-6 py-12 sm:px-12 lg:min-h-0 lg:w-[40%] lg:px-16 xl:px-24">
+    <div class="flex min-h-screen w-full flex-col justify-center bg-card px-6 py-12 shadow-lg sm:px-12 lg:min-h-0 lg:w-[40%] lg:px-16 xl:px-24">
         <div class="mx-auto w-full max-w-md space-y-8">
             <!-- Branding - stagger 0 -->
             <div
@@ -39,7 +39,7 @@
             >
                 <div class="flex items-center gap-3">
                     <AppLogoIcon class="size-10" />
-                    <h1 class="text-2xl font-bold tracking-tight text-foreground">Acorn</h1>
+                    <h1 class="text-2xl leading-none font-bold tracking-tight text-foreground">Acorn</h1>
                 </div>
                 <p class="text-sm text-muted-foreground">
                     JumpStart Autism Collective
@@ -137,11 +137,8 @@
     </div>
 
     <!-- Right Panel: Design / Messaging -->
-    <div class="relative hidden flex-1 flex-col items-center justify-center overflow-hidden bg-primary/5 lg:flex" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
-        <div class="absolute -top-24 -right-24 size-96 rounded-full bg-accent/20"></div>
-        <div class="absolute -bottom-32 -left-32 size-[28rem] rounded-full bg-primary/10"></div>
-
-        <div class="relative z-10 flex flex-col items-center gap-10 px-12">
+    <div class="relative hidden flex-1 flex-col items-center justify-center overflow-hidden bg-background lg:flex" style="background-image: url('/texture.svg'); background-size: 200px 200px;">
+        <div class="flex flex-col items-center gap-10 px-12">
             <div class="size-48 xl:size-56 drop-shadow-2xl">
                 <AppLogoAnimated class="size-full" />
             </div>
@@ -149,7 +146,7 @@
             <!-- Desktop messaging - staggers after animation -->
             <div class="flex max-w-sm flex-col items-center gap-6 text-center">
                 <h2
-                    class="stagger-item text-2xl font-bold tracking-tight text-foreground xl:text-3xl"
+                    class="stagger-item text-2xl text-balance font-bold tracking-tight text-foreground xl:text-3xl"
                     style="transition-delay: 0ms;"
                     class:visible={desktopTextVisible}
                 >

@@ -134,7 +134,6 @@ it('displays the intake detail page', function (): void {
             ->component('staff/IntakeDetail')
             ->has('intake')
             ->has('formResponses')
-            ->has('notes')
             ->has('flags')
             ->has('schemas')
         );
@@ -241,18 +240,4 @@ it('stays flagged when some flags remain unresolved', function (): void {
     $this->post(sprintf('/staff/intakes/%s/flags/%s/resolve', $intake->id, $flag1->id));
 
     expect($intake->fresh()->status)->toBe(IntakeStatus::Flagged);
-});
-
-it('allows staff to add a note', function (): void {
-    $intake = Intake::factory()->submitted()->create();
-
-    $this->post(sprintf('/staff/intakes/%s/notes', $intake->id), [
-        'body' => 'Looks good, just need to verify insurance.',
-    ])->assertRedirect();
-
-    $intake->refresh();
-
-    expect($intake->notes)->toHaveCount(1);
-    expect($intake->notes->first()->body)->toBe('Looks good, just need to verify insurance.');
-    expect($intake->notes->first()->user_id)->toBe(auth()->id());
 });

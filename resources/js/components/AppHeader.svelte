@@ -1,10 +1,7 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
-    import BookOpen from 'lucide-svelte/icons/book-open';
-    import Folder from 'lucide-svelte/icons/folder';
-    import LayoutGrid from 'lucide-svelte/icons/layout-grid';
+    import ClipboardList from 'lucide-svelte/icons/clipboard-list';
     import Menu from 'lucide-svelte/icons/menu';
-    import Search from 'lucide-svelte/icons/search';
     import AppLogo from '@/components/AppLogo.svelte';
     import AppLogoIcon from '@/components/AppLogoIcon.svelte';
     import Breadcrumbs from '@/components/Breadcrumbs.svelte';
@@ -32,17 +29,11 @@
         SheetTitle,
         SheetTrigger,
     } from '@/components/ui/sheet';
-    import {
-        Tooltip,
-        TooltipContent,
-        TooltipProvider,
-        TooltipTrigger,
-    } from '@/components/ui/tooltip';
     import UserMenuContent from '@/components/UserMenuContent.svelte';
     import { currentUrlState } from '@/lib/currentUrl';
     import { getInitials } from '@/lib/initials';
     import { toUrl } from '@/lib/utils';
-    import { dashboard } from '@/routes';
+    import { index as staffIntakesIndex } from '@/actions/App/Http/Controllers/Staff/IntakeController';
     import type { BreadcrumbItem, NavItem } from '@/types';
 
     let {
@@ -55,26 +46,13 @@
     const { currentUrl, isCurrentUrl, whenCurrentUrl } = currentUrlState();
 
     const activeItemStyles =
-        'text-neutral-900';
+        'text-foreground';
 
     const mainNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
-            href: dashboard(),
-            icon: LayoutGrid,
-        },
-    ];
-
-    const rightNavItems: NavItem[] = [
-        {
-            title: 'Repository',
-            href: 'https://github.com/laravel/svelte-starter-kit',
-            icon: Folder,
-        },
-        {
-            title: 'Documentation',
-            href: 'https://laravel.com/docs/starter-kits#svelte',
-            icon: BookOpen,
+            title: 'Intakes',
+            href: staffIntakesIndex(),
+            icon: ClipboardList,
         },
     ];
 </script>
@@ -102,7 +80,7 @@
                         <SheetTitle class="sr-only">Navigation menu</SheetTitle>
                         <SheetHeader class="flex justify-start text-left">
                             <AppLogoIcon
-                                class="size-6 fill-current text-black"
+                                class="size-6 fill-current text-foreground"
                             />
                         </SheetHeader>
                         <div
@@ -126,27 +104,12 @@
                                     </Link>
                                 {/each}
                             </nav>
-                            <div class="flex flex-col space-y-4">
-                                {#each rightNavItems as item (toUrl(item.href))}
-                                    <a
-                                        href={toUrl(item.href)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="flex items-center space-x-2 text-sm font-medium"
-                                    >
-                                        {#if item.icon}
-                                            <item.icon class="h-5 w-5" />
-                                        {/if}
-                                        <span>{item.title}</span>
-                                    </a>
-                                {/each}
-                            </div>
                         </div>
                     </SheetContent>
                 </Sheet>
             </div>
 
-            <Link href={toUrl(dashboard())} class="flex items-center gap-x-2">
+            <Link href={toUrl(staffIntakesIndex())} class="flex items-center gap-x-2">
                 <AppLogo />
             </Link>
 
@@ -186,55 +149,13 @@
             </div>
 
             <div class="ml-auto flex items-center space-x-2">
-                <div class="relative flex items-center space-x-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        class="group h-9 w-9 cursor-pointer"
-                    >
-                        <Search
-                            class="size-5 opacity-80 group-hover:opacity-100"
-                        />
-                    </Button>
-
-                    <div class="hidden space-x-1 lg:flex">
-                        {#each rightNavItems as item (toUrl(item.href))}
-                            <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                    <TooltipTrigger>
-                                        {#snippet child({ props })}
-                                            <a
-                                                href={toUrl(item.href)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                {...props}
-                                                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 w-9 group cursor-pointer"
-                                            >
-                                                <span class="sr-only"
-                                                    >{item.title}</span
-                                                >
-                                                <item.icon
-                                                    class="size-5 opacity-80 group-hover:opacity-100"
-                                                />
-                                            </a>
-                                        {/snippet}
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>{item.title}</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        {/each}
-                    </div>
-                </div>
-
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         {#snippet children(props)}
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
+                                class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-visible:ring-ring"
                                 onclick={props.onclick}
                                 aria-expanded={props['aria-expanded']}
                                 data-state={props['data-state']}
@@ -249,7 +170,7 @@
                                         />
                                     {/if}
                                     <AvatarFallback
-                                        class="rounded-lg bg-neutral-200 font-semibold text-black"
+                                        class="rounded-lg bg-muted font-semibold text-foreground"
                                     >
                                         {getInitials(auth.user?.name)}
                                     </AvatarFallback>
@@ -268,7 +189,7 @@
     {#if breadcrumbs.length > 1}
         <div class="flex w-full border-b border-sidebar-border/70">
             <div
-                class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl"
+                class="mx-auto flex h-12 w-full items-center justify-start px-4 text-muted-foreground md:max-w-7xl"
             >
                 <Breadcrumbs {breadcrumbs} />
             </div>

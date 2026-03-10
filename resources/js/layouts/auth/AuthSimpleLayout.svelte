@@ -16,7 +16,7 @@
 </script>
 
 <div
-    class="flex min-h-svh flex-col items-center justify-center gap-6 bg-primary/5 p-6 md:p-10"
+    class="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10"
     style="background-image: url('/texture.svg'); background-size: 200px 200px;"
 >
     <div class="w-full max-w-sm">

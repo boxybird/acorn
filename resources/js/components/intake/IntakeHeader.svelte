@@ -24,7 +24,7 @@
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
                 <AppLogoIcon class="size-6" />
-                <span class="text-sm font-bold text-foreground">Acorn</span>
+                <span class="text-sm leading-none font-bold text-foreground">Acorn</span>
             </div>
 
             {#if breadcrumbs.length > 0}

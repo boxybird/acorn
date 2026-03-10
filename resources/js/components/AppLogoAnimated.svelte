@@ -67,7 +67,7 @@
     height="250"
     fill="none"
     viewBox="0 0 250 250"
-    class="w-full h-full max-w-[500px] max-h-[500px] drop-shadow-2xl {className}"
+    class="w-full h-full max-w-[500px] max-h-[500px] drop-shadow-2xl hover:animate-wobble {className}"
 >
     <g class="acorn-wrapper" style="transform-origin: center; transform-box: fill-box;">
         <path class="anim-part" data-i="0" data-anim="y" d="m141.9 46.94c17.94-6.15 24.18-23.27 22.77-39.03l-0.25-1.24-1.05-0.14c-19.33-1.48-33.33 6.68-38.53 25.21-2.59-9.06-7.76-16.4-13.27-21.55l-10.29 9.73 0.18 0.14c8.42 6.03 16.28 14.8 17.86 26.13-38.18 0.89-76.86 25.46-76.86 55.24 0 8.45 5.12 13.83 12 15.56v44.9c0 25.56 14.84 48.09 38.44 61.26 8.35 4.61 16.47 6.23 31.74 20.85 10.54-11.37 19.29-14.24 30.45-20.02 23.33-11.12 39.37-34.11 39.37-62.09v-44.5c8.38-2.42 12.32-8.58 12.32-16.28-0.73-18.27-21.63-47.89-64.88-54.17z" fill={gUrl(0)}/>

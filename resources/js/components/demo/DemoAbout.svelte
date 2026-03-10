@@ -18,7 +18,7 @@
         {
             title: 'Staff Experience',
             content:
-                'Staff see submitted intakes in their dashboard. They can review each form, flag items that need correction, add notes, and approve completed intakes. Once approved, intake data will sync to Monday.com boards so staff can continue managing the family in their existing workflow.',
+                'Staff see submitted intakes in their dashboard. They can review each form, flag items that need correction, and approve completed intakes. Once approved, intake data will sync to Monday.com boards so staff can continue managing the family in their existing workflow.',
         },
         {
             title: 'Current Status',
@@ -30,7 +30,7 @@
 
 <div class="space-y-6">
     <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 3h6l1 7H8L9 3z" />
                 <path d="M8 10h8v2a4 4 0 0 1-8 0v-2z" />
